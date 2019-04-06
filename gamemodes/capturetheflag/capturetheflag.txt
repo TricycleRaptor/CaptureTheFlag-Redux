@@ -1,0 +1,89 @@
+"Gamemode"
+{
+	"base"		"sandbox"
+	"title"		"Capture the Flag"
+	"maps"		"^ctf_"
+	"menusystem"	"1"
+	"workshopid"	"738284170"
+
+	"settings"
+	{
+		1
+		{
+			"name"		"ctf_buildtime"
+			"text"		"Dedicated Build Time"
+			"help"		"The number of minutes where players can build, but not fight."
+			"type"		"Numeric"
+			"default"	"60"
+		}
+
+		2
+		{
+			"name"		"ctf_buildzonescale"
+			"text"		"Build Zone Scale"
+			"help"		"The scale of the build area"
+			"type"		"Numeric"
+			"default"	"1"
+		}
+
+		3
+		{
+			"name"		"ctf_usepropprotect"
+			"text"		"Use Default Prop Protection"
+			"help"		"Turns on the built in prop protection"
+			"type"		"CheckBox"
+			"default"	"1"
+		}
+
+		4
+		{
+			"name"		"ctf_restrictkeys"
+			"text"		"Restrict Keyboard Triggers"
+			"help"		"Forces players to use gmod buttons to trigger gmod entities, instead of key presses"
+			"type"		"CheckBox"
+			"default"	"1"
+		}
+		5
+		{
+			"name"		"ctf_capturetarget"
+			"text"		"Capture Target"
+			"help"		"Number of flag captures before a team reaches victory"
+			"type"		"Numeric"
+			"default"	"1"
+		}
+		6
+		{
+			"name"		"ctf_respawntime"
+			"text"		"Respawn Wait Time"
+			"help"		"Number of seconds before a player can respawn"
+			"type"		"Numeric"
+			"default"	"10"
+		}
+		7
+		{
+			"name"		"ctf_forcerespawn"
+			"text"		"Force Respawn"
+			"help"		"Forces players to respawn as soon as they are able. If Death Spectate is enabled, this option will auto initiate spectating."
+			"type"		"CheckBox"
+			"default"	"0"
+		}
+		8
+		{
+			"name"		"ctf_deathspectate"
+			"text"		"Enable Death Spectate"
+			"help"		"Allows players to spectate while they're waiting to respawn"
+			"type"		"CheckBox"
+			"default"	"1"
+		}
+		9
+		{
+			"name"		"ctf_restrictdeathspectate"
+			"text"		"Restricted Death Spectate"
+			"help"		"Locks death spectating to allies only chase cam, instead of free roam"
+			"type"		"CheckBox"
+			"default"	"1"
+		}
+			
+			
+	}
+}
