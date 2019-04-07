@@ -532,6 +532,13 @@ function GM:PlayerLoadout( ply )
 			ply:Give(v)
 		end
 		
+		ply:GiveAmmo(150, "9x19MM", true)
+		ply:GiveAmmo(80, "5.7x28MM", true)
+		ply:GiveAmmo(200, "5.56x45MM", true)
+		ply:GiveAmmo(100, ".45 ACP", true)
+		ply:GiveAmmo(30, ".338 Lapua", true)
+		ply:GiveAmmo(24, "12 Gauge", true)
+		
 	end
 end
 
