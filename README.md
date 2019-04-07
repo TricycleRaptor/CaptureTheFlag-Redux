@@ -6,7 +6,7 @@ a money feature, and an ordnance menu for use with said money system to purchase
 
 ------------------------------------------------------------------------------------------------------------------------
 
-##PLANNED FEATURES:##
+## PLANNED FEATURES: ##
 
 1.) Disable the spawn and context menu after the round starts. [COMPLETE]
 
