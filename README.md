@@ -4,6 +4,8 @@ An overhaul of the existing gamemode, Capture the Flag, by Nefusadi for Garry's 
 This project is intended to improve the vanilla gamemode and add features such as a class system for players,
 a money feature, and an ordnance menu for use with said money system to purchase armor, vehicles, and other upgrades.
 
+------------------------------------------------------------------------------------------------------------------------
+
 An outline of planned improvements is as follows:
 
 1.) Disable the spawn and context menu after the round starts. [COMPLETE]
@@ -26,6 +28,7 @@ An outline of planned improvements is as follows:
 
 10.) Add a condition to prevent the ordnance menu from being opened outside of base.
 
+------------------------------------------------------------------------------------------------------------------------
 
 The original gamemode can be found here: https://steamcommunity.com/sharedfiles/filedetails/?id=738284170
 
