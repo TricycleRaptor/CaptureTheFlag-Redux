@@ -30,6 +30,6 @@ a money feature, and an ordnance menu for use with said money system to purchase
 
 ------------------------------------------------------------------------------------------------------------------------
 
-**ORIGINAL GAMEMODE**: https://steamcommunity.com/sharedfiles/filedetails/?id=738284170
+**ORIGINAL GAMEMODE:** https://steamcommunity.com/sharedfiles/filedetails/?id=738284170
 
 All credit for the original gamemode goes to Nefusadi. This project aims to build upon what they have already created.
