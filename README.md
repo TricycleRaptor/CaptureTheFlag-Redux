@@ -1,5 +1,5 @@
 # CaptureTheFlag-Redux
-An overhaul project of Capture the Flag by Nefusadi, for Garry's Mod.
+An overhaul project for Capture the Flag by Nefusadi, for Garry's Mod.
 
 This project is intended to improve the vanilla gamemode and add features such as a class system for players,
 a money feature, and an ordnance menu for use with said money system to purchase armor, vehicles, and other upgrades.
