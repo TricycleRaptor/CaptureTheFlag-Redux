@@ -5,7 +5,6 @@ GM.Website      = ""
 
 DeriveGamemode( "sandbox" )
 include( 'class_menu.lua' )
-include( 'ordnance_menu.lua' )
 
 function GM:Initialize()
 	team.SetUp( 1, "RedTeam", Color( 255, 100, 100, 255 ) ) //RedTeam
