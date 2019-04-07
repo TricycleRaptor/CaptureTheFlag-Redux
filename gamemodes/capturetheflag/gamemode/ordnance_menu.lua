@@ -118,22 +118,19 @@ function addButtons(Menu)
 		iconList:SetSpaceY(5)
 		iconList:SetSpaceX(5)
 		
-		local entsArr = {}
-		entsArr[1] = scripted_ents.Get("sim_fphys_v8elite_armed2")
+		local entityArray = {}
+		entityArray[1] = scripted_ents.Get("lunasflightschool_combineheli") -- Test
 		
-		for k, v in pairs(entsArr) do
-		
-			local iocn = vgui.Create("SpawnIcon", iconList)
+		for k, v in pairs(entityArray) do
+			local icon = vgui.Create("SpawnIcon", iconList)
 			icon:SetModel(v["Model"])
 			icon:SetToolTip(v["PrintName"])
 			iconList:Add(icon)
 			icon.DoClick = function(icon)
-				LocalPlayer():ConCommand("buy_entity"..v["ClassName"])
+				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
-		
 	end
-
 end
 
 -- Ammo Panel
