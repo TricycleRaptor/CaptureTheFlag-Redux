@@ -1,3 +1,5 @@
+ButtonNoise = Sound("buttons/lightswitch2.wav")
+
 local Menu
 
 net.Receive("OrdnanceMenu",function()
@@ -58,7 +60,32 @@ function addButtons(Menu)
 	end
 	
 	ammoButton.DoClick = function(ammoButton)
+		LocalPlayer():EmitSound(ButtonNoise)
 		local ammoPanel = Menu:Add("AmmoPanel")
+		local iconList = vgui.Create("DIconLayout", ammoPanel)
+		
+		iconList:SetPos(10,5)
+		iconList:SetSize(ammoPanel:GetWide(), ammoPanel:GetTall())
+		iconList:SetSpaceY(10)
+		iconList:SetSpaceX(10)
+		
+		local entityArray = {}
+		entityArray[1] = scripted_ents.Get("cw_ammo_kit_small")
+		entityArray[2] = scripted_ents.Get("cw_ammo_kit_regular")
+		entityArray[3] = scripted_ents.Get("cw_ammo_40mm")
+		entityArray[4] = scripted_ents.Get("cw_ammo_crate_small")
+		
+		
+		for k, v in pairs(entityArray) do
+			local icon = vgui.Create("SpawnIcon", iconList)
+			icon:SetModel(v["Model"])
+			icon:SetToolTip(v["PrintName"])
+			iconList:Add(icon)
+			icon.DoClick = function(icon)
+				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
+			end
+		end
+		
 	end
 	
 	-- Entities Button --
@@ -79,12 +106,37 @@ function addButtons(Menu)
 		surface.DrawRect(99,0,1,entitiesButton:GetTall()) -- Width of 100 minus 1
 		
 		-- Draw text
-		draw.DrawText("Entities","DermaDefaultBold",entitiesButton:GetWide()/2,17,Color(255,255,255,255),1)
+		draw.DrawText("Equipment","DermaDefaultBold",entitiesButton:GetWide()/2,17,Color(255,255,255,255),1)
 		
 	end
 	
 	entitiesButton.DoClick = function(entitiesButton)
+		LocalPlayer():EmitSound(ButtonNoise)
 		local entitiesPanel = Menu:Add("EntitiesPanel")
+		local iconList = vgui.Create("DIconLayout", entitiesPanel)
+		
+		iconList:SetPos(10,5)
+		iconList:SetSize(entitiesPanel:GetWide(), entitiesPanel:GetTall())
+		iconList:SetSpaceY(10)
+		iconList:SetSpaceX(10)
+		
+		local entityArray = {}
+		entityArray[1] = scripted_ents.Get("danguvestsmall")
+		entityArray[2] = scripted_ents.Get("danguvestnormal")
+		entityArray[3] = scripted_ents.Get("danguvestheavy")
+		entityArray[4] = scripted_ents.Get("danguvesthelmet")
+		
+		
+		for k, v in pairs(entityArray) do
+			local icon = vgui.Create("SpawnIcon", iconList)
+			icon:SetModel(v["Model"])
+			icon:SetToolTip(v["PrintName"])
+			iconList:Add(icon)
+			icon.DoClick = function(icon)
+				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
+			end
+		end
+		
 	end
 	
 	-- Vehicles Button ---
@@ -110,13 +162,14 @@ function addButtons(Menu)
 	end
 	
 	vehiclesButton.DoClick = function(vehiclesButton)
+		LocalPlayer():EmitSound(ButtonNoise)
 		local vehiclesPanel = Menu:Add("VehiclesPanel")
 		local iconList = vgui.Create("DIconLayout", vehiclesPanel)
 		
-		iconList:SetPos(0,0)
+		iconList:SetPos(10,5)
 		iconList:SetSize(vehiclesPanel:GetWide(), vehiclesPanel:GetTall())
-		iconList:SetSpaceY(5)
-		iconList:SetSpaceX(5)
+		iconList:SetSpaceY(10)
+		iconList:SetSpaceX(10)
 		
 		local entityArray = {}
 		entityArray[1] = scripted_ents.Get("lunasflightschool_combineheli") -- Test
@@ -130,6 +183,7 @@ function addButtons(Menu)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
+		
 	end
 end
 
