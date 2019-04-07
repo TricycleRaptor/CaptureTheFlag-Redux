@@ -32,4 +32,4 @@ a money feature, and an ordnance menu for use with said money system to purchase
 
 **ORIGINAL GAMEMODE:** https://steamcommunity.com/sharedfiles/filedetails/?id=738284170
 
-Credit to Nefusadi for the original. This project only aims to build upon what they have already created.
+All credit goes to Nefusadi for the original. This project only aims to build upon what they have already created.
