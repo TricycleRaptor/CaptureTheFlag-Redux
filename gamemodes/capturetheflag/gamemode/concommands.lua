@@ -1,27 +1,43 @@
 BeginNoise = Sound("ambient/levels/streetwar/city_battle13.wav")
 
--- function buyEntity(ply, cmd, args)
+function buyEntity(ply, cmd, args)
 
-	-- if(args[1] != nil) then
-		-- local ent = ents.Create(args[1])
-		-- local tr = ply:GetEyeTrace()
+	if(args[1] != nil) then
+		local ent = ents.Create(args[1])
+		local tr = ply:GetEyeTrace()
 		
-		-- if(ent:IsValid()) then
+		if(ent:IsValid()) then
+			local ClassName = ent:GetClass()
 		
+			if(!tr.Hit) then return end
 		
+		local entCount = ply:GetNWInt(ClassName .. "count")
 		
-		-- end
-	-- end
-
--- end
+		if(entCount < ent.Limit) then
+			local SpawnPost = ply:GetShootPos() + ply:GetForward() * 80
+			
+			ent.Owner = ply
+			
+			ent:SetPos(SpawnPos)
+			ent:Spawn()
+			ent:Activate()
+			
+			ply:SetNWInt(ClassName .. "count", entCount + 1)
+			
+			return ent
+		end
+		
+		return
+		
+		end
+	end
+end
+concommand.Add("ctf_buyentity", buyEntity)
 
 function setPlayerClass(ply, cmd, args)
-
-	if(args[nil]) then
-		return
-	else
+	
+	if(args[1] != nil) then
 		ply:SetNWInt("playerClass", tonumber(args[1]))
-		--ply:Kill()
 	end
 	
 end
