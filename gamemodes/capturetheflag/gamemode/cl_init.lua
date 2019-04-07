@@ -1,5 +1,6 @@
 include( 'cl_scoreboard.lua' )
 include( 'shared.lua' )
+include( 'ordnance_menu.lua' )
 
 BeginNoise = Sound("ambient/levels/streetwar/city_battle13.wav")
 BaseAppear = Sound("npc/scanner/scanner_nearmiss2.wav")
