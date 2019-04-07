@@ -32,5 +32,4 @@ a money feature, and an ordnance menu for use with said money system to purchase
 
 The original gamemode can be found here: https://steamcommunity.com/sharedfiles/filedetails/?id=738284170
 
-All credit for the original gamemode goes to Nefusadi. This project simply aims to build upon the base they have already
-created.
+All credit for the original gamemode goes to Nefusadi. This project simply aims to build upon the base they have already created.
