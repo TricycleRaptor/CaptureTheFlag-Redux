@@ -1,5 +1,3 @@
-BeginNoise = Sound("ambient/levels/streetwar/city_battle13.wav")
-
 function buyEntity(ply, cmd, args)
 
 	if(args[1] != nil) then
@@ -13,7 +11,7 @@ function buyEntity(ply, cmd, args)
 		
 		local entCount = ply:GetNWInt(ClassName .. "count")
 		
-		if(entCount < ent.Limit) then
+		if(entCount < ent.Limit) then -- Implement entCount
 			local SpawnPost = ply:GetShootPos() + ply:GetForward() * 80
 			
 			ent.Owner = ply
@@ -42,3 +40,12 @@ function setPlayerClass(ply, cmd, args)
 	
 end
 concommand.Add("ctf_setclass",setPlayerClass)
+
+function setPlayerMoney(ply, cmd, args)
+	
+	if(args[1] != nil) then
+		ply:SetNWInt("playerMoney", tonumber(args[1]))
+	end
+	
+end
+concommand.Add("ctf_setmoney",setPlayerClass)
