@@ -1,7 +1,7 @@
-GM.Name		= "CaptureTheFlag"
-GM.Author	= "Nefusadi"
-GM.Email	= ""
-GM.Website      = ""
+GM.Name		= "CaptureTheFlag: Redux"
+GM.Author	= "Nefusadi, TricycleRaptor"
+GM.Email	= "arrinbevers@yahoo.com"
+GM.Website  	= ""
 
 DeriveGamemode( "sandbox" )
 include( 'class_menu.lua' )
