@@ -356,6 +356,9 @@ function GM:PlayerSpawn( ply )
 	end
 
 	if (MatchHasBegun) then
+	
+		timer.Create( "moneyTimer", 5, 0, function() ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + 100) end) -- Working timer that adds $100 every 5 seconds
+	
 		net.Start("RestrictMenu")
 		net.Send(ply)
 	else
@@ -371,12 +374,6 @@ function GM:PlayerSpawn( ply )
 			break
 		end
  	end
-
-	timer.Create( "PSVMoney" .. ply:UserID(), 1, 5, function() 
-		ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + 5)
-	end)
-
-
 end
 
 function GM:PostPlayerDeath( ply )
@@ -617,7 +614,7 @@ function joining( ply )
  
 end
 
--- function GM:PlayerShouldTakeDamage(victim,attacker) -- no friendly fire
+-- function GM:PlayerShouldTakeDamage(victim,attacker) -- Disable friendly fire
 	-- if Time / 60 < CTF_Time:GetFloat() or (attacker:IsPlayer() and attacker:Team() == victim:Team() or CurTime() - victim.InvulnTime < 6) then
 		-- return false
 	-- else
@@ -675,6 +672,14 @@ function doBuild(team, pos, ply)
 	end
 	
 	PropProtection.TeamMakePropOwner(team, ConSphere)
+	
+	-- Experimental base perimeter determination (Working, theoretically)--
+	PerimeterSphere = ents.Create("CTF_PerimeterSphere")
+	PerimeterSphere:SetPos(pos)
+	PerimeterSphere:SetNWInt("Team", team)
+	PerimeterSphere:SetGravity(0)
+	PerimeterSphere:Spawn()
+	PerimeterSphere:SetModelScale(GetConVar("ctf_buildzonescale"):GetFloat())
 	
 	FlagBase = ents.Create("CTF_FlagBase")
 	FlagBase:SetPos(pos + Vector(-100,0,0))
@@ -873,6 +878,12 @@ function GM:PlayerDeath(victim, inflictor, attacker)
 	end
 end
 
+function giveMoney( ply )
+
+	ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + 100) -- Give the player $100
+
+end
+
 function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
 	if ( attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) ) then
 		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + damageTaken) -- Award player $1 per point of damage
@@ -891,14 +902,18 @@ function GM:ShowSpare1(ply)
 	
 end
 
-local isOpen = false
+local open = false
 
 util.AddNetworkString("OrdnanceMenu")
 function GM:ShowSpare2(ply)
-	isOpen = not isOpen
+
+	if(open == false) then
+		open = true
+	else
+		open = false
+	end
 
 	net.Start("OrdnanceMenu")
-	net.WriteBit(isOpen)
+	net.WriteBit(open)
 	net.Broadcast()
-
 end
