@@ -371,6 +371,12 @@ function GM:PlayerSpawn( ply )
 			break
 		end
  	end
+
+	timer.Create( "PSVMoney" .. ply:UserID(), 1, 5, function() 
+		ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + 5)
+	end)
+
+
 end
 
 function GM:PostPlayerDeath( ply )
@@ -862,14 +868,20 @@ end
 
 
 function GM:PlayerDeath(victim, inflictor, attacker)
-	if(attacker:Team() == 1 and victim:Team() == 2) then
-		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + 50) -- Award red player $50 for an enemy kill
-	elseif(attacker:Team() == 2 and victim:Team() == 1) then
-		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + 50) -- Award blue player $50 for an enemy kill
+	if(attacker:Team() ~= victim:Team()) then
+		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + 50) -- Award player $50 for an enemy kill
+	end
+end
+
+function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
+	if ( attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) ) then
+		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + damageTaken) -- Award player $1 per point of damage
 	end
 end
 
 --------------------------------Menu Calls--------------------------
+
+--TODO fix these calls by making them client-specific
 
 util.AddNetworkString("ClassMenu")
 function GM:ShowSpare1(ply)
@@ -879,18 +891,14 @@ function GM:ShowSpare1(ply)
 	
 end
 
-local open = false
+local isOpen = false
 
 util.AddNetworkString("OrdnanceMenu")
 function GM:ShowSpare2(ply)
-
-	if(open == false) then
-		open = true
-	else
-		open = false
-	end
+	isOpen = not isOpen
 
 	net.Start("OrdnanceMenu")
-	net.WriteBit(open)
+	net.WriteBit(isOpen)
 	net.Broadcast()
+
 end

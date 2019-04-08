@@ -587,3 +587,4 @@ function VictoryThink()
 	end
 end
 hook.Add("Think", "VictoryThink", VictoryThink)
+
