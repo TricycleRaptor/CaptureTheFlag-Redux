@@ -1,590 +1,919 @@
-include( 'cl_scoreboard.lua' )
+AddCSLuaFile( "cl_init.lua" )
+AddCSLuaFile( "cl_scoreboard.lua" )
+AddCSLuaFile( "shared.lua" )
+AddCSLuaFile( "config/custom_classes.lua" )
+
+resource.AddFile( "models/CTF_Flag/ctf_flag.mdl" )
+resource.AddFile( "models/CTF_FlagBase/ctf_flagbase.mdl" )
+resource.AddFile( "models/CTF_SpawnArea/ctf_spawnarea.mdl" )
+resource.AddFile( "models/CTF_Sphere/ctf_constructsphere.mdl" )
+
+resource.AddFile( "materials/models/CTF_Flag/flagblue.vmt" )
+resource.AddFile( "materials/models/CTF_Flag/flagred.vmt" )
+resource.AddFile( "materials/models/CTF_FlagBase/baseblue.vmt" )
+resource.AddFile( "materials/models/CTF_FlagBase/basered.vmt" )
+resource.AddFile( "materials/models/CTF_SpawnArea/baseblue.vmt" )
+resource.AddFile( "materials/models/CTF_SpawnArea/basered.vmt" )
+resource.AddFile( "materials/models/CTF_Sphere/sphereblue.vmt" )
+resource.AddFile( "materials/models/CTF_Sphere/spherered.vmt" )
+resource.AddSingleFile( "materials/models/ctf_sphere/innersphereblue.vmt" )
+resource.AddSingleFile( "materials/models/ctf_sphere/innerspherered.vmt" )
+
+resource.AddFile( "materials/buttons/blue_button.png" )
+resource.AddFile( "materials/buttons/blue_button_down.png" )
+resource.AddFile( "materials/buttons/red_button.png" )
+resource.AddFile( "materials/buttons/red_button_down.png" )
+resource.AddFile( "materials/buttons/spectators_button.png" )
+resource.AddFile( "materials/buttons/spectators_button_down.png" )
+resource.AddFile( "materials/buttons/welcome.png" )
+
+resource.AddFile( "materials/icons/blue_win_logo.png" )
+resource.AddFile( "materials/icons/blue_win_text.png" )
+resource.AddFile( "materials/icons/flag_icon.png" )
+resource.AddFile( "materials/icons/flag_icon_carried.png" )
+resource.AddFile( "materials/icons/flag_icon_dropped.png" )
+resource.AddFile( "materials/icons/red_win_logo.png" )
+resource.AddFile( "materials/icons/red_win_text.png" )
+
+util.AddNetworkString("RestrictMenu")
+util.AddNetworkString("UnrestrictMenu")
+util.AddNetworkString("BaseSet")
+util.AddNetworkString("MatchBegin")
+util.AddNetworkString("ctf_TimeUpdate")
+util.AddNetworkString("UpdatePP")
+util.AddNetworkString("TeamScored")
+util.AddNetworkString("UpdateAllValues")
+util.AddNetworkString("FlagDropped")
+util.AddNetworkString("FlagPickedUp")
+util.AddNetworkString("FlagReturned")
+util.AddNetworkString("GameEnded")
+util.AddNetworkString("NotifyDeath")
+util.AddNetworkString("UpdateRespawn")
+
 include( 'shared.lua' )
-include( 'ordnance_menu.lua' )
+include ( 'concommands.lua' )
+include ( 'config/custom_classes.lua' )
 
-BeginNoise = Sound("ambient/levels/streetwar/city_battle13.wav")
-BaseAppear = Sound("npc/scanner/scanner_nearmiss2.wav")
-//LoseNoise = Sound("vo/k_lab/kl_ahhhh.wav")
-//WinNoise = Sound("")
-ScoreNoise = Sound("ambient/levels/labs/electric_explosion1.wav")
-PickupNoise = Sound("ambient/levels/canals/windchime2.wav")
-DropNoise = Sound("ambient/alarms/warningbell1.wav")
-UIThunk = Sound("physics/cardboard/cardboard_box_impact_hard4.wav")
+CTF_Time = GetConVar( "ctf_buildtime" )
+buildTime = CTF_Time:GetFloat()
+showPP = GetConVar( "ctf_usepropprotect" ):GetBool()
+CTF_RespawnTime = GetConVar( "ctf_respawntime" )
+CTF_ForceRespawn = GetConVar( "ctf_forcerespawn" )
+CTF_DSpectate = GetConVar( "ctf_deathspectate" )
+CTF_DSpectateRestrict = GetConVar( "ctf_restrictdeathspectate" )
 
-LocalPlayer().canbuild = 1
-
+Time = 0
+TeamSetUp = {false, false}
 MatchHasBegun = false
-BaseSet = {false, false}
-FlagsDropped = {false, false}
-FlagsCarried = {false, false}
-Scores = {0,0}
+TeamLocations = {nil, nil}
+respawnTime = 10
 
-FlagCarrier = {NULL, NULL}
-Icon = {NULL, NULL}
-IconDropped = {NULL, NULL}
-IconCarried = {NULL, NULL}
+-------------------------------Prop Protection----------------------------
+PropProtection.Props = {}
 
-TimeLeft = 0
-ShowPP = false
-
-IconTimer = {0,0}
-
-WinTime = -5
-DeathTime = -10
-RespawnTime = 10
-
-for i=1,2 do
-	Icon[i] = vgui.Create( "DImage" )
-	Icon[i]:SetImage( "icons/flag_icon.png" )
-	Icon[i]:SetImageColor( Color(150,150,150,150) )
-	Icon[i]:Show()
-
-	IconCarried[i] = vgui.Create( "DImage" )
-	IconCarried[i]:SetImage( "icons/flag_icon_carried.png" )
-	IconCarried[i]:Show() // Might not be necessary
-	IconCarried[i]:SetVisible(false)
-
-	IconDropped[i] = vgui.Create( "DImage" )
-	IconDropped[i]:SetImage( "icons/flag_icon_dropped.png" )
-	IconDropped[i]:Show()
-	IconDropped[i]:SetVisible(false)
-end
-
-victoryLogo = vgui.Create( "DImage")
-victoryText = vgui.Create( "DImage")
-
-local function HandleUpdateAllValues(len, ply)
-
-	MatchHasBegun = net.ReadBool()
-	FlagCarrier[1] = net.ReadEntity()
-	FlagCarrier[2] = net.ReadEntity()
-	BaseSet[1] = net.ReadBool()
-	BaseSet[2] = net.ReadBool()
-	FlagsDropped[1] = net.ReadBool()
-	FlagsDropped[2] = net.ReadBool()
-	FlagsCarried[1] = net.ReadBool()
-	FlagsCarried[2] = net.ReadBool()
-	Scores[1] = net.ReadFloat()
-	Scores[2] = net.ReadFloat()
-	TimeLeft = net.ReadFloat()
-	ShowPP = net.ReadBool()
-	RespawnTime = net.ReadFloat()
-
-	print("Data Received")
-
-	for i=1,2 do
-		local c = Color(255,75,75,255)
-		if i == 2 then
-			c = Color(75,75,255,255)
-		end
-
-		if BaseSet[i] then
-			Icon[i]:SetImageColor( c )
-		else
-			Icon[i]:SetImageColor( Color(150,150,150,150) )
-		end
-
-		if FlagsDropped[i] then
-			IconDropped[i]:SetVisible(true)
-		else
-			IconDropped[i]:SetVisible(false)
-		end
-
-		if FlagsCarried[i] then
-			IconCarried[i]:SetVisible(true)
-		else
-			IconCarried[i]:SetVisible(false)
-		end
-	end
-end
-net.Receive("UpdateAllValues", HandleUpdateAllValues)
-
-local function HandlePPUpdate()
-	ShowPP = net.ReadBool()
-end
-net.Receive("UpdatePP", HandlePPUpdate)
-
-local function HandleBaseSet(len, ply)
-	local team = net.ReadFloat()
-	LocalPlayer():EmitSound(BaseAppear)
-	LocalPlayer().canbuild = 1
-	BaseSet[team] = true
-
-	local c = Color(255,75,75,255)
-	if team == 2 then
-		c = Color(75,75,255,255)
-	end
-	
-	Icon[team]:SetImageColor(c)
-	IconTimer[team] = CurTime()
-end
-net.Receive("BaseSet", HandleBaseSet)
-
-local function HandleMatchBegin()
-	MatchHasBegun = true
-	LocalPlayer():EmitSound(BeginNoise)
-end
-net.Receive("MatchBegin", HandleMatchBegin)
-
-local function HandleFlagDropped(len, ply)
-	local team = net.ReadFloat()
-	FlagsDropped[team] = true
-	FlagsCarried[team] = false
-	FlagCarrier[team] = NULL
-	LocalPlayer():EmitSound(DropNoise)
-	IconDropped[team]:SetVisible(true)
-	IconCarried[team]:SetVisible(false)
-	IconTimer[team] = CurTime()
-end
-net.Receive("FlagDropped", HandleFlagDropped)
-
-local function HandleFlagPickedUp(len, ply)
-	local ply = net.ReadEntity()
-	local team = 1
-	if ply:Team() == 1 then
-		team = 2
+function PropProtection.PlayerCanTouch(ply, ent)
+	if ply:Team() == 3 then
+		return false
 	end
 
-	FlagsDropped[team] = false
-	FlagsCarried[team] = true
-	FlagCarrier[team] = ply
-
-	IconCarried[team]:SetVisible(true)
-	IconDropped[team]:SetVisible(false)
-	IconTimer[team] = CurTime()
-
-	LocalPlayer():EmitSound(PickupNoise)
-end
-net.Receive("FlagPickedUp", HandleFlagPickedUp)
-
-local function HandleFlagReturned(len, ply)
-	local team = net.ReadFloat()
-
-	FlagsDropped[team] = false
-	FlagsCarried[team] = false
-	LocalPlayer():EmitSound(PickupNoise, 75, 50)
-	IconCarried[team]:SetVisible(false)
-	IconDropped[team]:SetVisible(false)
-	IconTimer[team] = CurTime()
-	FlagCarrier[team] = NULL
-end
-net.Receive("FlagReturned", HandleFlagReturned)
-
-local function HandleTeamScored(len, ply)
-	local scoredTeam = net.ReadFloat()
-	FlagsDropped = {false, false}
-	FlagsCarried = {false, false}
-	FlagCarrier = {NULL, NULL}
-	local newScore = net.ReadFloat()
-	Scores[scoredTeam] = newScore
-
-	LocalPlayer():EmitSound(ScoreNoise)
-	if scoredTeam != LocalPlayer():Team() && LocalPlayer():Team() <= 2 then
-		//LocalPlayer():EmitSound(LoseNoise)
-	elseif LocalPlayer():Team() <= 2 then
-		//LocalPlayer():EmitSound(WinNoise)
-	end
-
-	for i=1,2 do
-		IconCarried[i]:SetVisible(false)
-		IconDropped[i]:SetVisible(false)
-	end
-end
-net.Receive("TeamScored", HandleTeamScored)
-
-local function HandleTimeUpdate(len, ply)
-	TimeLeft = net.ReadFloat()
-end
-net.Receive("ctf_TimeUpdate", HandleTimeUpdate)
-
-local function HandleGameEnded(len, ply)
-	local winningTeam = net.ReadFloat()
-
-	if winningTeam == 1 then
-		victoryLogo:SetImage( "icons/red_win_logo.png" )
-		victoryText:SetImage( "icons/red_win_text.png" )
-	else
-		victoryLogo:SetImage( "icons/blue_win_logo.png" )
-		victoryText:SetImage( "icons/blue_win_text.png" )
-	end
-
-	victoryLogo:Show()
-	victoryText:Show()
-
-	WinTime = CurTime()
-end
-net.Receive("GameEnded", HandleGameEnded)
-
-local function NotifyDeath()
-	DeathTime = CurTime()
-end
-net.Receive("NotifyDeath", NotifyDeath)
-
-local function UpdateRespawn()
-	RespawnTime = net.ReadFloat()
-end
-net.Receive("UpdateRespawn", UpdateRespawn)
-
-hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
-
-	-- Player halos
-	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
-		if(LocalPlayer():GetEyeTrace().Entity:IsPlayer()) then -- Determine if the entity is a player
-			if(LocalPlayer():GetEyeTrace().Entity:Team() == 1) then -- Determine if the player is on red team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 5, 5, 1 ) -- Color red team
-			elseif (LocalPlayer():GetEyeTrace().Entity:Team() == 2) then -- Determine if the player is on blue team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 5, 5, 1 ) -- Color blue team
-			end
-		end
-	end 
-	
-	-- Vehicle halos
-	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
-		if(LocalPlayer():GetEyeTrace().Entity:IsVehicle()) then -- Determine if the entity is a vehicle
-			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then -- Determine if the vehicle is owned by red team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 5, 5, 1 ) -- Color red team
-			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then -- Determine if the player is owned by blue team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 5, 5, 1 ) -- Color blue team
-			end
-		end
-	end
-	
-end )
-
-surface.CreateFont( "MyScoreAndTime", {
-	size = ScrH() / 8,
-	weight = 550,
-	font = "Arial"
-} )
-
-function SpawnMenuOpen()
-	if LocalPlayer().canbuild == 1 and LocalPlayer():Alive() then
+	if ent:GetClass() == "worldspawn" then
 		return true
 	end
 
+	if (ent:GetNWInt("OwningTeam") == nil or ent:GetNWInt("OwningTeam") == 0) and not ent:IsPlayer() then
+		PropProtection.TeamMakePropOwner(ply:Team(), ent)
+		return true
+	end
+
+	if (MatchHasBegun and (ent.IsBase or ent.IsSpawnArea) or ent.IsFlag) then
+		return false
+	end
+
+	if not (GetConVar("ctf_usepropprotect"):GetBool()) then
+		return true
+	end
+
+	return ent:GetNWInt("OwningTeam") == ply:Team() or ent:GetNWInt("OwningTeam") == -1
+end
+
+function PropProtection.UnOwnProp(ent)
+	if not IsValid(ent) then return false end
+
+	PropProtection.Props[ent:EntIndex()] = nil
+	ent:SetNWInt("OwningTeam", nil)
+
+	return true
+end
+
+function PropProtection.TeamMakePropOwner(team, ent)
+	if ent:IsPlayer() then
+		return false
+	end
+
+	PropProtection.Props[ent:EntIndex()] = team
+	ent:SetNWInt("OwningTeam", team)
+
+	return true
+end
+
+
+local plymeta = FindMetaTable("Player")
+if plymeta.AddCount then
+	local Backup = plymeta.AddCount
+	function plymeta:AddCount(Type, ent)
+		PropProtection.TeamMakePropOwner(self:Team(), ent)
+		Backup(self, Type, ent)
+	end
+end
+
+
+function PropProtection.PhysGravGunPickup(ply, ent)
+	if not IsValid(ent) then
+		return
+	end
+	
+	if not PropProtection.PlayerCanTouch(ply, ent) then return false end
+end
+//hook.Add("GravGunPunt", "PropProtection.GravGunPunt", PropProtection.PhysGravGunPickup)
+//hook.Add("GravGunPickupAllowed", "PropProtection.GravGunPickupAllowed", PropProtection.PhysGravGunPickup)
+hook.Add("PhysgunPickup", "PropProtection.PhysgunPickup", PropProtection.PhysGravGunPickup)
+
+function PropProtection.FlagPunt(ply, ent)
+	if not IsValid(ent) then
+		return
+	end
+
+	if ent.IsFlag then
+		return false
+	end
+end
+hook.Add("GravGunPunt", "PropProtection.GravGunPunt", PropProtection.FlagPunt)
+
+-- function PropProtection.CanTool(ply, tr, mode)
+	-- if tr.HitWorld then
+		-- return
+	-- end
+	-- local ent = tr.Entity
+	-- if not IsValid(ent) or ent:IsPlayer() or ent.IsBase or ent.IsFlag or ent.IsSpawnArea then
+		-- return false
+	-- end
+
+	-- if not PropProtection.PlayerCanTouch(ply, ent) then return false end
+-- end
+-- hook.Add("CanTool", "PropProtection.CanTool", PropProtection.CanTool)
+
+function PropProtection.EntityTakeDamageFireCheck(ent)
+	if not IsValid(ent) then
+		return
+	end
+	if ent:IsOnFire() then
+		ent:Extinguish()
+	end
+end
+
+function PropProtection.EntityTakeDamage(ent, dmginfo)
+	local attacker = dmginfo:GetAttacker()
+	if not IsValid(ent) or ent:IsPlayer() or not attacker:IsPlayer() then
+		return
+	end
+	if ent.IsBase or ent.IsSpawnArea then
+		dmginfo:SetDamage(0)
+		timer.Simple(0.1,
+			function()
+				if IsValid(ent) then PropProtection.EntityTakeDamageFireCheck(ent) end
+			end)
+	end
+end
+hook.Add("EntityTakeDamage", "PropProtection.EntityTakeDamage", PropProtection.EntityTakeDamage)
+
+function PropProtection.OnPhysgunReload(weapon, ply)
+	local tr = util.TraceLine(util.GetPlayerTrace(ply))
+	if tr.HitWorld or not IsValid(tr.Entity) or tr.Entity:IsPlayer() then
+		return
+	end
+
+	if not PropProtection.PlayerCanTouch(ply, tr.Entity) then return false end
+end
+hook.Add("OnPhysgunReload", "PropProtection.OnPhysgunReload", PropProtection.OnPhysgunReload)
+
+function PropProtection.EntitySpawned(ent)
+	if ent:GetOwner():IsValid() and ent:GetOwner():IsPlayer() then
+		PropProtection.TeamMakePropOwner(ent:GetOwner():Team(), ent)
+	end
+end
+hook.Add("EntityCreated", "PropProtection.EntityCreated", PropProtection.EntitySpawned)
+
+function PropProtection.EntityRemoved(ent)
+	PropProtection.Props[ent:EntIndex()] = nil
+end
+hook.Add("EntityRemoved", "PropProtection.EntityRemoved", PropProtection.EntityRemoved)
+
+function PropProtection.PlayerSpawnedSENT(ply, ent)
+	PropProtection.TeamMakePropOwner(ply:Team(), ent)
+end
+hook.Add("PlayerSpawnedSENT", "PropProtection.PlayerSpawnedSENT", PropProtection.PlayerSpawnedSENT)
+
+function PropProtection.PlayerSpawnedVehicle(ply, ent)
+	PropProtection.TeamMakePropOwner(ply:Team(), ent)
+end
+hook.Add("PlayerSpawnedVehicle", "PropProtection.PlayerSpawnedVehicle", PropProtection.PlayerSpawnedVehicle)
+
+function PropProtection.NPCCreatedRagdoll(npc,doll)
+	if PropProtection.Props[npc:EntIndex()] and not PropProtection.Props[doll:EntIndex()] then
+		PropProtection.TeamMakePropOwner(npc:GetNWInt("OwningTeam"),doll)
+	end
+end
+hook.Add("CreateEntityRagdoll","PropProtection.NPCCreatedRagdoll",PropProtection.NPCCreatedRagdoll)
+
+function PropProtection.NPCDeath(npc,attacker,weapon)
+	if not IsValid(npc:GetActiveWeapon()) then return end
+	if PropProtection.Props[npc:EntIndex()] and not PropProtection.Props[npc:GetActiveWeapon():EntIndex()] then
+		PropProtection.TeamMakePropOwner(npc:GetNWInt("OwningTeam"),npc:GetActiveWeapon())
+	end
+end
+hook.Add("OnNPCKilled","PropProtection.NPCDeath",PropProtection.NPCDeath)
+
+function PropProtection.WorldOwner()
+	local WorldEnts = 0
+	for k,v in pairs(ents.GetAll()) do
+		if not v:IsPlayer() and v:GetNWInt("OwningTeam") == 0 then
+			v:SetNWInt("OwningTeam", -1)
+			WorldEnts = WorldEnts + 1
+		end
+	end
+	print("World Props Added: " .. WorldEnts)
+end
+timer.Simple(2, PropProtection.WorldOwner)
+
+function PropProtection.CanEditVariable( ent, ply, key, val, editor )
+	return PropProtection.PlayerCanTouch(ply, ent) and !ent.IsBase and !ent.IsFlag and !ent.IsSpawnArea
+end
+hook.Add("CanEditVariable", "PropProtection.CanEditVariable", PropProtection.CanEditVariable)
+
+function PropProtection.AllowPlayerPickup( ply, ent )
+	if not PropProtection.PlayerCanTouch(ply, ent) then return false end
+end
+hook.Add("AllowPlayerPickup", "PropProtection.AllowPlayerPickup", PropProtection.AllowPlayerPickup)
+
+function PropProtection.CanDrive( ply, ent )
+	if ply:Team() == 3 then return false end
+end
+hook.Add("CanPlayerEnterVehicle", "PropProtection.CanDrive", PropProtection.CanDrive)
+
+function PropProtection.CanProperty( ply, property, ent )
+	if not PropProtection.PlayerCanTouch(ply, ent) then return false end
+	if ent:GetNWString("Owner") == "World" or ent.IsBase or ent.IsFlag or ent.IsSpawnArea then return false end
+end
+hook.Add("CanProperty", "PropProtection.CanProperty", PropProtection.CanProperty)
+-----------------------------Prop Protection End--------------------------
+
+--------------------Force the use of buttons for key presses--------------
+numpad.OldActivate = numpad.Activate
+function numpad.Activate(ply, key, isButton)
+	if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+		return numpad.OldActivate(ply, key, isButton)
+	end
+end
+
+numpad.OldDeactivate = numpad.Deactivate
+function numpad.Deactivate(ply, key, isButton)
+	if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+		return numpad.OldDeactivate(ply, key, isButton)
+	end
+end
+--------------------------------Button Force End--------------------------
+
+function UpdateAllValues(ply)
+
+	local flagDropped = {false, false}
+	local flagCarried = {false, false}
+	local carrier = {NULL, NULL}
+
+	for k,v in pairs(ents.GetAll()) do
+		if v.IsFlag then
+			flagDropped[v:GetNWInt("Team")] = !v.IsHeld && !v.IsOnBase
+			flagCarried[v:GetNWInt("Team")] = v.IsHeld
+			carrier[v:GetNWInt("Team")] = v.Carrier
+		end
+	end
+
+	net.Start("UpdateAllValues")
+	net.WriteBool(MatchHasBegun)
+	net.WriteEntity(carrier[1])
+	net.WriteEntity(carrier[2])
+	net.WriteBool(TeamSetUp[1])
+	net.WriteBool(TeamSetUp[2])
+	net.WriteBool(flagDropped[1])
+	net.WriteBool(flagDropped[2])
+	net.WriteBool(flagCarried[1])
+	net.WriteBool(flagCarried[2])
+	net.WriteFloat(team.GetScore(1))
+	net.WriteFloat(team.GetScore(2))
+	net.WriteFloat(math.ceil(CTF_Time:GetFloat() * 60 - Time))
+	net.WriteBool(GetConVar("ctf_usepropprotect"):GetBool())
+	net.WriteFloat(CTF_RespawnTime:GetFloat())
+	net.Send(ply)
+
+end
+
+function BroadcastFlagPickedUp(ply)
+	net.Start("FlagPickedUp")
+	net.WriteEntity(ply)
+	net.Broadcast()
+end
+
+function BroadcastFlagDropped(team)
+	net.Start("FlagDropped")
+	net.WriteFloat(team)
+	net.Broadcast()
+end
+
+function BroadcastFlagReturned(team)
+	net.Start("FlagReturned")
+	net.WriteFloat(team)
+	net.Broadcast()
+end
+
+function GM:PlayerSpawn( ply )
+ 
+	self.BaseClass:PlayerSpawn( ply )
+	local plyClass = PLAYER_CLASSES[ply:GetNWInt("playerClass")]
+	
+	ply:SetMaxHealth(plyClass.health)
+	ply:SetHealth(plyClass.health)
+	ply:SetWalkSpeed(plyClass.walkspeed)
+	ply:SetRunSpeed(plyClass.runspeed)
+
+	hook.Call("PlayerLoadout", ply)
+
+	if (ply:Team() == 4) then
+		ply:StripWeapons()
+		ply:Spectate( OBS_MODE_ROAMING )
+	end
+
+	if Time / 60 < CTF_Time:GetFloat() then
+		ply.DoOnce = 1
+	end
+
+	if (MatchHasBegun) then
+	
+		timer.Create( "moneyTimer", 5, 0, function() ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + 100) end) -- Working timer that adds $100 every 5 seconds
+	
+		net.Start("RestrictMenu")
+		net.Send(ply)
+	else
+		net.Start("UnrestrictMenu")
+		net.Send(ply)
+	end
+
+	ply.InvulnTime = CurTime()
+
+	for k,v in pairs(ents.GetAll()) do
+		if (v.IsSpawnArea and ply:Team() == v:GetNWInt("Team")) then
+			ply:SetPos(v:GetSpawnPos())
+			break
+		end
+ 	end
+end
+
+function GM:PostPlayerDeath( ply )
+	ply.DeathTime = CurTime()
+	ply.ctf_clicked = false
+	net.Start("NotifyDeath")
+	net.Send(ply)
+end
+
+function GM:PlayerDeathThink( ply )
+	if (!MatchHasBegun or respawnTime < 3 and !CTF_ForceRespawn:GetBool()) then
+		return self.BaseClass:PlayerDeathThink(ply)
+	end
+
+	ply.ctf_clicked = (ply:KeyPressed( IN_ATTACK ) || ply:KeyPressed( IN_ATTACK2 ) || ply:KeyPressed( IN_JUMP )) || ply.ctf_clicked
+
+	if (CurTime() - ply.DeathTime < 3) then return false end
+
+	if (ply.InDeathSpectate) then
+		if (!IsValid(ply:GetObserverTarget()) or ply.ctf_clicked) then
+			ply.ctf_clicked = false
+			GetNextSpectateTarget(ply)
+		end
+
+		if (CurTime() - ply.DeathTime >= respawnTime) then
+			ply.InDeathSpectate = false
+			ply:Spawn()
+		end
+	end
+
+	if (CurTime() - ply.DeathTime < respawnTime) then
+		if ((CTF_ForceRespawn:GetBool() or ply.ctf_clicked) and CTF_DSpectate:GetBool()) then
+			ply.ctf_clicked = false
+			ply.InDeathSpectate = true
+			if (CTF_DSpectateRestrict:GetBool()) then
+				ply:Spectate( OBS_MODE_CHASE )
+				GetNextSpectateTarget(ply)
+			else
+				ply:Spectate( OBS_MODE_ROAMING )
+			end
+		end
+		return false;
+	elseif (CTF_ForceRespawn:GetBool()) then
+		ply:Spawn()
+	else
+		ply.ctf_clicked = false
+		self.BaseClass:PlayerDeathThink(ply)
+	end
+end
+
+function GetNextSpectateTarget(ply)
+	local target = ply:GetObserverTarget()
+	local targetIndex = -1
+		
+	for k,v in pairs(team.GetPlayers(ply:Team())) do
+		if (!IsValid(target) and v != ply) then
+			ply:SpectateEntity(v)
+			break
+		elseif (targetIndex == -1 and IsValid(target) and target == v) then
+			targetIndex = k + 1
+		elseif (targetIndex == k) then
+			ply:SpectateEntity(v)
+			targetIndex = -1
+			break
+		end
+	end
+
+	if (!IsValid(ply:GetObserverTarget()) or targetIndex >= 0) then
+		ply:SpectateEntity(team.GetPlayers(ply:Team())[0])
+	end
+end
+
+function GM:PlayerInitialSpawn( ply )
+
+	ply:SetNWInt("playerClass", 1)
+	
+	net.Start("ClassMenu")
+	net.Broadcast()
+
+	UpdateAllValues(ply)
+	joining( ply )
+	ply:ConCommand( "ctf_start" )
+	
+end
+
+function GM:PlayerCanPickupWeapon(ply, wep)
+	if MatchHasBegun and (wep:GetClass() == "weapon_physgun" or wep:GetClass() == "gmod_tool") or ply:Team() == 3 then
+		wep:Remove()
+		return false
+	end
+	return true
+end
+
+function GM:PlayerDisconnected( ply )
+	if (MatchHasBegun) then
+		return
+	end
+
+	if (ply.IsCaptain && !TeamSetUp[ply:Team()]) then
+		for k,v in pairs (team.GetPlayers( ply:Team() )) do
+			if v != ply then
+				v.IsCaptain = true
+				v:Give( "weapon_ctf_setup" )
+				ply:ChatPrint( "[CTF]: You have been made team captain. Please select a location for your base." )
+			end
+		end
+	end
+end
+
+function GM:PlayerLoadout( ply )
+
+	if (TeamSetUp[ply:Team()]) then
+	
+		ply:StripWeapons()
+		RestoreTools(ply)
+		
+		-- Check player class
+		local plyClass = PLAYER_CLASSES[ply:GetNWInt("playerClass")]
+		-- Equip class weapons
+		for k, v in pairs(plyClass.weapons) do
+			ply:Give(v)
+		end
+		
+		-- Give Ammo
+		ply:GiveAmmo(150, "9x19MM", true)
+		ply:GiveAmmo(80, "5.7x28MM", true)
+		ply:GiveAmmo(200, "5.56x45MM", true)
+		ply:GiveAmmo(100, ".45 ACP", true)
+		ply:GiveAmmo(30, ".338 Lapua", true)
+		ply:GiveAmmo(24, "12 Gauge", true)
+		
+	elseif ply.IsCaptain and !TeamSetUp[ply:Team()] then
+	
+		ply:StripWeapons()
+		ply:Give( "weapon_ctf_setup" )
+		
+		-- Check player class
+		local plyClass = PLAYER_CLASSES[ply:GetNWInt("playerClass")]
+		-- Equip class weapons
+		for k, v in pairs(plyClass.weapons) do
+			ply:Give(v)
+		end
+		
+		-- Give Ammo
+		ply:GiveAmmo(150, "9x19MM", true)
+		ply:GiveAmmo(80, "5.7x28MM", true)
+		ply:GiveAmmo(200, "5.56x45MM", true)
+		ply:GiveAmmo(100, ".45 ACP", true)
+		ply:GiveAmmo(30, ".338 Lapua", true)
+		ply:GiveAmmo(24, "12 Gauge", true)
+		
+	else
+	
+		ply:StripWeapons()
+		-- Check player class
+		local plyClass = PLAYER_CLASSES[ply:GetNWInt("playerClass")]
+		-- Equip class weapons
+		for k, v in pairs(plyClass.weapons) do
+			ply:Give(v)
+		end
+		
+		ply:GiveAmmo(150, "9x19MM", true)
+		ply:GiveAmmo(80, "5.7x28MM", true)
+		ply:GiveAmmo(200, "5.56x45MM", true)
+		ply:GiveAmmo(100, ".45 ACP", true)
+		ply:GiveAmmo(30, ".338 Lapua", true)
+		ply:GiveAmmo(24, "12 Gauge", true)
+		
+	end
+end
+
+function GM:PlayerNoClip(ply, state)
+	if ply:Team() == 3 and !state then
+		return false
+	elseif !MatchHasBegun and TeamSetUp[ply:Team()] or ply:Team() == 3 then
+		return true
+	end
 	return false
 end
-hook.Add("SpawnMenuOpen", "CTFSpawnMenu", SpawnMenuOpen)
 
-local function RestrictMenu()
-
-	LocalPlayer().canbuild = 0
-
-end
-net.Receive("RestrictMenu", RestrictMenu)
-
-local function UnrestrictMenu()
-
-	LocalPlayer().canbuild = 1
-
-end
-net.Receive("UnrestrictMenu", UnrestrictMenu)
-
-function set_team()
-
-	local buttonSizeY = ScrH() / 8
-	local buttonSizeX = buttonSizeY * 510 / 260
-	local spacing = ScrW() / 16;
-	local frameWidth = (buttonSizeX + spacing) * 3
-
-	if PickTeam != nil then
-		PickTeam:Remove()
-	end
-
-	PickTeam = vgui.Create( "DFrame" )
-	PickTeam:SetPos( ScrW() / 2 - frameWidth / 2, ScrH() / 2 - ScrH() / 4 )
-	PickTeam:SetSize( frameWidth, ScrH() / 2 )
-	PickTeam:SetTitle( "Choose your team" )
-	PickTeam:SetVisible( true )
-	PickTeam:SetDraggable( false )
-	PickTeam:ShowCloseButton( false )
-	PickTeam:MakePopup()
-
-	local Image = vgui.Create( "DImage", PickTeam )
-	Image:SetSize( frameWidth - 10, (frameWidth - 10) * 256 / 1024 )
-	Image:SetPos( 5, 15 )
-	Image:SetImage( "buttons/welcome.png" )
-
-	grid = vgui.Create( "DGrid", PickTeam )
-	grid:SetPos( spacing / 2, ScrH() / 2 - buttonSizeY * 3 / 2 )
-	grid:SetCols( 3 )
-	grid:SetRowHeight( buttonSizeX )
-	grid:SetColWide( buttonSizeX + spacing )
-
-	PickTeamR = vgui.Create( "DImageButton" )
-	PickTeamR:SetSize( buttonSizeX, buttonSizeY )
-	PickTeamR:SetImage( "buttons/red_button.png" )
-	PickTeamR.DoClick = function()
-		RunConsoleCommand( "ctf_setteam", "1" )
-		PickTeam:Remove()
-		PickTeam = nil
-	end
-	grid:AddItem(PickTeamR)
-
-	PickTeamB = vgui.Create( "DImageButton" )
-	PickTeamB:SetSize( buttonSizeX, buttonSizeY )
-	PickTeamB:SetImage( "buttons/blue_button.png" )
-	PickTeamB.DoClick = function()
-		RunConsoleCommand( "ctf_setteam", "2" )
-		PickTeam:Remove()
-		PickTeam = nil
-	end
-	grid:AddItem(PickTeamB)
-
-	PickTeamS = vgui.Create( "DImageButton", PickTeam )
-	PickTeamS:SetSize( buttonSizeX, buttonSizeY )
-	PickTeamS:SetImage( "buttons/spectators_button.png" ) 
-	PickTeamS.DoClick = function()
-		RunConsoleCommand( "ctf_spectate" )
-		PickTeam:Remove()
-		PickTeam = nil
-	end
-	grid:AddItem(PickTeamS)
-end
-concommand.Add( "ctf_start", set_team )
-
-function PropProtection.HUDPaint()
-	if not IsValid(LocalPlayer()) or not ShowPP then
-		return
-	end
-	local tr = util.TraceLine(util.GetPlayerTrace(LocalPlayer()))
-	if tr.HitNonWorld then
-		if IsValid(tr.Entity) and not tr.Entity:IsPlayer() and not LocalPlayer():InVehicle() then
-			local PropOwner = "Owner: "
-			local OwnerTeam = tr.Entity:GetNWInt("OwningTeam", 0)
-			if OwnerTeam == 1 then
-				PropOwner = PropOwner .. "Red Team"
-			elseif OwnerTeam == 2 then
-				PropOwner = PropOwner .. "Blue Team"
-			elseif OwnerTeam == 0 then
-				PropOwner = PropOwner .. "N/A"
-			else
-				PropOwner = PropOwner .. "World"
-			end
-			surface.SetFont("Default")
-			local w, h = surface.GetTextSize(PropOwner)
-			w = w + 25
-			draw.RoundedBox(4, ScrW() - (w + 8), (ScrH() / 2 - 150) - (8), w + 8, h + 8, Color(0, 0, 0, 150))
-			draw.SimpleText(PropOwner, "Default", ScrW() - (w / 2) - 7, ScrH() / 2 - 150, Color(255, 255, 255, 255), 1, 1)
-		end
-	end
-end
-hook.Add("HUDPaint", "PropProtection.HUDPaint", PropProtection.HUDPaint)
-
-function GM:ScoreboardShow()
-
-end
-
-function GM:ScoreboardHide()
-
-end
-
-function ButtonThink()
-
-	if PickTeam == nil or not PickTeam:IsVisible() then
+function ctf_setteam( ply, cmd, args, argStr)
+	local teamNum = tonumber(args[1])
+	if (teamNum == nil) then
+		ply:ConCommand("ctf_start")
 		return
 	end
 
-	if PickTeamR != null then
-		if PickTeamR:IsDown() then
-			PickTeamR:SetImage("buttons/red_button_down.png")
-		else
-			PickTeamR:SetImage("buttons/red_button.png")
-			if PickTeamR.Hovered then
-				PickTeamR:SetColor(Color(200,200,200,255))
-			else
-				PickTeamR:SetColor(Color(255,255,255,255))
-			end
+	teamNum = math.Round(teamNum)
+	if (teamNum < 1) then
+		teamNum = 1
+	elseif teamNum > 2 then
+		teamNum = 2
+	end
+	local teamName = "Red"
+	if (teamNum == 2) then
+		teamName = "Blue"
+	end
+
+	ply:SetTeam(0)
+	
+	for k,v in pairs(ply:GetChildren()) do
+		if v.IsFlag then
+			v:ReturnFlag()
+			BroadcastFlagReturned(v:GetNWInt("Team"))
 		end
 	end
 
-	if PickTeamB != null then
-		if PickTeamB:IsDown() then
-			PickTeamB:SetImage("buttons/blue_button_down.png")
-		else
-			PickTeamB:SetImage("buttons/blue_button.png")
-			if PickTeamB.Hovered then
-				PickTeamB:SetColor(Color(200,200,200,255))
-			else
-				PickTeamB:SetColor(Color(255,255,255,255))
-			end
-		end
+	ply:PrintMessage( HUD_PRINTTALK, "[CTF]: Welcome to the " .. teamName .. " Team, " .. ply:Nick() .. ".")
+	if team.NumPlayers(teamNum) < 1 and !TeamSetUp[teamNum] then
+		ply:ChatPrint( "[CTF]: Please select a location for your base." )
+		ply.IsCaptain = true
+	elseif team.NumPlayers(teamNum) >= 1 and !TeamSetUp[teamNum] then
+		ply:ChatPrint( "[CTF]: Please wait for your team captian to pick a base location." )
+		ply.IsCaptain = false
 	end
+	ply:UnSpectate()
+	ply:SetTeam( teamNum )
+	ply:Spawn()
+ 
+end
+concommand.Add( "ctf_setteam", ctf_setteam )
 
-	if PickTeamS != null then
-		if PickTeamS:IsDown() then
-			PickTeamS:SetImage("buttons/spectators_button_down.png")
-		else
-			PickTeamS:SetImage("buttons/spectators_button.png")
-			if PickTeamS.Hovered then
-				PickTeamS:SetColor(Color(200,200,200,255))
-			else
-				PickTeamS:SetColor(Color(255,255,255,255))
-			end
-		end
-	end
+function ctf_spectate( ply )
+
+	ply:SetTeam( 3 )
+	ply:Spawn()
+	ply:StripWeapons()
+	ply:Spectate( OBS_MODE_ROAMING )
+	ply:ConCommand("noclip") // Fixes issues with spectators intersecting with ladders.
+	ply:ChatPrint( "[CTF]: Welcome, spectator. Enjoy the show." )
 
 end
-hook.Add("Think", "ButtonThink", ButtonThink)
+concommand.Add( "ctf_spectate", ctf_spectate )
 
-function AlertThink()
+function joining( ply )
+ 
+	ply:SetTeam( 4 )
+ 
+end
 
-	local TimeA = 0
-	local SText = ""
-	local MText = ""
-	local Scorea = 0
-	local seconds = math.floor(TimeLeft) % 60
-	local minutes = math.floor(TimeLeft / 60) % 60
-	local hours = math.floor(TimeLeft / (60 * 60))
-	local deathText = math.Max(RespawnTime - math.floor(CurTime() - DeathTime), 0)
-	local deathAtCenter = 0
+-- function GM:PlayerShouldTakeDamage(victim,attacker) -- Disable friendly fire
+	-- if Time / 60 < CTF_Time:GetFloat() or (attacker:IsPlayer() and attacker:Team() == victim:Team() or CurTime() - victim.InvulnTime < 6) then
+		-- return false
+	-- else
+		-- return true
+	-- end
+-- end
 
-	if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
-		deathText = "Respawn in\n"..deathText
-		if (CurTime() - DeathTime > RespawnTime) then
-			deathText = "Click to respawn"
-		end
-	end
-
-	if LocalPlayer():GetObserverMode() == OBS_MODE_NONE then
-		deathAtCenter = 1
-	end
-
-	local showDeath = !LocalPlayer():Alive()
-
-	local holdingFlag1 = 0
-	local team = LocalPlayer():Team()
+function doBuild(team, pos, ply)
 	local otherTeam = 1
 	if (team == 1) then
 		otherTeam = 2
 	end
 
-	if (LocalPlayer() == FlagCarrier[otherTeam] && otherTeam == 1) then
-		holdingFlag1 = 1
+	if (TeamLocations[otherTeam] != nil && (pos - TeamLocations[otherTeam]):Length() < GetConVar("ctf_buildzonescale"):GetFloat() * 2000) then
+		ply:ChatPrint( "[CTF] This location is too close to the opposing base." )
+		return
 	end
 
-	local holdingFlag2 = 0
-	if (LocalPlayer() == FlagCarrier[otherTeam] && otherTeam == 2) then
-		holdingFlag2 = 1
+	-- local tr = util.TraceHull( {
+		-- start = pos + Vector(0,0,1),
+		-- endpos = pos + Vector(0,0,2),
+		-- filter = ply,
+		-- mins = Vector(-200, -200, 0),
+		-- maxs = Vector(200, 200, 50)
+	-- } )
+
+	-- if (tr.Hit) then
+		-- ply:ChatPrint( "[CTF]: This location is invalid! Not enough space." )
+		-- return
+	-- end
+	
+
+	TeamLocations[team] = pos
+	
+	ply:StripWeapon("weapon_ctf_setup")
+	local r,g,b,a = 70,70,70,255
+
+	if team == 1 then
+		r = 255
+	elseif team == 2 then
+		b = 255
 	end
 
-	if !MatchHasBegun then
-		TimeA = 255
+	ConSphere = ents.Create("CTF_ConstructSphere")
+	ConSphere:SetPos(pos)
+	ConSphere:SetNWInt("Team", team)
+	ConSphere:SetGravity(0)
+	ConSphere:Spawn()
+
+	ConSphere:SetModelScale(GetConVar("ctf_buildzonescale"):GetFloat())
+	if ConSphere:GetNWInt("Team") == 1 then
+		ConSphere:SetSkin(0)
+	elseif ConSphere:GetNWInt("Team") == 2 then
+		ConSphere:SetSkin(1)
+	end
+	
+	PropProtection.TeamMakePropOwner(team, ConSphere)
+	
+	-- Experimental base perimeter determination (Working, theoretically)--
+	PerimeterSphere = ents.Create("CTF_PerimeterSphere")
+	PerimeterSphere:SetPos(pos)
+	PerimeterSphere:SetNWInt("Team", team)
+	PerimeterSphere:SetGravity(0)
+	PerimeterSphere:Spawn()
+	PerimeterSphere:SetModelScale(GetConVar("ctf_buildzonescale"):GetFloat())
+	
+	FlagBase = ents.Create("CTF_FlagBase")
+	FlagBase:SetPos(pos + Vector(-100,0,0))
+	FlagBase:SetNWInt("Team", team)
+	FlagBase:SetGravity(1)
+	FlagBase:Spawn()
+	PropProtection.TeamMakePropOwner(team, FlagBase)
+	FlagBase:GetPhysicsObject():EnableMotion(false)
+	Flag = ents.Create("CTF_Flag")
+	Flag:SetPos(pos + Vector(-100,0,10))
+	Flag:SetNWInt("Team", team)
+	Flag:SetGravity(1)
+	Flag:Spawn()
+	PropProtection.TeamMakePropOwner(team, Flag)
+	Flag:PhysWake()
+	Flag:SetNWBool("HUDStart",true)
+	FlagBase.Flag = Flag
+	Flag.FlagBase = FlagBase
+	Flag:SetParent(FlagBase)
+	Flag.IsOnBase = true
+
+	SpawnArea = ents.Create("CTF_SpawnArea")
+	SpawnArea:SetPos(pos + Vector(100,0,0))
+	SpawnArea:SetNWInt("Team", team)
+	SpawnArea:SetGravity(1)
+	SpawnArea:Spawn()
+	PropProtection.TeamMakePropOwner(team, SpawnArea)
+	SpawnArea:GetPhysicsObject():EnableMotion(false)
+
+	TeamSetUp[team] = true
+	RespawnTeam(team)
+
+	local OtherTeam = 2
+	if team == 2 then
+		OtherTeam = 1
 	end
 
-	if seconds < 10 then
-		SText = "0"
-	else
-		SText = ""
-	end
-
-	if minutes < 10 then
-		MText = "0"
-	else
-		MText = ""
-	end
-
-	local TimeText = hours .. ":" .. MText .. minutes .. ":" .. SText .. seconds
-
-	if MatchHasBegun then
-		Scorea = 255
-	end
-
-	local function TeamDisplay()
-		local Scale1 = 2 - (CurTime() - IconTimer[1]) * 2
-		local Scale2 = 2 - (CurTime() - IconTimer[2]) * 2
-		if Scale1 < 1 then Scale1 = 1 end
-		if Scale2 < 1 then Scale2 = 1 end
-
-		local AlertSize1 = (ScrH() / 10) * Scale1
-		local AlertSize2 = (ScrH() / 10) * Scale2
-
-		Icon[1]:SetSize(AlertSize1, AlertSize1)
-		Icon[1]:SetPos(ScrW() / 2 - AlertSize1 * 5 / 4, ScrH() - AlertSize1)
-		Icon[2]:SetSize(AlertSize2, AlertSize2)
-		Icon[2]:SetPos(ScrW() / 2 + AlertSize2 / 4, ScrH() - AlertSize2)
-
-		local flash1 = 255 * holdingFlag1 * math.Round((CurTime() % .25) * 4)
-		local flash2 = 255 * holdingFlag2 * math.Round((CurTime() % .25) * 4)
-
-		IconCarried[1]:SetSize(AlertSize1, AlertSize1)
-		IconCarried[1]:SetPos(ScrW() / 2 - AlertSize1 * 5 / 4, ScrH() - AlertSize1)
-		IconCarried[1]:SetImageColor(Color(255,255,flash1,255))
-		IconCarried[2]:SetSize(AlertSize2, AlertSize2)
-		IconCarried[2]:SetPos(ScrW() / 2 + AlertSize2 / 4, ScrH() - AlertSize2)
-		IconCarried[2]:SetImageColor(Color(255,255,flash2,255))
-
-		IconDropped[1]:SetSize(AlertSize1, AlertSize1)
-		IconDropped[1]:SetPos(ScrW() / 2 - AlertSize1 * 5 / 4, ScrH() - AlertSize1)
-		IconDropped[2]:SetSize(AlertSize2, AlertSize2)
-		IconDropped[2]:SetPos(ScrW() / 2 + AlertSize2 / 4, ScrH() - AlertSize2)
-
-		surface.SetFont( "MyScoreAndTime" )
-		local colonWidth, colonHeight = surface.GetTextSize(":")
-		local deathWidth, deathHeight = surface.GetTextSize(deathText)
-
-		draw.DrawText(TimeText, "MyScoreAndTime", ScrW() / 2, 0, Color(255,255,0,TimeA), TEXT_ALIGN_CENTER)
-
-		draw.DrawText(Scores[1] .. ":", "MyScoreAndTime", ScrW() / 2 + colonWidth / 2, 0, Color(255,255,0,Scorea), TEXT_ALIGN_RIGHT)
-		draw.DrawText(tostring(Scores[2]), "MyScoreAndTime", ScrW() / 2 + colonWidth / 2, 0, Color(255, 255, 0, Scorea), TEXT_ALIGN_LEFT)
-		
-		-- Add Balance
-		draw.RoundedBox(10, 70, ScrH() - 1075, 130, 30, Color(120, 120, 120, 180))
-		draw.SimpleText("Balance: $ " .. LocalPlayer():GetNWInt("playerMoney"), "DermaDefaultBold", 80, ScrH() - 1067, Color(255, 255, 255, 255), 0)
-
-		if (showDeath) then
-			surface.SetDrawColor(65, 65, 65, 65)
-			surface.DrawRect(0, 0, ScrW(), ScrH())
-			draw.DrawText(deathText, "MyScoreAndTime", ScrW() / 2, deathAtCenter * (ScrH() / 2 - deathHeight / 2) + (1 - deathAtCenter) * deathHeight, Color(255,255,255,255), TEXT_ALIGN_CENTER)
+	if TeamSetUp[OtherTeam] then
+		for k,v in pairs(ents.GetAll()) do
+			for j,f in pairs(ents.GetAll()) do
+				if v:IsValid() and v.IsBase and f:IsValid() and f.IsFlag and v:GetNWInt("Team") != f:GetNWInt("Team") then
+					v.OtherFlag = f
+				end
+			end
 		end
 	end
-	hook.Add("HUDPaint", "TeamDisplay", TeamDisplay)
+
+	for k,v in pairs(player.GetAll()) do
+		if v:Team() == team then
+			v:ChatPrint( "[CTF]: You may now build your base." )
+		end
+	end
+	Timer = CurTime()
+	net.Start("BaseSet")
+	net.WriteFloat(ply:Team())
+	net.Broadcast()
 end
-hook.Add("Think", "AlertThink", AlertThink)
 
-
-playedThunk = true
-function VictoryThink()
-	if CurTime() - WinTime > 7 then
-		victoryLogo:Hide()
-		victoryText:Hide()
-                playedThunk = false
-	else
-		local LogoSize = 2 - (CurTime() - WinTime)
-		if LogoSize < 1 then
-			LogoSize = 1
+function RespawnTeam( team )
+	for k,ply in pairs(player.GetAll()) do
+		if (ply:Team() == team) then
+			ply:Spawn()
 		end
-		local LogoAlpha = 2 - LogoSize
-
-		local TextSize = 3 - (CurTime() - WinTime)
-		if TextSize < 1 then
-			TextSize = 1
-		end
-		local TextAlpha = 2 - TextSize
-		if TextAlpha < 0 then
-			TextAlpha = 0
-		end
-
-		local time = CurTime() - WinTime
-		if (time > 1 and time < 1.5 and not playedThunk) then
-			playedThunk = true
-			LocalPlayer():EmitSound(UIThunk)
-		elseif time > 1.5 and time < 2 then
-			playedThunk = false
-		elseif time > 2 and not playedThunk then
-			playedThunk = true
-			LocalPlayer():EmitSound(UIThunk)
-		end
-
-		victoryLogo:SetSize(LogoSize * ScrH() / 2, LogoSize * ScrH() / 2)
-		victoryText:SetSize(TextSize * ScrH() / 2, TextSize * ScrH() / 2)
-
-		victoryLogo:SetPos(ScrW() / 2 - (LogoSize * ScrH() / 2) / 2, ScrH() / 2 - (LogoSize * ScrH() / 2) / 2)
-		victoryText:SetPos(ScrW() / 2 - (TextSize * ScrH() / 2) / 2, ScrH() / 2 - (TextSize * ScrH() / 2) / 2)
-
-		victoryLogo:SetImageColor(Color(255,255,255,255 * LogoAlpha))
-		victoryText:SetImageColor(Color(255,255,255,255 * TextAlpha))
 	end
 end
-hook.Add("Think", "VictoryThink", VictoryThink)
 
+function RestoreTools(ply)
+	if ply:Alive() and ply:Team() != 3 and not MatchHasBegun and (ply:HasWeapon("gmod_tool") == false or ply:HasWeapon("weapon_physcannon") == false or ply:HasWeapon("weapon_physgun") == false) then
+		ply:Give( "weapon_physcannon" )
+		ply:Give( "weapon_physgun" )
+		ply:Give( "gmod_tool" )
+		player_manager.RunClass( ply, "Loadout" )
+		ply:SelectWeapon("weapon_physgun")
+	elseif ply:Alive() and ply:Team() != 3 and MatchHasBegun and not ply:HasWeapon("weapon_physcannon") then
+		player_manager.RunClass( ply, "Loadout" )
+		ply:StripWeapon("weapon_phsgun")
+		ply:StripWeapon("gmod_tool")
+	end
+end
+
+function TeamScored( scoredTeam )
+	team.AddScore(scoredTeam,1)
+
+	net.Start("TeamScored")
+	net.WriteFloat(scoredTeam)
+	net.WriteFloat(team.GetScore(scoredTeam))
+	net.Broadcast();
+
+	local target = GetConVar("ctf_capturetarget"):GetInt()
+	if target == nil then
+		target = 1
+	end
+
+	if (team.GetScore(scoredTeam) >= target && target > 0) then
+		EndGame(scoredTeam)
+	end
+end
+
+function ResetWorld()
+	MatchHasBegun = false
+	Timer = CurTime()
+	Time = 0
+	TeamSetUp = {false, false}
+	MatchHasBegun = false
+	TeamLocations = {nil, nil}
+	team.SetScore(1, 0)
+	team.SetScore(2, 0)
+
+	game.CleanUpMap()
+
+	for k,ply in pairs(player.GetAll()) do
+		UpdateAllValues(ply)
+		joining( ply )
+		ply:UnLock()
+		ply:ConCommand( "ctf_start" )
+		ply:Spawn()
+	end
+end
+
+function EndGame(team)
+	timer.Simple(7, ResetWorld)
+
+	for k,ply in pairs(player.GetAll()) do
+		ply:Lock()
+	end
+
+	net.Start("GameEnded")
+	net.WriteFloat(team)
+	net.Broadcast()
+end
+
+LastTimeLeft = math.ceil(CTF_Time:GetFloat() * 60 - Time)
+function GM:Think()
+
+	if buildTime != CTF_Time:GetFloat() then
+		buildTime = CTF_Time:GetFloat()
+		net.Start("ctf_TimeUpdate")
+		net.WriteFloat(math.ceil(buildTime * 60 - Time))
+		net.Broadcast()
+	end
+
+	if showPP != GetConVar("ctf_usepropprotect"):GetBool() then
+		showPP = GetConVar("ctf_usepropprotect"):GetBool()
+		net.Start("UpdatePP")
+		net.WriteBool(tobool(showPP))
+		net.Broadcast()
+	end
+
+	if respawnTime != CTF_RespawnTime:GetFloat() then
+		respawnTime = CTF_RespawnTime:GetFloat()
+		net.Start("UpdateRespawn")
+		net.WriteFloat(respawnTime)
+		net.Broadcast()
+	end
+
+	if Time / 60 > CTF_Time:GetFloat() and not MatchHasBegun then
+		MatchHasBegun = true
+		net.Start("MatchBegin")
+		net.Broadcast()
+		for k,v in pairs(ents.GetAll()) do
+			if v.IsSphere then
+				v:Remove()
+			elseif v.IsBase or v.IsSpawnArea then
+				v:GetPhysicsObject():EnableMotion(false)
+			end
+		end
+		for k,v in pairs(player.GetAll()) do
+			v:StripWeapons()
+			RestoreTools(v)
+			v.canbuild = 1
+			RespawnTeam(1)
+			RespawnTeam(2)
+			v:ChatPrint( "[CTF]: The build phase is over; let the match begin!")
+		end
+		table.Empty(undo:GetTable())
+	end
+
+	if TeamSetUp[1] and TeamSetUp[2] and !MatchHasBegun then
+		Time = CurTime() - Timer
+		local NewTimeLeft = math.ceil(CTF_Time:GetFloat() * 60 - Time)
+		if (NewTimeLeft != LastTimeLeft) then
+			LastTimeLeft = NewTimeLeft
+			net.Start("ctf_TimeUpdate")
+			net.WriteFloat(NewTimeLeft)
+			net.Broadcast()
+		end
+	end
+end
+
+--------------------------------Economy--------------------------
+
+
+function GM:PlayerDeath(victim, inflictor, attacker)
+	if(attacker:Team() ~= victim:Team()) then
+		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + 50) -- Award player $50 for an enemy kill
+	end
+end
+
+function giveMoney( ply )
+
+	ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + 100) -- Give the player $100
+
+end
+
+function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
+	if ( attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) ) then
+		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + damageTaken) -- Award player $1 per point of damage
+	end
+end
+
+--------------------------------Menu Calls--------------------------
+
+--TODO fix these calls by making them client-specific
+
+util.AddNetworkString("ClassMenu")
+function GM:ShowSpare1(ply)
+	
+	net.Start("ClassMenu")
+	net.Broadcast()
+	
+end
+
+local open = false
+
+util.AddNetworkString("OrdnanceMenu")
+function GM:ShowSpare2(ply)
+
+	if(open == false) then
+		open = true
+	else
+		open = false
+	end
+
+	net.Start("OrdnanceMenu")
+	net.WriteBit(open)
+	net.Broadcast()
+end
