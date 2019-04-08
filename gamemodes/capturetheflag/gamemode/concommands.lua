@@ -9,23 +9,15 @@ function buyEntity(ply, cmd, args)
 		
 			if(!tr.Hit) then return end
 		
-		local entCount = ply:GetNWInt(ClassName .. "count")
-		
-		if(entCount < ent.Limit) then -- Implement entCount
-			local SpawnPost = ply:GetShootPos() + ply:GetForward() * 80
+			local entCount = ply:GetNWInt(ClassName .. "count")
+			local SpawnPos = ply:GetShootPos() + ply:GetForward() * 80
 			
 			ent.Owner = ply
-			
 			ent:SetPos(SpawnPos)
 			ent:Spawn()
 			ent:Activate()
 			
 			ply:SetNWInt(ClassName .. "count", entCount + 1)
-			
-			return ent
-		end
-		
-		return
 		
 		end
 	end
