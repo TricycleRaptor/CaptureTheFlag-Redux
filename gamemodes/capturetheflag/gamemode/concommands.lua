@@ -10,10 +10,14 @@ function buyEntity(ply, cmd, args)
 			if(!tr.Hit) then return end
 		
 			local entCount = ply:GetNWInt(ClassName .. "count")
-			local SpawnPos = ply:GetShootPos() + ply:GetForward() * 80
+			
+			-- TO DO: 
+			-- Add team entity count check
+			-- Write separate function for buying vehicles to give the SetPos vector additional room on the X and Y coordinates so spawning a vehicle doesn't kill
+			-- Troubleshoot Y coordinate in SetPos vector so vehicles do not get stuck in the ground on spawn
 			
 			ent.Owner = ply
-			ent:SetPos(SpawnPos)
+			ent:SetPos(Vector((ply:GetShootPos() + ply:GetForward() * 200), 500, 500))
 			ent:Spawn()
 			ent:Activate()
 			
@@ -33,11 +37,6 @@ function setPlayerClass(ply, cmd, args)
 end
 concommand.Add("ctf_setclass",setPlayerClass)
 
-function setPlayerMoney(ply, cmd, args)
-	
-	if(args[1] != nil) then
-		ply:SetNWInt("playerMoney", tonumber(args[1]))
-	end
-	
-end
-concommand.Add("ctf_setmoney",setPlayerClass)
+-- TO DO:
+-- Add set money console command for testing purchases easily from the ordnance menu in the future
+
