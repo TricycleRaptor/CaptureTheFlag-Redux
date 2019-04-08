@@ -1,4 +1,5 @@
 ButtonNoise = Sound("buttons/lightswitch2.wav")
+BuyNoise = Sound("buttons/button14.wav")
 
 local Menu
 
@@ -82,6 +83,7 @@ function addButtons(Menu)
 			icon:SetToolTip(v["PrintName"])
 			iconList:Add(icon)
 			icon.DoClick = function(icon)
+				LocalPlayer():EmitSound(BuyNoise)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
@@ -133,6 +135,7 @@ function addButtons(Menu)
 			icon:SetToolTip(v["PrintName"])
 			iconList:Add(icon)
 			icon.DoClick = function(icon)
+				LocalPlayer():EmitSound(BuyNoise)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
@@ -172,7 +175,9 @@ function addButtons(Menu)
 		iconList:SetSpaceX(10)
 		
 		local entityArray = {}
-		entityArray[1] = scripted_ents.Get("lunasflightschool_combineheli") -- Test
+		entityArray[1] = scripted_ents.Get("lunasflightschool_rebelheli")
+		entityArray[2] = scripted_ents.Get("lunasflightschool_combineheli")
+		entityArray[3] = scripted_ents.Get("lfs_crysis_vtol")
 		
 		for k, v in pairs(entityArray) do
 			local icon = vgui.Create("SpawnIcon", iconList)
@@ -180,9 +185,27 @@ function addButtons(Menu)
 			icon:SetToolTip(v["PrintName"])
 			iconList:Add(icon)
 			icon.DoClick = function(icon)
+				LocalPlayer():EmitSound(BuyNoise)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
+		
+		-- TO DO: 
+		-- Determine how to spawn simphys vehicles by calling and using the keys in the list
+		
+		-- local simfphysArray = {list.Get("spawnlist_armedvehicles")} -- Call list of simfphys vehicles?
+		-- simfphysArray[1] =  -- Test
+		
+		-- for k, v in pairs(simfphysArray) do
+			-- local icon = vgui.Create("SpawnIcon", iconList)
+			-- icon:SetModel(v["Model"])
+			-- icon:SetToolTip(v["PrintName"])
+			-- iconList:Add(icon)
+			-- icon.DoClick = function(icon)
+				-- LocalPlayer():EmitSound(BuyNoise)
+				-- LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
+			-- end
+		-- end
 		
 	end
 end
