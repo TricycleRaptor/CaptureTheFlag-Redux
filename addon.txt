@@ -1,7 +1,6 @@
-// Extracted with MulleDK19's GMAD Extractor
 "AddonInfo"
 {
 	"name" "Capture the Flag"
-	"author_name" "Author Name"
+	"author_name" "Nefusadi, Tricycle Raptor, Fudashet"
 	"info" "{ 	"description": "Description", 	"type": "gamemode", 	"tags": [ 		"build", 		"fun" 	] }"
 }
