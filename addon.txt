@@ -1,6 +1,7 @@
 "AddonInfo"
 {
-	"name" "Capture the Flag"
-	"author_name" "Nefusadi, Tricycle Raptor, Fudashet"
+	"name" "Capture the Flag: Redux"
+	"author_name" "Nefusadi, TricycleRaptor, Fudashet"
 	"info" "{ 	"description": "Description", 	"type": "gamemode", 	"tags": [ 		"build", 		"fun" 	] }"
+	"override" "1"
 }
