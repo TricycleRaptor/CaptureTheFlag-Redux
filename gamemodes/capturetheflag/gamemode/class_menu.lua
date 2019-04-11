@@ -40,7 +40,7 @@ net.Receive("ClassMenu",function()
 	
 	Button2.DoClick = function()
 		
-		-- Call player table value for rifleman
+		-- Call player table value for marksman
 		RunConsoleCommand( "ctf_setclass", "3" )
 		
 		ply:ChatPrint( "[CTF]: Marksman class selected. Loadout will be applied on respawn." )
@@ -59,7 +59,7 @@ net.Receive("ClassMenu",function()
 	
 	Button3.DoClick = function()
 		
-		-- Call player table value for rifleman
+		-- Call player table value for gunner
 		RunConsoleCommand( "ctf_setclass", "4" )
 		
 		ply:ChatPrint( "[CTF]: Gunner class selected. Loadout will be applied on respawn." )
@@ -78,7 +78,7 @@ net.Receive("ClassMenu",function()
 	
 	Button4.DoClick = function()
 		
-		-- Call player table value for rifleman
+		-- Call player table value for demolitionist
 		RunConsoleCommand( "ctf_setclass", "5" )
 		
 		ply:ChatPrint( "[CTF]: Demolitionist class selected. Loadout will be applied on respawn." )
@@ -97,7 +97,7 @@ net.Receive("ClassMenu",function()
 	
 	Button5.DoClick = function()
 		
-		-- Call player table value for rifleman
+		-- Call player table value for arsonist
 		RunConsoleCommand( "ctf_setclass", "6" )
 		
 		ply:ChatPrint( "[CTF]: Arsonist class selected. Loadout will be applied on respawn." )
@@ -116,7 +116,7 @@ net.Receive("ClassMenu",function()
 	
 	Button6.DoClick = function()
 		
-		-- Call player table value for rifleman
+		-- Call player table value for engineer
 		RunConsoleCommand( "ctf_setclass", "7" )
 		
 		ply:ChatPrint( "[CTF]: Engineer class selected. Loadout will be applied on respawn." )
@@ -135,7 +135,7 @@ net.Receive("ClassMenu",function()
 	
 	Button7.DoClick = function()
 		
-		-- Call player table value for rifleman
+		-- Call player table value for scout
 		RunConsoleCommand( "ctf_setclass", "8" )
 		
 		ply:ChatPrint( "[CTF]: Scout class selected. Loadout will be applied on respawn." )
@@ -154,7 +154,7 @@ net.Receive("ClassMenu",function()
 	
 	Button8.DoClick = function()
 		
-		-- Call player table value for rifleman
+		-- Call player table value for medic
 		RunConsoleCommand( "ctf_setclass", "9" )
 		
 		ply:ChatPrint( "[CTF]: Medic class selected. Loadout will be applied on respawn." )
