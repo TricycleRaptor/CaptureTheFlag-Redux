@@ -1,7 +1,7 @@
 "Gamemode"
 {
 	"base"		"sandbox"
-	"title"		"Capture the Flag"
+	"title"		"Capture the Flag: Redux"
 	"maps"		"^ctf_"
 	"menusystem"	"1"
 	"workshopid"	"738284170"
@@ -83,7 +83,30 @@
 			"type"		"CheckBox"
 			"default"	"1"
 		}
-			
+		10
+		{
+			"name"		"ctf_passivetimer"
+			"text"		"Income: Timer Interval (Secs)"
+			"help"		"Sets the interval for passive income timer (In seconds)"
+			"type"		"Numeric"
+			"default"	"600"	
+		}
+		11
+		{
+			"name"		"ctf_passiveincome"
+			"text"		"Income: Passive Reward"
+			"help"		"Amount awarded to players passively"
+			"type"		"Numeric"
+			"default"	"500"
+		}
+		12
+		{
+			"name"		"ctf_killincome"
+			"text"		"Income: Kill Reward"
+			"help"		"Amount awarded to players for a kill"
+			"type"		"Numeric"
+			"default"	"50"
+		}
 			
 	}
 }
