@@ -61,6 +61,9 @@ CTF_RespawnTime = GetConVar( "ctf_respawntime" )
 CTF_ForceRespawn = GetConVar( "ctf_forcerespawn" )
 CTF_DSpectate = GetConVar( "ctf_deathspectate" )
 CTF_DSpectateRestrict = GetConVar( "ctf_restrictdeathspectate" )
+CTF_PassiveTimer = GetConVar( "ctf_passivetimer" )
+CTF_PassiveIncome = GetConVar( "ctf_passiveincome" )
+CTF_KillIncome = GetConVar( "ctf_killincome" )
 
 Time = 0
 TeamSetUp = {false, false}
@@ -357,7 +360,8 @@ function GM:PlayerSpawn( ply )
 
 	if (MatchHasBegun) then
 	
-		timer.Create( "moneyTimer", 5, 0, function() ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + 100) end) -- Working timer that adds $100 every 5 seconds
+		-- Start the timer when the match begins
+		timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
 	
 		net.Start("RestrictMenu")
 		net.Send(ply)
@@ -871,17 +875,16 @@ end
 
 --------------------------------Economy--------------------------
 
+function GM:OnNPCKilled( npc, attacker, inflictor )
+	
+	attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (GetConVar("ctf_killincome"):GetFloat())) -- Award amount based on killincome cvar
+
+end
 
 function GM:PlayerDeath(victim, inflictor, attacker)
 	if(attacker:Team() ~= victim:Team()) then
-		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + 50) -- Award player $50 for an enemy kill
+		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (GetConVar("ctf_killincome"):GetFloat())) -- Award amount based on killincome cvar
 	end
-end
-
-function giveMoney( ply )
-
-	ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + 100) -- Give the player $100
-
 end
 
 function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
