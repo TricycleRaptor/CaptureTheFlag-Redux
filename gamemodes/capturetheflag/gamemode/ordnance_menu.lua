@@ -1,5 +1,4 @@
 ButtonNoise = Sound("buttons/lightswitch2.wav")
-BuyNoise = Sound("buttons/button14.wav")
 
 local Menu
 
@@ -75,15 +74,14 @@ function addButtons(Menu)
 		entityArray[2] = scripted_ents.Get("cw_ammo_kit_regular")
 		entityArray[3] = scripted_ents.Get("cw_ammo_40mm")
 		entityArray[4] = scripted_ents.Get("cw_ammo_crate_small")
-		
+		--entityArray[5] = scripted_ents.Get("item_rpg_round")
 		
 		for k, v in pairs(entityArray) do
 			local icon = vgui.Create("SpawnIcon", iconList)
 			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["PrintName"])
+			icon:SetToolTip(v["PrintName"].."\nCost: $"..v["Cost"])
 			iconList:Add(icon)
 			icon.DoClick = function(icon)
-				LocalPlayer():EmitSound(BuyNoise)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
@@ -131,11 +129,10 @@ function addButtons(Menu)
 		
 		for k, v in pairs(entityArray) do
 			local icon = vgui.Create("SpawnIcon", iconList)
-			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["PrintName"])
+			icon:SetModel(v["MdlRef"])
+			icon:SetToolTip(v["PrintName"].."\nCost: $"..v["Cost"])
 			iconList:Add(icon)
 			icon.DoClick = function(icon)
-				LocalPlayer():EmitSound(BuyNoise)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
@@ -175,17 +172,16 @@ function addButtons(Menu)
 		iconList:SetSpaceX(10)
 		
 		local entityArray = {}
-		entityArray[1] = scripted_ents.Get("lunasflightschool_rebelheli")
+		entityArray[1] = scripted_ents.Get("lunasflightschool_spitfire")
 		entityArray[2] = scripted_ents.Get("lunasflightschool_combineheli")
 		entityArray[3] = scripted_ents.Get("lfs_crysis_vtol")
 		
 		for k, v in pairs(entityArray) do
 			local icon = vgui.Create("SpawnIcon", iconList)
-			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["PrintName"])
+			icon:SetModel(v["MDL"])
+			icon:SetToolTip(v["PrintName"].."\nCost: $"..v["Cost"])
 			iconList:Add(icon)
 			icon.DoClick = function(icon)
-				LocalPlayer():EmitSound(BuyNoise)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
@@ -193,19 +189,18 @@ function addButtons(Menu)
 		-- TO DO: 
 		-- Determine how to spawn simphys vehicles by calling and using the keys in the list
 		
-		-- local simfphysArray = {list.Get("spawnlist_armedvehicles")} -- Call list of simfphys vehicles?
-		-- simfphysArray[1] =  -- Test
+		local vehicleList = list.Get( "simfphys_vehicles" ) -- Call list of simfphys vehicles?
+		local vehicle = vehicleList[ vname ]
 		
-		-- for k, v in pairs(simfphysArray) do
-			-- local icon = vgui.Create("SpawnIcon", iconList)
-			-- icon:SetModel(v["Model"])
-			-- icon:SetToolTip(v["PrintName"])
-			-- iconList:Add(icon)
-			-- icon.DoClick = function(icon)
-				-- LocalPlayer():EmitSound(BuyNoise)
-				-- LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
-			-- end
-		-- end
+		for k, v in pairs(vehicleList) do
+			local icon = vgui.Create("SpawnIcon", iconList)
+			icon:SetModel(v["Model"])
+			icon:SetToolTip(v["Name"])
+			iconList:Add(icon)
+			icon.DoClick = function(icon)
+				LocalPlayer():ConCommand("ctf_simfphys_buyvehicle "..v[vehicle])
+			end
+		end
 		
 	end
 end
