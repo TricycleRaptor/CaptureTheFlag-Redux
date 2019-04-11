@@ -198,7 +198,7 @@ function addButtons(Menu)
 			icon:SetToolTip(v["Name"])
 			iconList:Add(icon)
 			icon.DoClick = function(icon)
-				LocalPlayer():ConCommand("ctf_simfphys_buyvehicle "..v[vehicle])
+				LocalPlayer():ConCommand("ctf_simfphys_buyvehicle "..k)
 			end
 		end
 		
