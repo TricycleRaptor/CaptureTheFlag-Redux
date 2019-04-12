@@ -62,29 +62,69 @@ function addButtons(Menu)
 	ammoButton.DoClick = function(ammoButton)
 		LocalPlayer():EmitSound(ButtonNoise)
 		local ammoPanel = Menu:Add("AmmoPanel")
-		local iconList = vgui.Create("DIconLayout", ammoPanel)
 		
-		iconList:SetPos(10,5)
-		iconList:SetSize(ammoPanel:GetWide(), ammoPanel:GetTall())
-		iconList:SetSpaceY(10)
-		iconList:SetSpaceX(10)
+		--- General Ammo Start ---
 		
-		local entityArray = {}
-		entityArray[1] = scripted_ents.Get("cw_ammo_kit_small")
-		entityArray[2] = scripted_ents.Get("cw_ammo_kit_regular")
-		entityArray[3] = scripted_ents.Get("cw_ammo_40mm")
-		entityArray[4] = scripted_ents.Get("cw_ammo_crate_small")
-		--entityArray[5] = scripted_ents.Get("item_rpg_round")
+		local generalAmmoCategory = vgui.Create("DCollapsibleCategory", ammoPanel)
+		generalAmmoCategory:SetPos(0,0)
+		generalAmmoCategory:SetSize(ammoPanel:GetWide(),100)
+		generalAmmoCategory:SetLabel("[CW 2.0] General Ammo Kits:")
 		
-		for k, v in pairs(entityArray) do
-			local icon = vgui.Create("SpawnIcon", iconList)
+		local generalAmmoList = vgui.Create("DIconLayout", generalAmmoCategory)
+		
+		generalAmmoList:SetPos(10,25)
+		generalAmmoList:SetSize(ammoPanel:GetWide(), ammoPanel:GetTall())
+		generalAmmoList:SetSpaceY(10)
+		generalAmmoList:SetSpaceX(10)
+		
+		local generalAmmoArray = {}
+		generalAmmoArray[1] = scripted_ents.Get("cw_ammo_kit_small")
+		generalAmmoArray[2] = scripted_ents.Get("cw_ammo_kit_regular")
+		generalAmmoArray[3] = scripted_ents.Get("cw_ammo_crate_small")
+		--generalAmmoArray[5] = scripted_ents.Get("item_rpg_round")
+		--generalAmmoArray[1] = scripted_ents.Get("cw_ammo_40mm")
+		
+		for k, v in pairs(generalAmmoArray) do
+			local icon = vgui.Create("SpawnIcon", generalAmmoList)
 			icon:SetModel(v["Model"])
 			icon:SetToolTip(v["PrintName"].."\nCost: $"..v["Cost"])
-			iconList:Add(icon)
+			generalAmmoList:Add(icon)
 			icon.DoClick = function(icon)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
+		
+		
+		--- Special Ammo Start ---
+		
+		local specialAmmoCategory = vgui.Create("DCollapsibleCategory", ammoPanel)
+		specialAmmoCategory:SetPos(0,100)
+		specialAmmoCategory:SetSize(ammoPanel:GetWide(),100)
+		specialAmmoCategory:SetLabel("[CW 2.0] Special Ammo Kits:")
+		
+		local specialAmmoList = vgui.Create("DIconLayout", specialAmmoCategory)
+		
+		specialAmmoList:SetPos(10,25)
+		specialAmmoList:SetSize(ammoPanel:GetWide(), ammoPanel:GetTall())
+		specialAmmoList:SetSpaceY(10)
+		specialAmmoList:SetSpaceX(10)
+		
+		local specialAmmoArray = {}
+		specialAmmoArray[1] = scripted_ents.Get("cw_ammo_40mm")
+		specialAmmoArray[2] = scripted_ents.Get("cw_ammo_fraggrenades")
+		specialAmmoArray[3] = scripted_ents.Get("item_rpg_round")
+		
+		for k, v in pairs(specialAmmoArray) do
+			local icon = vgui.Create("SpawnIcon", specialAmmoList)
+			icon:SetModel(v["Model"])
+			icon:SetToolTip(v["PrintName"].."\nCost: $"..v["Cost"])
+			specialAmmoList:Add(icon)
+			icon.DoClick = function(icon)
+				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
+			end
+		end
+		
+		
 		
 	end
 	
@@ -139,7 +179,7 @@ function addButtons(Menu)
 		
 	end
 	
-	-- Vehicles Button ---
+	--- Vehicles Button ---
 	
 	local vehiclesButton = vgui.Create("DButton")
 	vehiclesButton:SetParent(Menu)
@@ -164,39 +204,57 @@ function addButtons(Menu)
 	vehiclesButton.DoClick = function(vehiclesButton)
 		LocalPlayer():EmitSound(ButtonNoise)
 		local vehiclesPanel = Menu:Add("VehiclesPanel")
-		local iconList = vgui.Create("DIconLayout", vehiclesPanel)
 		
-		iconList:SetPos(10,5)
-		iconList:SetSize(vehiclesPanel:GetWide(), vehiclesPanel:GetTall())
-		iconList:SetSpaceY(10)
-		iconList:SetSpaceX(10)
+		local airCategory = vgui.Create("DCollapsibleCategory", vehiclesPanel)
+		airCategory:SetPos(0,0) -- Set the second value by the number determined below (100)
+		airCategory:SetSize(vehiclesPanel:GetWide(),100) --Change 100 for more than one line
+		airCategory:SetLabel("[LFS] Air Vehicles:")
 		
-		local entityArray = {}
-		entityArray[1] = scripted_ents.Get("lunasflightschool_spitfire")
-		entityArray[2] = scripted_ents.Get("lunasflightschool_combineheli")
-		entityArray[3] = scripted_ents.Get("lfs_crysis_vtol")
+		--- Air Vehicles Start ---
 		
-		for k, v in pairs(entityArray) do
-			local icon = vgui.Create("SpawnIcon", iconList)
+		local airList = vgui.Create("DIconLayout", airCategory)
+		airList:SetPos(10,25)
+		airList:SetSize(vehiclesPanel:GetWide(), vehiclesPanel:GetTall())
+		airList:SetSpaceY(10)
+		airList:SetSpaceX(10)
+		
+		local airArray = {}
+		airArray[1] = scripted_ents.Get("lunasflightschool_spitfire")
+		airArray[2] = scripted_ents.Get("lunasflightschool_combineheli")
+		airArray[3] = scripted_ents.Get("lfs_crysis_vtol")
+		
+		for k, v in pairs(airArray) do
+			local icon = vgui.Create("SpawnIcon", airList)
 			icon:SetModel(v["MDL"])
 			icon:SetToolTip(v["PrintName"].."\nCost: $"..v["Cost"])
-			iconList:Add(icon)
+			airList:Add(icon)
 			icon.DoClick = function(icon)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
 		
-		-- TO DO: 
-		-- Determine how to spawn simphys vehicles by calling and using the keys in the list
+		--- Simfphys Start --
 		
-		local vehicleList = list.Get( "simfphys_vehicles" ) -- Call list of simfphys vehicles?
+		local simfphysCategory = vgui.Create("DCollapsibleCategory", vehiclesPanel)
+		simfphysCategory:SetPos(0,100) -- Set the second value by the number determined below (100)
+		simfphysCategory:SetSize(vehiclesPanel:GetWide(),100) --Change 100 for more than one line
+		simfphysCategory:SetLabel("[Simfphys] Vehicles:")
+		
+		local simfphysList = vgui.Create("DIconLayout", simfphysCategory)
+		
+		simfphysList:SetPos(10,25)
+		simfphysList:SetSize(vehiclesPanel:GetWide(), vehiclesPanel:GetTall())
+		simfphysList:SetSpaceY(10)
+		simfphysList:SetSpaceX(10)
+		
+		local vehicleList = list.Get( "simfphys_vehicles" ) -- Call modified list
 		local vehicle = vehicleList[ vname ]
 		
 		for k, v in pairs(vehicleList) do
-			local icon = vgui.Create("SpawnIcon", iconList)
+			local icon = vgui.Create("SpawnIcon", simfphysList)
 			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["Name"])
-			iconList:Add(icon)
+			icon:SetToolTip(v["Name"].."\nCost: $"..v["Cost"])
+			simfphysList:Add(icon)
 			icon.DoClick = function(icon)
 				LocalPlayer():ConCommand("ctf_simfphys_buyvehicle "..k)
 			end
