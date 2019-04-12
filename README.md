@@ -18,7 +18,7 @@ a money feature, and an ordnance menu for use with said money system to purchase
 
 5.) A class menu for player loadouts, in order to eliminate the need for Weapon STAR. [COMPLETE]
 
-6.) An ordnance menu so vehicles and other useful entities like ammo may be spawned mid-match. [IN PROGRESS]
+6.) An ordnance menu so vehicles and other useful entities like ammo may be spawned mid-match. [COMPLETE]
 
 7.) A money system for purchasing entities from said ordnance menu. [COMPLETE]
 
