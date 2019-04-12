@@ -32,14 +32,14 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 300,
-		weapons = {"weapon_crowbar", "weapon_rpg", "weapon_ied", "cw_g4p_m16a4"}
+		weapons = {"weapon_crowbar", "weapon_rpg", "weapon_ied", "cw_g4p_m16a4", "weapon_extinguisher"}
 	},
 	{
 		name = "Arsonist",
 		health = 100,
 		walkspeed = 200,
 		runspeed = 300,
-		weapons = {"weapon_crowbar", "cw_ump45", "cw_fiveseven", "weapon_nmrih_molotov", "weapon_vfire_gascan"}
+		weapons = {"weapon_crowbar", "cw_ump45", "cw_fiveseven", "weapon_nmrih_molotov", "weapon_vfire_gascan", "weapon_extinguisher"}
 	},
 	{
 		name = "Engineer",
