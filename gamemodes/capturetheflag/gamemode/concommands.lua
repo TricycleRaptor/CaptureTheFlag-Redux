@@ -1,6 +1,3 @@
-BuyNoise = Sound("buttons/button14.wav")
-DenyNoise = Sound("buttons/button10.wav")
-
 function buyEntity(ply, cmd, args)
 
 	if(args[1] != nil) then
@@ -22,7 +19,7 @@ function buyEntity(ply, cmd, args)
 			
 			if(balance >= ent.Cost) then
 			
-				ply:EmitSound("buttons/button14.wav") --Serverside
+				ply:EmitSound("ambient/levels/labs/coinslot1.wav") --Serverside
 			
 				ply:SetNWInt("playerMoney", balance - ent.Cost)
 			
@@ -35,7 +32,7 @@ function buyEntity(ply, cmd, args)
 			
 			else
 			
-				ply:EmitSound("buttons/button10.wav") --Serverside
+				ply:EmitSound("buttons/combine_button_locked.wav") --Serverside
 			
 			end
 		
@@ -45,6 +42,8 @@ end
 concommand.Add("ctf_buyentity", buyEntity)
 
 function buySimfphysVehicle( ply, vname, tr )
+
+	local balance = ply:GetNWInt("playerMoney")
 
 	if not vname then return end
 
@@ -62,26 +61,37 @@ function buySimfphysVehicle( ply, vname, tr )
 	end
 	
 	local VehicleList = list.Get( "simfphys_vehicles" )
-	local vehicle = VehicleList[ vname ] -- Not working
+	local vehicle = VehicleList[ vname ]
 
 	if not vehicle then return end
 	
-	if not tr then
-		tr = ply:GetEyeTraceNoCursor()
-	end
-
-	local Angles = ply:GetAngles()
-	Angles.pitch = 0
-	Angles.roll = 0
-	Angles.yaw = Angles.yaw + 180 + (vehicle.SpawnAngleOffset and vehicle.SpawnAngleOffset or 0)
-
-	local pos = tr.HitPos + Vector(0,0,25) + (vehicle.SpawnOffset or Vector(0,0,0))
-
-	local Ent = simfphys.SpawnVehicle( ply, pos, Angles, vehicle.Model, vehicle.Class, vname, vehicle )
+	if (balance >= vehicle["Cost"]) then
 	
-	if not IsValid( Ent ) then return end
+		ply:EmitSound("ambient/levels/labs/coinslot1.wav")
+		ply:SetNWInt("playerMoney", balance - vehicle["Cost"])
+	
+		if not tr then
+			tr = ply:GetEyeTraceNoCursor()
+		end
 
-	ply:AddCleanup( "vehicles", Ent )
+		local Angles = ply:GetAngles()
+		Angles.pitch = 0
+		Angles.roll = 0
+		Angles.yaw = Angles.yaw + 180 + (vehicle.SpawnAngleOffset and vehicle.SpawnAngleOffset or 0)
+
+		local pos = tr.HitPos + Vector(0,0,25) + (vehicle.SpawnOffset or Vector(0,0,0))
+
+		local Ent = simfphys.SpawnVehicle( ply, pos, Angles, vehicle.Model, vehicle.Class, vname, vehicle )
+	
+		if not IsValid( Ent ) then return end
+
+		ply:AddCleanup( "vehicles", Ent )
+	
+	else
+	
+		ply:EmitSound("buttons/combine_button_locked.wav")
+	
+	end
 	
 end
 concommand.Add( "ctf_simfphys_buyvehicle", function( ply, cmd, args ) buySimfphysVehicle( ply, args[1] ) end )
