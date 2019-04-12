@@ -81,13 +81,11 @@ function addButtons(Menu)
 		generalAmmoArray[1] = scripted_ents.Get("cw_ammo_kit_small")
 		generalAmmoArray[2] = scripted_ents.Get("cw_ammo_kit_regular")
 		generalAmmoArray[3] = scripted_ents.Get("cw_ammo_crate_small")
-		--generalAmmoArray[5] = scripted_ents.Get("item_rpg_round")
-		--generalAmmoArray[1] = scripted_ents.Get("cw_ammo_40mm")
 		
 		for k, v in pairs(generalAmmoArray) do
 			local icon = vgui.Create("SpawnIcon", generalAmmoList)
 			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["PrintName"].."\nCost: $"..v["Cost"])
+			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
 			generalAmmoList:Add(icon)
 			icon.DoClick = function(icon)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
@@ -112,19 +110,17 @@ function addButtons(Menu)
 		local specialAmmoArray = {}
 		specialAmmoArray[1] = scripted_ents.Get("cw_ammo_40mm")
 		specialAmmoArray[2] = scripted_ents.Get("cw_ammo_fraggrenades")
-		specialAmmoArray[3] = scripted_ents.Get("item_rpg_round")
+		--specialAmmoArray[3] = scripted_ents.Get("item_rpg_round")
 		
 		for k, v in pairs(specialAmmoArray) do
 			local icon = vgui.Create("SpawnIcon", specialAmmoList)
 			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["PrintName"].."\nCost: $"..v["Cost"])
+			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
 			specialAmmoList:Add(icon)
 			icon.DoClick = function(icon)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
-		end
-		
-		
+		end	
 		
 	end
 	
@@ -153,25 +149,31 @@ function addButtons(Menu)
 	entitiesButton.DoClick = function(entitiesButton)
 		LocalPlayer():EmitSound(ButtonNoise)
 		local entitiesPanel = Menu:Add("EntitiesPanel")
-		local iconList = vgui.Create("DIconLayout", entitiesPanel)
 		
-		iconList:SetPos(10,5)
-		iconList:SetSize(entitiesPanel:GetWide(), entitiesPanel:GetTall())
-		iconList:SetSpaceY(10)
-		iconList:SetSpaceX(10)
+		local vestCategory = vgui.Create("DCollapsibleCategory", entitiesPanel)
+		vestCategory:SetPos(0,0)
+		vestCategory:SetSize(entitiesPanel:GetWide(),100)
+		vestCategory:SetLabel("[Ballistic Vests] Personal Protection:")
 		
-		local entityArray = {}
-		entityArray[1] = scripted_ents.Get("danguvestsmall")
-		entityArray[2] = scripted_ents.Get("danguvestnormal")
-		entityArray[3] = scripted_ents.Get("danguvestheavy")
-		entityArray[4] = scripted_ents.Get("danguvesthelmet")
+		local vestList = vgui.Create("DIconLayout", vestCategory)
+		
+		vestList:SetPos(10,25)
+		vestList:SetSize(entitiesPanel:GetWide(), entitiesPanel:GetTall())
+		vestList:SetSpaceY(10)
+		vestList:SetSpaceX(10)
+		
+		local vestArray = {}
+		vestArray[1] = scripted_ents.Get("danguvestsmall")
+		vestArray[2] = scripted_ents.Get("danguvestnormal")
+		vestArray[3] = scripted_ents.Get("danguvestheavy")
+		vestArray[4] = scripted_ents.Get("danguvesthelmet")
 		
 		
-		for k, v in pairs(entityArray) do
-			local icon = vgui.Create("SpawnIcon", iconList)
+		for k, v in pairs(vestArray) do
+			local icon = vgui.Create("SpawnIcon", vestList)
 			icon:SetModel(v["MdlRef"])
-			icon:SetToolTip(v["PrintName"].."\nCost: $"..v["Cost"])
-			iconList:Add(icon)
+			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
+			vestList:Add(icon)
 			icon.DoClick = function(icon)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
@@ -226,7 +228,7 @@ function addButtons(Menu)
 		for k, v in pairs(airArray) do
 			local icon = vgui.Create("SpawnIcon", airList)
 			icon:SetModel(v["MDL"])
-			icon:SetToolTip(v["PrintName"].."\nCost: $"..v["Cost"])
+			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
 			airList:Add(icon)
 			icon.DoClick = function(icon)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
@@ -253,7 +255,7 @@ function addButtons(Menu)
 		for k, v in pairs(vehicleList) do
 			local icon = vgui.Create("SpawnIcon", simfphysList)
 			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["Name"].."\nCost: $"..v["Cost"])
+			icon:SetToolTip(v["Name"].."\nCost: "..v["Cost"].."cR")
 			simfphysList:Add(icon)
 			icon.DoClick = function(icon)
 				LocalPlayer():ConCommand("ctf_simfphys_buyvehicle "..k)
