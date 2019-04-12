@@ -530,7 +530,7 @@ function AlertThink()
 		
 		-- Add Balance
 		draw.RoundedBox(10, 70, ScrH() - 1075, 130, 30, Color(120, 120, 120, 180))
-		draw.SimpleText("Balance: $ " .. LocalPlayer():GetNWInt("playerMoney"), "DermaDefaultBold", 80, ScrH() - 1067, Color(255, 255, 255, 255), 0)
+		draw.SimpleText("Balance: " .. LocalPlayer():GetNWInt("playerMoney").."cR", "DermaDefaultBold", 80, ScrH() - 1067, Color(255, 255, 255, 255), 0)
 
 		if (showDeath) then
 			surface.SetDrawColor(65, 65, 65, 65)
