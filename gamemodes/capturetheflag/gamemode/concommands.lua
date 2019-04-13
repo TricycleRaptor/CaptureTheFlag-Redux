@@ -22,9 +22,10 @@ function buyEntity(ply, cmd, args)
 				ply:EmitSound("ambient/levels/labs/coinslot1.wav") --Serverside
 			
 				ply:SetNWInt("playerMoney", balance - ent.Cost)
+				local plyAngles = ply:GetShootPos() + ply:GetForward() * 200
 			
 				ent.Owner = ply
-				ent:SetPos(Vector((ply:GetShootPos() + ply:GetForward() * 200), 500, 500))
+				ent:SetPos(Vector(plyAngles,100,100))
 				ent:Spawn()
 				ent:Activate()
 			
@@ -40,6 +41,59 @@ function buyEntity(ply, cmd, args)
 	end
 end
 concommand.Add("ctf_buyentity", buyEntity)
+
+function buyLFSVehicle(ply, cmd, args)
+
+	if(args[1] != nil) then
+		local ent = ents.Create(args[1])
+		local tr = ply:GetEyeTrace()
+		local balance = ply:GetNWInt("playerMoney")
+		
+		if(ent:IsValid()) then
+			local ClassName = ent:GetClass()
+		
+			if(!tr.Hit) then return end
+		
+			local entCount = ply:GetNWInt(ClassName .. "count")
+			
+			-- TO DO: 
+			-- Add team entity count check
+			-- Write separate function for buying vehicles to give the SetPos vector additional room on the X and Y coordinates so spawning a vehicle doesn't kill
+			-- Troubleshoot Y coordinate in SetPos vector so vehicles do not get stuck in the ground on spawn
+			
+			if(balance >= ent.Cost) then
+			
+				ply:EmitSound("ambient/levels/labs/coinslot1.wav") --Serverside
+				ply:SetNWInt("playerMoney", balance - ent.Cost)
+				
+				local plyTr = ply:GetShootPos() + ply:GetForward() * 450
+				local posVector = Vector(plyTr,100,ply:GetShootPos() * 200)
+				
+				if(ClassName == "lunasflightschool_combineheli") then
+					
+					ent:SetAngles(Angle(-10,0,0))
+					
+				elseif (ClassName == "lfs_crysis_vtol") then
+				
+					ent:SetAngles(Angle(3,0,0))
+				
+				end
+				
+				ent.Owner = ply
+				ent:SetPos( posVector )
+				ent:Spawn()
+				ent:Activate()
+			
+			else
+			
+				ply:EmitSound("buttons/combine_button_locked.wav") --Serverside
+			
+			end
+		
+		end
+	end
+end
+concommand.Add("ctf_buyLFSVehicle", buyLFSVehicle)
 
 function buySimfphysVehicle( ply, vname, tr )
 
