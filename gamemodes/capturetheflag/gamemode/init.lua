@@ -453,13 +453,11 @@ end
 function GM:PlayerInitialSpawn( ply )
 
 	ply:SetNWInt("playerClass", 1)
-	
-	net.Start("ClassMenu")
-	net.Broadcast()
 
 	UpdateAllValues(ply)
 	joining( ply )
 	ply:ConCommand( "ctf_start" )
+	ply:ConCommand( "ctf_open_classmenu" ) 
 	
 end
 
@@ -882,7 +880,7 @@ function GM:OnNPCKilled( npc, attacker, inflictor )
 end
 
 function GM:PlayerDeath(victim, inflictor, attacker)
-	if(attacker:Team() ~= victim:Team()) then
+	if(attacker:IsPlayer() and attacker:Team() ~= victim:IsPlayer() and victim:Team()) then
 		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (GetConVar("ctf_killincome"):GetFloat())) -- Award amount based on killincome cvar
 	end
 end
@@ -897,26 +895,15 @@ end
 
 --TODO fix these calls by making them client-specific
 
-util.AddNetworkString("ClassMenu")
 function GM:ShowSpare1(ply)
 	
-	net.Start("ClassMenu")
-	net.Broadcast()
+	ply:ConCommand("ctf_open_classmenu")
 	
 end
-
-local open = false
 
 util.AddNetworkString("OrdnanceMenu")
 function GM:ShowSpare2(ply)
 
-	if(open == false) then
-		open = true
-	else
-		open = false
-	end
-
-	net.Start("OrdnanceMenu")
-	net.WriteBit(open)
-	net.Broadcast()
+	ply:ConCommand("ctf_open_ordnancemenu")
+	
 end
