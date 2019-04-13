@@ -2,7 +2,7 @@ ButtonNoise = Sound("buttons/lightswitch2.wav")
 
 local Menu
 
-net.Receive("OrdnanceMenu",function()
+function ordnanceMenu()
 
 	if(Menu == nil) then
 	
@@ -13,7 +13,6 @@ net.Receive("OrdnanceMenu",function()
 		Menu:SetDraggable(true)
 		Menu:ShowCloseButton(false)
 		Menu:SetDeleteOnClose(false)
-		
 		Menu.Paint = function()
 			surface.SetDrawColor(60,60,60,255)
 			surface.DrawRect(0,0,Menu:GetWide(),Menu:GetTall())
@@ -21,19 +20,23 @@ net.Receive("OrdnanceMenu",function()
 			surface.SetDrawColor(40,40,40,255)
 			surface.DrawRect(0,24,Menu:GetWide(),1)
 		end
-	end
 	
-	addButtons(Menu)
-	
-	
-	if(net.ReadBit() == 0) then
-		Menu:Hide()
-		gui.EnableScreenClicker(false)
-	else
-		Menu:Show()
+		addButtons(Menu)
 		gui.EnableScreenClicker(true)
+		
+	else
+	
+		if(Menu:IsVisible()) then
+			Menu:SetVisible(false)
+			gui.EnableScreenClicker(false)
+		else
+			Menu:SetVisible(true)
+			gui.EnableScreenClicker(true)
+		end
+		
 	end
-end)
+end
+concommand.Add( "ctf_open_ordnancemenu", ordnanceMenu )
 
 function addButtons(Menu)
 
@@ -122,8 +125,35 @@ function addButtons(Menu)
 			end
 		end	
 		
-	end
+		--- HL2 Ammo Start ---
 	
+		local hl2AmmoCategory = vgui.Create("DCollapsibleCategory", ammoPanel)
+		hl2AmmoCategory:SetPos(0,200)
+		hl2AmmoCategory:SetSize(ammoPanel:GetWide(),100)
+		hl2AmmoCategory:SetLabel("[HL2] Additional Munitions:")
+		
+		local hl2AmmoList = vgui.Create("DIconLayout", hl2AmmoCategory)
+		
+		hl2AmmoList:SetPos(10,25)
+		hl2AmmoList:SetSize(ammoPanel:GetWide(), ammoPanel:GetTall())
+		hl2AmmoList:SetSpaceY(10)
+		hl2AmmoList:SetSpaceX(10)
+		
+		local hl2AmmoArray = {}
+		hl2AmmoArray[1] = scripted_ents.Get("hl2_ammo_crate_rpg")
+		
+		for k, v in pairs(hl2AmmoArray) do
+			local icon = vgui.Create("SpawnIcon", hl2AmmoList)
+			icon:SetModel(v["Model"])
+			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
+			hl2AmmoList:Add(icon)
+			icon.DoClick = function(icon)
+				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
+			end
+		end
+		
+	end
+
 	-- Entities Button --
 	
 	local entitiesButton = vgui.Create("DButton")
@@ -231,7 +261,7 @@ function addButtons(Menu)
 			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
 			airList:Add(icon)
 			icon.DoClick = function(icon)
-				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
+				LocalPlayer():ConCommand("ctf_buyLFSVehicle "..v["ClassName"])
 			end
 		end
 		
