@@ -71,7 +71,7 @@ function buyLFSVehicle(ply, cmd, args)
 				
 				if(ClassName == "lunasflightschool_combineheli") then
 					
-					ent:SetAngles(Angle(-10,0,0))
+					ent:SetAngles(Angle(-11,0,0))
 					
 				elseif (ClassName == "lfs_crysis_vtol") then
 				
@@ -80,6 +80,7 @@ function buyLFSVehicle(ply, cmd, args)
 				end
 				
 				ent.Owner = ply
+				PropProtection.TeamMakePropOwner(ply:Team(), ent)
 				ent:SetPos( posVector )
 				ent:Spawn()
 				ent:Activate()
