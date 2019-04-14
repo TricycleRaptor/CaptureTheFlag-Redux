@@ -37,6 +37,8 @@ resource.AddFile( "materials/icons/red_win_text.png" )
 
 util.AddNetworkString("RestrictMenu")
 util.AddNetworkString("UnrestrictMenu")
+util.AddNetworkString("RestrictOrdnanceMenu")
+util.AddNetworkString("UnrestrictOrdnanceMenu")
 util.AddNetworkString("BaseSet")
 util.AddNetworkString("MatchBegin")
 util.AddNetworkString("ctf_TimeUpdate")
@@ -64,6 +66,7 @@ CTF_DSpectateRestrict = GetConVar( "ctf_restrictdeathspectate" )
 CTF_PassiveTimer = GetConVar( "ctf_passivetimer" )
 CTF_PassiveIncome = GetConVar( "ctf_passiveincome" )
 CTF_KillIncome = GetConVar( "ctf_killincome" )
+CTF_StartingBalance = GetConVar( "ctf_startingbalance" )
 
 Time = 0
 TeamSetUp = {false, false}
@@ -453,6 +456,7 @@ end
 function GM:PlayerInitialSpawn( ply )
 
 	ply:SetNWInt("playerClass", 1)
+	ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_startingbalance"):GetFloat()))
 
 	UpdateAllValues(ply)
 	joining( ply )
@@ -676,12 +680,12 @@ function doBuild(team, pos, ply)
 	PropProtection.TeamMakePropOwner(team, ConSphere)
 	
 	-- Experimental base perimeter determination (Working, theoretically)--
-	PerimeterSphere = ents.Create("CTF_PerimeterSphere")
-	PerimeterSphere:SetPos(pos)
-	PerimeterSphere:SetNWInt("Team", team)
-	PerimeterSphere:SetGravity(0)
-	PerimeterSphere:Spawn()
-	PerimeterSphere:SetModelScale(GetConVar("ctf_buildzonescale"):GetFloat())
+	-- PerimeterSphere = ents.Create("CTF_PerimeterSphere")
+	-- PerimeterSphere:SetPos(pos)
+	-- PerimeterSphere:SetNWInt("Team", team)
+	-- PerimeterSphere:SetGravity(0)
+	-- PerimeterSphere:Spawn()
+	-- PerimeterSphere:SetModelScale(GetConVar("ctf_buildzonescale"):GetFloat())
 	
 	FlagBase = ents.Create("CTF_FlagBase")
 	FlagBase:SetPos(pos + Vector(-100,0,0))
