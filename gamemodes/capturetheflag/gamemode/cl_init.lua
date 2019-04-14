@@ -12,6 +12,7 @@ DropNoise = Sound("ambient/alarms/warningbell1.wav")
 UIThunk = Sound("physics/cardboard/cardboard_box_impact_hard4.wav")
 
 LocalPlayer().canbuild = 1
+LocalPlayer().canbuy = 1
 
 MatchHasBegun = false
 BaseSet = {false, false}
@@ -249,6 +250,17 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 		end
 	end
 	
+	-- LFS Halos
+	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
+		if(LocalPlayer():GetEyeTrace().Entity:IsScripted()) then -- Determine if the entity is a vehicle
+			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then -- Determine if the vehicle is owned by red team
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 5, 5, 1 ) -- Color red team
+			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then -- Determine if the player is owned by blue team
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 5, 5, 1 ) -- Color blue team
+			end
+		end
+	end
+	
 end )
 
 surface.CreateFont( "MyScoreAndTime", {
@@ -279,6 +291,21 @@ local function UnrestrictMenu()
 
 end
 net.Receive("UnrestrictMenu", UnrestrictMenu)
+
+local function UnrestrictOrdnanceMenu()
+
+	LocalPlayer().canbuy = 1
+
+end
+net.Receive("UnrestrictOrdnanceMenu", UnrestrictOrdnanceMenu)
+
+local function RestrictOrdnanceMenu()
+
+	LocalPlayer().canbuy = 0
+
+end
+net.Receive("RestrictOrdnanceMenu", RestrictOrdnanceMenu)
+
 
 function set_team()
 
