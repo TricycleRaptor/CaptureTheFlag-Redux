@@ -884,7 +884,7 @@ end
 -- end
 
 function GM:PlayerDeath(victim, inflictor, attacker)
-	if(attacker:IsPlayer() and attacker:Team() ~= victim:IsPlayer() and victim:Team()) then
+	if(attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) and victim:IsPlayer()) then
 		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (GetConVar("ctf_killincome"):GetFloat())) -- Award amount based on killincome cvar
 	end
 end
