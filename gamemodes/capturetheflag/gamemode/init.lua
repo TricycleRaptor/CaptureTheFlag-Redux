@@ -877,11 +877,11 @@ end
 
 --------------------------------Economy--------------------------
 
-function GM:OnNPCKilled( npc, attacker, inflictor )
+-- function GM:OnNPCKilled( npc, attacker, inflictor )
 	
-	attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (GetConVar("ctf_killincome"):GetFloat())) -- Award amount based on killincome cvar
+	-- attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (GetConVar("ctf_killincome"):GetFloat())) -- Award amount based on killincome cvar
 
-end
+-- end
 
 function GM:PlayerDeath(victim, inflictor, attacker)
 	if(attacker:IsPlayer() and attacker:Team() ~= victim:IsPlayer() and victim:Team()) then
@@ -889,11 +889,11 @@ function GM:PlayerDeath(victim, inflictor, attacker)
 	end
 end
 
-function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
-	if ( attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) ) then
-		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + damageTaken) -- Award player $1 per point of damage
-	end
-end
+-- function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
+	-- if ( attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) ) then
+		-- attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + damageTaken) -- Award player $1 per point of damage
+	-- end
+-- end
 
 --------------------------------Menu Calls--------------------------
 
