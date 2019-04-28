@@ -232,9 +232,9 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
 		if(LocalPlayer():GetEyeTrace().Entity:IsPlayer()) then -- Determine if the entity is a player
 			if(LocalPlayer():GetEyeTrace().Entity:Team() == 1) then -- Determine if the player is on red team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 5, 5, 1 ) -- Color red team
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 3, 3, 1 ) -- Color red team
 			elseif (LocalPlayer():GetEyeTrace().Entity:Team() == 2) then -- Determine if the player is on blue team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 5, 5, 1 ) -- Color blue team
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 ) -- Color blue team
 			end
 		end
 	end 
@@ -243,23 +243,46 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
 		if(LocalPlayer():GetEyeTrace().Entity:IsVehicle()) then -- Determine if the entity is a vehicle
 			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then -- Determine if the vehicle is owned by red team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 5, 5, 1 ) -- Color red team
-			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then -- Determine if the player is owned by blue team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 5, 5, 1 ) -- Color blue team
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 3, 3, 1 ) -- Color red team
+			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then -- Determine if the vehicle is owned by blue team
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 ) -- Color blue team
 			end
 		end
 	end
 	
 	-- LFS Halos
 	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
-		if(LocalPlayer():GetEyeTrace().Entity:IsScripted()) then -- Determine if the entity is a vehicle
+		if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flag" and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flagbase") then -- Determine if the entity is a vehicle and is not a flag
 			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then -- Determine if the vehicle is owned by red team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 5, 5, 1 ) -- Color red team
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 3, 3, 1 ) -- Color red team
 			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then -- Determine if the player is owned by blue team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 5, 5, 1 ) -- Color blue team
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 ) -- Color blue team
 			end
 		end
 	end
+	
+	-- No-Z Flag Halos
+	local flagteam1 = {}
+	local flagteam2 = {}
+
+	for k, v in pairs(ents.FindByClass("ctf_flag")) do
+		if v:GetNWInt("OwningTeam") == 1 then
+			table.insert(flagteam1, v)
+		elseif v:GetNWInt("OwningTeam") == 2 then
+			table.insert(flagteam2, v)
+		end
+	end
+	
+	for k, v in pairs(ents.FindByClass("ctf_flagbase")) do
+		if v:GetNWInt("OwningTeam") == 1 then
+			table.insert(flagteam1, v)
+		elseif v:GetNWInt("OwningTeam") == 2 then
+			table.insert(flagteam2, v)
+		end
+	end
+
+	halo.Add(flagteam1, Color( 255, 0, 0 ), 2, 2, 1, true, true)
+	halo.Add(flagteam2, Color( 100, 100, 255 ), 2, 2, 1, true, true)
 	
 end )
 
