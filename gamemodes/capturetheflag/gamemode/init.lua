@@ -499,6 +499,8 @@ function GM:PlayerLoadout( ply )
 			ply:Give(v)
 		end
 		
+		ply:SelectWeapon("weapon_crowbar")
+		
 		-- Give Ammo
 		ply:GiveAmmo(150, "9x19MM", true)
 		ply:GiveAmmo(80, "5.7x28MM", true)
@@ -519,6 +521,8 @@ function GM:PlayerLoadout( ply )
 			ply:Give(v)
 		end
 		
+		ply:SelectWeapon("weapon_crowbar")
+		
 		-- Give Ammo
 		ply:GiveAmmo(150, "9x19MM", true)
 		ply:GiveAmmo(80, "5.7x28MM", true)
@@ -536,6 +540,8 @@ function GM:PlayerLoadout( ply )
 		for k, v in pairs(plyClass.weapons) do
 			ply:Give(v)
 		end
+		
+		ply:SelectWeapon("weapon_crowbar")
 		
 		ply:GiveAmmo(150, "9x19MM", true)
 		ply:GiveAmmo(80, "5.7x28MM", true)
@@ -588,7 +594,7 @@ function ctf_setteam( ply, cmd, args, argStr)
 		ply:ChatPrint( "[CTF]: Please select a location for your base." )
 		ply.IsCaptain = true
 	elseif team.NumPlayers(teamNum) >= 1 and !TeamSetUp[teamNum] then
-		ply:ChatPrint( "[CTF]: Please wait for your team captian to pick a base location." )
+		ply:ChatPrint( "[CTF]: Please wait for your team captain to pick a base location." )
 		ply.IsCaptain = false
 	end
 	ply:UnSpectate()
@@ -604,7 +610,7 @@ function ctf_spectate( ply )
 	ply:Spawn()
 	ply:StripWeapons()
 	ply:Spectate( OBS_MODE_ROAMING )
-	ply:ConCommand("noclip") // Fixes issues with spectators intersecting with ladders.
+	ply:ConCommand("noclip")
 	ply:ChatPrint( "[CTF]: Welcome, spectator. Enjoy the show." )
 
 end
@@ -631,7 +637,7 @@ function doBuild(team, pos, ply)
 	end
 
 	if (TeamLocations[otherTeam] != nil && (pos - TeamLocations[otherTeam]):Length() < GetConVar("ctf_buildzonescale"):GetFloat() * 2000) then
-		ply:ChatPrint( "[CTF] This location is too close to the opposing base." )
+		ply:ChatPrint( "[CTF] This location is too close to the opposing team's base." )
 		return
 	end
 
@@ -757,8 +763,9 @@ function RestoreTools(ply)
 		ply:SelectWeapon("weapon_physgun")
 	elseif ply:Alive() and ply:Team() != 3 and MatchHasBegun and not ply:HasWeapon("weapon_physcannon") then
 		player_manager.RunClass( ply, "Loadout" )
-		ply:StripWeapon("weapon_phsgun")
+		ply:StripWeapon("weapon_physgun")
 		ply:StripWeapon("gmod_tool")
+		ply:StripWeapon("gmod_camera")
 	end
 end
 
