@@ -362,10 +362,6 @@ function GM:PlayerSpawn( ply )
 	end
 
 	if (MatchHasBegun) then
-	
-		-- Start the timer when the match begins
-		timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
-	
 		net.Start("RestrictMenu")
 		net.Send(ply)
 	else
@@ -858,7 +854,8 @@ function GM:Think()
 			v.canbuild = 1
 			RespawnTeam(1)
 			RespawnTeam(2)
-			v:ChatPrint( "[CTF]: The build phase is over; let the match begin!")
+			v:ChatPrint( "[CTF]: The build phase is over. Begin.")
+			timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() v:SetNWInt("playerMoney", v:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end)
 		end
 		table.Empty(undo:GetTable())
 	end
@@ -877,12 +874,6 @@ end
 
 --------------------------------Economy--------------------------
 
--- function GM:OnNPCKilled( npc, attacker, inflictor )
-	
-	-- attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (GetConVar("ctf_killincome"):GetFloat())) -- Award amount based on killincome cvar
-
--- end
-
 function GM:PlayerDeath(victim, inflictor, attacker)
 	if(attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) and victim:IsPlayer()) then
 		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (GetConVar("ctf_killincome"):GetFloat())) -- Award amount based on killincome cvar
@@ -896,8 +887,6 @@ end
 -- end
 
 --------------------------------Menu Calls--------------------------
-
---TODO fix these calls by making them client-specific
 
 function GM:ShowSpare1(ply)
 	
