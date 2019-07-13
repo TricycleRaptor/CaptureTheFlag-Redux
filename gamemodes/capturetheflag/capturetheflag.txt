@@ -37,21 +37,14 @@
 
 		4
 		{
-			"name"		"ctf_restrictkeys"
-			"text"		"Restrict Keyboard Triggers"
-			"help"		"Forces players to use gmod buttons to trigger gmod entities, instead of key presses"
-			"type"		"CheckBox"
-			"default"	"1"
-		}
-		5
-		{
 			"name"		"ctf_capturetarget"
 			"text"		"Capture Target"
 			"help"		"Number of flag captures before a team reaches victory"
 			"type"		"Numeric"
 			"default"	"3"
 		}
-		6
+		
+		5
 		{
 			"name"		"ctf_respawntime"
 			"text"		"Respawn Wait Time"
@@ -59,7 +52,8 @@
 			"type"		"Numeric"
 			"default"	"10"
 		}
-		7
+		
+		6
 		{
 			"name"		"ctf_forcerespawn"
 			"text"		"Force Respawn"
@@ -67,53 +61,58 @@
 			"type"		"CheckBox"
 			"default"	"0"
 		}
-		8
+		7
 		{
 			"name"		"ctf_deathspectate"
 			"text"		"Enable Death Spectate"
 			"help"		"Allows players to spectate while they're waiting to respawn"
 			"type"		"CheckBox"
-			"default"	"1"
+			"default"	"0"
 		}
-		9
+		
+		8
 		{
 			"name"		"ctf_restrictdeathspectate"
 			"text"		"Restricted Death Spectate"
 			"help"		"Locks death spectating to allies only chase cam, instead of free roam"
 			"type"		"CheckBox"
-			"default"	"1"
+			"default"	"0"
 		}
-		10
+		
+		9
 		{
 			"name"		"ctf_passivetimer"
 			"text"		"Income: Timer Interval (Secs)"
 			"help"		"Sets the interval for passive income timer (In seconds)"
 			"type"		"Numeric"
-			"default"	"600"	
+			"default"	"300"	
 		}
-		11
+		
+		10
 		{
 			"name"		"ctf_passiveincome"
 			"text"		"Income: Passive Reward"
 			"help"		"Amount awarded to players passively"
 			"type"		"Numeric"
-			"default"	"250"
+			"default"	"500"
 		}
-		12
+		
+		11
 		{
 			"name"		"ctf_killincome"
 			"text"		"Income: Kill Reward"
 			"help"		"Amount awarded to players for a kill"
 			"type"		"Numeric"
-			"default"	"50"
+			"default"	"25"
 		}
-		13
+		
+		12
 		{
 			"name"		"ctf_startingbalance"
 			"text"		"Income: Starting Balance"
 			"help"		"Amount given to the player at the start of the match"
 			"type"		"Numeric"
-			"default"	"200"
+			"default"	"250"
 		}
 			
 	}
