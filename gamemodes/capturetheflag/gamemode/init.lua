@@ -35,6 +35,13 @@ resource.AddFile( "materials/icons/flag_icon_dropped.png" )
 resource.AddFile( "materials/icons/red_win_logo.png" )
 resource.AddFile( "materials/icons/red_win_text.png" )
 
+resource.AddFile( "ctf/intro.wav" )
+resource.AddFile( "ctf/intro.wav" )
+resource.AddFile( "ctf/captured.wav" )
+resource.AddFile( "ctf/taken.wav" )
+resource.AddFile( "ctf/dropped.wav" )
+resource.AddFile( "ctf/recovered.wav" )
+
 util.AddNetworkString("RestrictMenu")
 util.AddNetworkString("UnrestrictMenu")
 util.AddNetworkString("RestrictOrdnanceMenu")
@@ -362,11 +369,18 @@ function GM:PlayerSpawn( ply )
 	end
 
 	if (MatchHasBegun) then
+	
+		-- Start the timer when the match begins
+		timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
+	
 		net.Start("RestrictMenu")
 		net.Send(ply)
+		
 	else
+		
 		net.Start("UnrestrictMenu")
 		net.Send(ply)
+		
 	end
 
 	ply.InvulnTime = CurTime()
@@ -505,6 +519,8 @@ function GM:PlayerLoadout( ply )
 		ply:GiveAmmo(150, "9x19MM", true)
 		ply:GiveAmmo(80, "5.7x28MM", true)
 		ply:GiveAmmo(200, "5.56x45MM", true)
+		ply:GiveAmmo(200, "5.56x45MM", true)
+		ply:GiveAmmo(80, "7.62x51MM", true)
 		ply:GiveAmmo(100, ".45 ACP", true)
 		ply:GiveAmmo(30, ".338 Lapua", true)
 		ply:GiveAmmo(24, "12 Gauge", true)
@@ -527,6 +543,7 @@ function GM:PlayerLoadout( ply )
 		ply:GiveAmmo(150, "9x19MM", true)
 		ply:GiveAmmo(80, "5.7x28MM", true)
 		ply:GiveAmmo(200, "5.56x45MM", true)
+		ply:GiveAmmo(80, "7.62x51MM", true)
 		ply:GiveAmmo(100, ".45 ACP", true)
 		ply:GiveAmmo(30, ".338 Lapua", true)
 		ply:GiveAmmo(24, "12 Gauge", true)
@@ -611,7 +628,7 @@ function ctf_spectate( ply )
 	ply:StripWeapons()
 	ply:Spectate( OBS_MODE_ROAMING )
 	ply:ConCommand("noclip")
-	ply:ChatPrint( "[CTF]: Welcome, spectator. Enjoy the show." )
+	ply:ChatPrint( "[CTF]: Welcome, spectator." )
 
 end
 concommand.Add( "ctf_spectate", ctf_spectate )
@@ -637,7 +654,7 @@ function doBuild(team, pos, ply)
 	end
 
 	if (TeamLocations[otherTeam] != nil && (pos - TeamLocations[otherTeam]):Length() < GetConVar("ctf_buildzonescale"):GetFloat() * 2000) then
-		ply:ChatPrint( "[CTF] This location is too close to the opposing team's base." )
+		ply:ChatPrint( "[CTF] This location is too close to the opposing base." )
 		return
 	end
 
@@ -760,12 +777,12 @@ function RestoreTools(ply)
 		ply:Give( "weapon_physgun" )
 		ply:Give( "gmod_tool" )
 		player_manager.RunClass( ply, "Loadout" )
-		ply:SelectWeapon("weapon_physgun")
+		ply:SelectWeapon("weapon_crowbar")
 	elseif ply:Alive() and ply:Team() != 3 and MatchHasBegun and not ply:HasWeapon("weapon_physcannon") then
 		player_manager.RunClass( ply, "Loadout" )
 		ply:StripWeapon("weapon_physgun")
 		ply:StripWeapon("gmod_tool")
-		ply:StripWeapon("gmod_camera")
+		ply:SelectWeapon("weapon_crowbar")
 	end
 end
 
@@ -861,8 +878,7 @@ function GM:Think()
 			v.canbuild = 1
 			RespawnTeam(1)
 			RespawnTeam(2)
-			v:ChatPrint( "[CTF]: The build phase is over. Begin.")
-			timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() v:SetNWInt("playerMoney", v:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end)
+			v:ChatPrint( "[CTF]: The build phase is over, let the match begin!")
 		end
 		table.Empty(undo:GetTable())
 	end
@@ -882,28 +898,25 @@ end
 --------------------------------Economy--------------------------
 
 function GM:PlayerDeath(victim, inflictor, attacker)
-	if(attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) and victim:IsPlayer()) then
+	if(attacker:IsPlayer() and victim:IsPlayer() and attacker:Team() ~= victim:Team()) then
 		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (GetConVar("ctf_killincome"):GetFloat())) -- Award amount based on killincome cvar
 	end
 end
 
--- function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
-	-- if ( attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) ) then
-		-- attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + damageTaken) -- Award player $1 per point of damage
-	-- end
--- end
+function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
+	if ( attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) ) then
+		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + 1) -- Award player $1 per point of damage
+	end
+end
 
 --------------------------------Menu Calls--------------------------
 
+
 function GM:ShowSpare1(ply)
-	
 	ply:ConCommand("ctf_open_classmenu")
-	
 end
 
 util.AddNetworkString("OrdnanceMenu")
 function GM:ShowSpare2(ply)
-
 	ply:ConCommand("ctf_open_ordnancemenu")
-	
 end
