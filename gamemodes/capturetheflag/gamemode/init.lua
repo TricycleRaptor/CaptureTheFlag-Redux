@@ -281,19 +281,19 @@ hook.Add("CanProperty", "PropProtection.CanProperty", PropProtection.CanProperty
 -----------------------------Prop Protection End--------------------------
 
 --------------------Force the use of buttons for key presses--------------
-numpad.OldActivate = numpad.Activate
-function numpad.Activate(ply, key, isButton)
-	if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
-		return numpad.OldActivate(ply, key, isButton)
-	end
-end
+-- numpad.OldActivate = numpad.Activate
+-- function numpad.Activate(ply, key, isButton)
+	-- if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+		-- return numpad.OldActivate(ply, key, isButton)
+	-- end
+-- end
 
-numpad.OldDeactivate = numpad.Deactivate
-function numpad.Deactivate(ply, key, isButton)
-	if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
-		return numpad.OldDeactivate(ply, key, isButton)
-	end
-end
+-- numpad.OldDeactivate = numpad.Deactivate
+-- function numpad.Deactivate(ply, key, isButton)
+	-- if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+		-- return numpad.OldDeactivate(ply, key, isButton)
+	-- end
+-- end
 --------------------------------Button Force End--------------------------
 
 function UpdateAllValues(ply)
@@ -905,7 +905,7 @@ end
 
 function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
 	if ( attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) ) then
-		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + 1) -- Award player $1 per point of damage
+		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + math.floor(victim:damageTaken)) -- Award player money per point of damage
 	end
 end
 
