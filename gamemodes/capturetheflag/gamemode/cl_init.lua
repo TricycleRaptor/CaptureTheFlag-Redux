@@ -164,7 +164,7 @@ local function HandleFlagReturned(len, ply)
 
 	FlagsDropped[team] = false
 	FlagsCarried[team] = false
-	LocalPlayer():EmitSound(PickupNoise, 75, 50)
+	LocalPlayer():EmitSound(ReturnNoise)
 	IconCarried[team]:SetVisible(false)
 	IconDropped[team]:SetVisible(false)
 	IconTimer[team] = CurTime()
