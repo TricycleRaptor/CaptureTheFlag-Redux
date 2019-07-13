@@ -286,6 +286,7 @@ function addButtons(Menu)
 		local attachmentsArray = {}
 		attachmentsArray[1] = scripted_ents.Get("cw_attpack_suppressors")
 		attachmentsArray[2] = scripted_ents.Get("cw_attpack_various")
+		attachmentsArray[3] = scripted_ents.Get("x_cw_extra_g4p_attpack")
 		
 		
 		for k, v in pairs(attachmentsArray) do
