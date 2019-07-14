@@ -352,7 +352,7 @@ function ctf_matchtimer( ply )
 	if (MatchHasBegun) then
 
 	-- Start the timer when the match begins
-		timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() LocalPlayer():SetNWInt("playerMoney", LocalPlayer():GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
+		timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
 
 	end
 	
