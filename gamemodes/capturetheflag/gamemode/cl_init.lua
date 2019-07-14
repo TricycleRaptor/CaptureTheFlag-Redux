@@ -123,8 +123,13 @@ end
 net.Receive("BaseSet", HandleBaseSet)
 
 local function HandleMatchBegin()
+
 	MatchHasBegun = true
 	LocalPlayer():EmitSound(BeginNoise)
+	
+	-- Start the timer when the match begins
+	timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
+	
 end
 net.Receive("MatchBegin", HandleMatchBegin)
 
