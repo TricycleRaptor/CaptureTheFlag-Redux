@@ -281,19 +281,19 @@ hook.Add("CanProperty", "PropProtection.CanProperty", PropProtection.CanProperty
 -----------------------------Prop Protection End--------------------------
 
 --------------------Force the use of buttons for key presses--------------
-numpad.OldActivate = numpad.Activate
-function numpad.Activate(ply, key, isButton)
-	if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
-		return numpad.OldActivate(ply, key, isButton)
-	end
-end
+-- numpad.OldActivate = numpad.Activate
+-- function numpad.Activate(ply, key, isButton)
+	-- if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+		-- return numpad.OldActivate(ply, key, isButton)
+	-- end
+-- end
 
-numpad.OldDeactivate = numpad.Deactivate
-function numpad.Deactivate(ply, key, isButton)
-	if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
-		return numpad.OldDeactivate(ply, key, isButton)
-	end
-end
+-- numpad.OldDeactivate = numpad.Deactivate
+-- function numpad.Deactivate(ply, key, isButton)
+	-- if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+		-- return numpad.OldDeactivate(ply, key, isButton)
+	-- end
+-- end
 --------------------------------Button Force End--------------------------
 
 function UpdateAllValues(ply)
@@ -345,6 +345,17 @@ function BroadcastFlagReturned(team)
 	net.Start("FlagReturned")
 	net.WriteFloat(team)
 	net.Broadcast()
+end
+
+function ctf_matchtimer( ply )
+
+	if (MatchHasBegun) then
+
+	-- Start the timer when the match begins
+		timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() LocalPlayer():SetNWInt("playerMoney", LocalPlayer():GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
+
+	end
+	
 end
 
 function GM:PlayerSpawn( ply )
