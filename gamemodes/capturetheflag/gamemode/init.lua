@@ -347,13 +347,6 @@ function BroadcastFlagReturned(team)
 	net.Broadcast()
 end
 
-function PassiveTimer( ply )
-
-	-- Start the timer when the match begins
-	timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end)		
-
-end
-
 function GM:PlayerSpawn( ply )
  
 	self.BaseClass:PlayerSpawn( ply )
@@ -376,19 +369,11 @@ function GM:PlayerSpawn( ply )
 	end
 
 	if (MatchHasBegun) then
-	
-		for k,v in pairs(player.GetAll()) do
-			PassiveTimer(v)
-		end
-
 		net.Start("RestrictMenu")
 		net.Send(ply)
-		
 	else
-		
 		net.Start("UnrestrictMenu")
 		net.Send(ply)
-		
 	end
 
 	ply.InvulnTime = CurTime()
@@ -846,7 +831,19 @@ function EndGame(team)
 end
 
 LastTimeLeft = math.ceil(CTF_Time:GetFloat() * 60 - Time)
+NextPassiveTimer = null
 function GM:Think()
+	local ct = CurTime()
+
+	if MatchHasBegun and NextPassiveTimer and ct >= NextPassiveTimer then
+		for _, ply in ipairs(player.GetAll()) do
+			local curMoney = ply:GetNWInt("playerMoney")
+			local newMoney = curMoney + CTF_PassiveIncome:GetInt()
+			ply:SetNWInt(newMoney) --TODO: Add abstacted money methods
+			NextPassiveTimer = ct + CTF_PassiveTimer:GetFloat()
+		end
+	end
+
 
 	if buildTime != CTF_Time:GetFloat() then
 		buildTime = CTF_Time:GetFloat()
@@ -870,6 +867,7 @@ function GM:Think()
 	end
 
 	if Time / 60 > CTF_Time:GetFloat() and not MatchHasBegun then
+		NextPassiveTimer = CurTime() + CTF_PassiveTimer:GetFloat() --TODO: Make a function that more drly increments the PassiveTimer variable
 		MatchHasBegun = true
 		net.Start("MatchBegin")
 		net.Broadcast()
