@@ -832,18 +832,19 @@ end
 
 LastTimeLeft = math.ceil(CTF_Time:GetFloat() * 60 - Time)
 NextPassiveTimer = null
+
 function GM:Think()
 	local ct = CurTime()
+	local passiveIncome = (GetConVar("ctf_passiveincome"):GetFloat()))
 
-	if MatchHasBegun and NextPassiveTimer and ct >= NextPassiveTimer then
-		for _, ply in ipairs(player.GetAll()) do
-			local curMoney = ply:GetNWInt("playerMoney")
-			local newMoney = curMoney + CTF_PassiveIncome:GetInt()
-			ply:SetNWInt(newMoney) --TODO: Add abstacted money methods
-			NextPassiveTimer = ct + CTF_PassiveTimer:GetFloat()
-		end
-	end
-
+	-- if MatchHasBegun and NextPassiveTimer and ct >= NextPassiveTimer then
+		-- for _, ply in ipairs(player.GetAll()) do
+			-- local curMoney = ply:GetNWInt("playerMoney")
+			-- local newMoney = curMoney + CTF_PassiveIncome:GetInt()
+			-- ply:SetNWInt("playerMoney", newMoney) --TODO: Add abstacted money methods
+			-- NextPassiveTimer = ct + CTF_PassiveTimer:GetFloat()
+		-- end
+	-- end
 
 	if buildTime != CTF_Time:GetFloat() then
 		buildTime = CTF_Time:GetFloat()
@@ -887,6 +888,17 @@ function GM:Think()
 			v:ChatPrint( "[CTF]: The build phase is over, let the match begin!")
 		end
 		table.Empty(undo:GetTable())
+		
+		timer.Create("paySalary", CTF_PassiveTimer:GetFloat(), 0, function()
+		
+			for _,ply in ipairs(player.GetAll()) do
+				local curMoney = ply:GetNWInt("playerMoney")
+				local newMoney = curMoney + CTF_PassiveIncome:GetInt()
+				ply:SetNWInt("playerMoney", newMoney)
+			end
+		
+		end)
+		
 	end
 
 	if TeamSetUp[1] and TeamSetUp[2] and !MatchHasBegun then
