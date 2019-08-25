@@ -43,6 +43,7 @@ end
 
 function ENT:Use(activator, caller)
 
+	local plyClass = PLAYER_CLASSES[activator:GetNWInt("playerClass")]
 	
 	if (activator:IsPlayer()) then
 		if ( activator:GetNWBool("danguLWVest")==true ) then
@@ -50,9 +51,21 @@ function ENT:Use(activator, caller)
 		return end
 		activator:GetActiveWeapon():SendWeaponAnim( ACT_VM_DRAW )
 		activator:PrintMessage(HUD_PRINTTALK, "Lightweight vest equipped.")
-		activator:SetWalkSpeed(200)
-		activator:SetRunSpeed(400)
-		activator:SetJumpPower(200)
+		
+		if (plyClass.name == "Machinegunner") or (plyClass.name == "Demolitionist") then
+		
+			activator:SetWalkSpeed(200)
+			activator:SetRunSpeed(240)
+			activator:SetJumpPower(200)
+		
+		else
+		
+			activator:SetWalkSpeed(200)
+			activator:SetRunSpeed(275)
+			activator:SetJumpPower(200)
+		
+		end
+		
 		activator:EmitSound("items/ammopickup.wav")
 		activator:SetNWBool("danguLWVest",true)
 		
