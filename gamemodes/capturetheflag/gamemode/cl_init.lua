@@ -3,6 +3,7 @@ include( 'shared.lua' )
 include( 'ordnance_menu.lua' )
 
 BeginNoise = Sound("ctf/intro.wav")
+DeployNoise = Sound("ambient/levels/streetwar/city_battle13.wav")
 BaseAppear = Sound("npc/scanner/scanner_nearmiss2.wav")
 ScoreNoise = Sound("ctf/captured.wav")
 PickupNoise = Sound("ctf/taken.wav")
@@ -10,7 +11,6 @@ DropNoise = Sound("ctf/dropped.wav")
 ReturnNoise = Sound("ctf/recovered.wav")
 //LoseNoise = Sound("")
 //WinNoise = Sound("")
-UIThunk = Sound("physics/cardboard/cardboard_box_impact_hard4.wav")
 
 LocalPlayer().canbuild = 1
 LocalPlayer().canbuy = 1
@@ -126,6 +126,7 @@ local function HandleMatchBegin()
 
 	MatchHasBegun = true
 	LocalPlayer():EmitSound(BeginNoise)
+	LocalPlayer():EmitSound(DeployNoise)
 	
 end
 net.Receive("MatchBegin", HandleMatchBegin)
@@ -576,10 +577,10 @@ function AlertThink()
 		local colonWidth, colonHeight = surface.GetTextSize(":")
 		local deathWidth, deathHeight = surface.GetTextSize(deathText)
 
-		draw.DrawText(TimeText, "MyScoreAndTime", ScrW() / 2, 0, Color(255,255,0,TimeA), TEXT_ALIGN_CENTER)
+		draw.DrawText(TimeText, "MyScoreAndTime", (ScrW() / 2) + 650, 0, Color(255,255,0,TimeA), TEXT_ALIGN_CENTER)
 
-		draw.DrawText(Scores[1] .. ":", "MyScoreAndTime", ScrW() / 2 + colonWidth / 2, 0, Color(255,255,0,Scorea), TEXT_ALIGN_RIGHT)
-		draw.DrawText(tostring(Scores[2]), "MyScoreAndTime", ScrW() / 2 + colonWidth / 2, 0, Color(255, 255, 0, Scorea), TEXT_ALIGN_LEFT)
+		draw.DrawText(Scores[1] .. ":", "MyScoreAndTime", ScrW() / 2 + colonWidth / 50, 0, Color(255,255,0,Scorea), TEXT_ALIGN_RIGHT)
+		draw.DrawText(tostring(Scores[2]), "MyScoreAndTime", ScrW() / 2 + colonWidth / 50, 0, Color(255, 255, 0, Scorea), TEXT_ALIGN_LEFT)
 		
 		-- Add Balance
 		draw.RoundedBox(10, 70, ScrH() - 1075, 130, 30, Color(120, 120, 120, 180))
@@ -621,12 +622,10 @@ function VictoryThink()
 		local time = CurTime() - WinTime
 		if (time > 1 and time < 1.5 and not playedThunk) then
 			playedThunk = true
-			LocalPlayer():EmitSound(UIThunk)
 		elseif time > 1.5 and time < 2 then
 			playedThunk = false
 		elseif time > 2 and not playedThunk then
 			playedThunk = true
-			LocalPlayer():EmitSound(UIThunk)
 		end
 
 		victoryLogo:SetSize(LogoSize * ScrH() / 2, LogoSize * ScrH() / 2)
@@ -667,7 +666,7 @@ function classMenu()
 		-- Call player table value for rifleman
 		RunConsoleCommand( "ctf_setclass", "2" )
 		
-		ply:ChatPrint( "[CTF]: Rifleman class selected. Loadout will be applied on respawn." )
+		LocalPlayer():ChatPrint( "[CTF]: Rifleman class selected. Loadout will be applied on respawn." )
 		Frame:Close()
 		
 	end
@@ -686,7 +685,7 @@ function classMenu()
 		-- Call player table value for marksman
 		RunConsoleCommand( "ctf_setclass", "3" )
 		
-		ply:ChatPrint( "[CTF]: Marksman class selected. Loadout will be applied on respawn." )
+		LocalPlayer():ChatPrint( "[CTF]: Marksman class selected. Loadout will be applied on respawn." )
 		Frame:Close()
 		
 	end
@@ -705,7 +704,7 @@ function classMenu()
 		-- Call player table value for gunner
 		RunConsoleCommand( "ctf_setclass", "4" )
 		
-		ply:ChatPrint( "[CTF]: Gunner class selected. Loadout will be applied on respawn." )
+		LocalPlayer():ChatPrint( "[CTF]: Gunner class selected. Loadout will be applied on respawn." )
 		Frame:Close()
 		
 	end
@@ -724,7 +723,7 @@ function classMenu()
 		-- Call player table value for demolitionist
 		RunConsoleCommand( "ctf_setclass", "5" )
 		
-		ply:ChatPrint( "[CTF]: Demolitionist class selected. Loadout will be applied on respawn." )
+		LocalPlayer():ChatPrint( "[CTF]: Demolitionist class selected. Loadout will be applied on respawn." )
 		Frame:Close()
 		
 	end
@@ -743,7 +742,7 @@ function classMenu()
 		-- Call player table value for arsonist
 		RunConsoleCommand( "ctf_setclass", "6" )
 		
-		ply:ChatPrint( "[CTF]: Arsonist class selected. Loadout will be applied on respawn." )
+		LocalPlayer():ChatPrint( "[CTF]: Arsonist class selected. Loadout will be applied on respawn." )
 		Frame:Close()
 		
 	end
@@ -762,7 +761,7 @@ function classMenu()
 		-- Call player table value for engineer
 		RunConsoleCommand( "ctf_setclass", "7" )
 		
-		ply:ChatPrint( "[CTF]: Engineer class selected. Loadout will be applied on respawn." )
+		LocalPlayer():ChatPrint( "[CTF]: Engineer class selected. Loadout will be applied on respawn." )
 		Frame:Close()
 		
 	end
@@ -781,7 +780,7 @@ function classMenu()
 		-- Call player table value for scout
 		RunConsoleCommand( "ctf_setclass", "8" )
 		
-		ply:ChatPrint( "[CTF]: Scout class selected. Loadout will be applied on respawn." )
+		LocalPlayer():ChatPrint( "[CTF]: Scout class selected. Loadout will be applied on respawn." )
 		Frame:Close()
 		
 	end
@@ -800,7 +799,7 @@ function classMenu()
 		-- Call player table value for medic
 		RunConsoleCommand( "ctf_setclass", "9" )
 		
-		ply:ChatPrint( "[CTF]: Medic class selected. Loadout will be applied on respawn." )
+		LocalPlayer():ChatPrint( "[CTF]: Medic class selected. Loadout will be applied on respawn." )
 		Frame:Close()
 		
 	end
