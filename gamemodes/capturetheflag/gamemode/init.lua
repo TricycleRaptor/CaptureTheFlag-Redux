@@ -513,18 +513,6 @@ function GM:PlayerLoadout( ply )
 			ply:Give(v)
 		end
 		
-		ply:SelectWeapon("weapon_crowbar")
-		
-		-- Give Ammo
-		ply:GiveAmmo(150, "9x19MM", true)
-		ply:GiveAmmo(80, "5.7x28MM", true)
-		ply:GiveAmmo(200, "5.56x45MM", true)
-		ply:GiveAmmo(200, "5.56x45MM", true)
-		ply:GiveAmmo(80, "7.62x51MM", true)
-		ply:GiveAmmo(100, ".45 ACP", true)
-		ply:GiveAmmo(30, ".338 Lapua", true)
-		ply:GiveAmmo(24, "12 Gauge", true)
-		
 	elseif ply.IsCaptain and !TeamSetUp[ply:Team()] then
 	
 		ply:StripWeapons()
@@ -537,17 +525,6 @@ function GM:PlayerLoadout( ply )
 			ply:Give(v)
 		end
 		
-		ply:SelectWeapon("weapon_crowbar")
-		
-		-- Give Ammo
-		ply:GiveAmmo(150, "9x19MM", true)
-		ply:GiveAmmo(80, "5.7x28MM", true)
-		ply:GiveAmmo(200, "5.56x45MM", true)
-		ply:GiveAmmo(80, "7.62x51MM", true)
-		ply:GiveAmmo(100, ".45 ACP", true)
-		ply:GiveAmmo(30, ".338 Lapua", true)
-		ply:GiveAmmo(24, "12 Gauge", true)
-		
 	else
 	
 		ply:StripWeapons()
@@ -557,15 +534,6 @@ function GM:PlayerLoadout( ply )
 		for k, v in pairs(plyClass.weapons) do
 			ply:Give(v)
 		end
-		
-		ply:SelectWeapon("weapon_crowbar")
-		
-		ply:GiveAmmo(150, "9x19MM", true)
-		ply:GiveAmmo(80, "5.7x28MM", true)
-		ply:GiveAmmo(200, "5.56x45MM", true)
-		ply:GiveAmmo(100, ".45 ACP", true)
-		ply:GiveAmmo(30, ".338 Lapua", true)
-		ply:GiveAmmo(24, "12 Gauge", true)
 		
 	end
 end
@@ -888,8 +856,10 @@ function GM:Think()
 				local curMoney = ply:GetNWInt("playerMoney")
 				local newMoney = curMoney + CTF_PassiveIncome:GetInt()
 				ply:SetNWInt("playerMoney", newMoney)
+				ply:ChatPrint( "[CTF]: Passive salary paid.")
 			end
 		end)
+		
 	end
 
 	if TeamSetUp[1] and TeamSetUp[2] and !MatchHasBegun then
