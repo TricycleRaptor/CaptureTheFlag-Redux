@@ -41,8 +41,6 @@ function ENT:Initialize()
 end
 
 function ENT:Use(activator, caller)
-
-	local plyClass = PLAYER_CLASSES[activator:GetNWInt("playerClass")]
 	
 	if (activator:IsPlayer()) then
 		if ( activator:GetNWBool("danguHVVest")==true ) then
@@ -51,18 +49,30 @@ function ENT:Use(activator, caller)
 		activator:GetActiveWeapon():SendWeaponAnim( ACT_VM_DRAW )
 		activator:PrintMessage(HUD_PRINTTALK, "Heavy vest equipped. You feel very encumbered")
 		
-		if (plyClass.name == "Machinegunner") or (plyClass.name == "Demolitionist") then
+		if (GAMEMODE_NAME == "capturetheflag") then
 		
-			activator:SetWalkSpeed(125)
-			activator:SetRunSpeed(220)
-			activator:SetJumpPower(200)
+			local plyClass = PLAYER_CLASSES[activator:GetNWInt("playerClass")]
+		
+			if (plyClass.name == "Machinegunner") or (plyClass.name == "Demolitionist") then
+		
+				activator:SetWalkSpeed(125)
+				activator:SetRunSpeed(220)
+				activator:SetJumpPower(200)
+		
+			else
+			
+				activator:SetWalkSpeed(125)
+				activator:SetRunSpeed(240)
+				activator:SetJumpPower(200)
+		
+			end
 		
 		else
 		
 			activator:SetWalkSpeed(125)
-			activator:SetRunSpeed(240)
-			activator:SetJumpPower(200)
-		
+			activator:SetRunSpeed(250)
+			activator:SetJumpPower(130)
+			
 		end
 		
 		activator:EmitSound("items/ammopickup.wav")
