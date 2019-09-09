@@ -71,7 +71,7 @@ function addButtons(Menu)
 		local generalAmmoCategory = vgui.Create("DCollapsibleCategory", ammoPanel)
 		generalAmmoCategory:SetPos(0,0)
 		generalAmmoCategory:SetSize(ammoPanel:GetWide(),100)
-		generalAmmoCategory:SetLabel("[CW 2.0] General Ammo Kits:")
+		generalAmmoCategory:SetLabel("[TFA] Ammo Kits:")
 		
 		local generalAmmoList = vgui.Create("DIconLayout", generalAmmoCategory)
 		
@@ -81,49 +81,21 @@ function addButtons(Menu)
 		generalAmmoList:SetSpaceX(10)
 		
 		local generalAmmoArray = {}
-		generalAmmoArray[1] = scripted_ents.Get("cw_ammo_kit_small")
-		generalAmmoArray[2] = scripted_ents.Get("cw_ammo_kit_regular")
-		generalAmmoArray[3] = scripted_ents.Get("cw_ammo_crate_small")
+		generalAmmoArray[1] = scripted_ents.Get("tfa_ammo_pistol")
+		generalAmmoArray[2] = scripted_ents.Get("tfa_ammo_smg")
+		generalAmmoArray[3] = scripted_ents.Get("tfa_ammo_ar2")
+		generalAmmoArray[4] = scripted_ents.Get("tfa_ammo_buckshot")
+		generalAmmoArray[5] = scripted_ents.Get("tfa_ammo_357")
 		
 		for k, v in pairs(generalAmmoArray) do
 			local icon = vgui.Create("SpawnIcon", generalAmmoList)
-			icon:SetModel(v["Model"])
+			icon:SetModel(v["MyModel"])
 			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
 			generalAmmoList:Add(icon)
 			icon.DoClick = function(icon)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
-		
-		
-		--- Special Ammo Start ---
-		
-		local specialAmmoCategory = vgui.Create("DCollapsibleCategory", ammoPanel)
-		specialAmmoCategory:SetPos(0,100)
-		specialAmmoCategory:SetSize(ammoPanel:GetWide(),100)
-		specialAmmoCategory:SetLabel("[CW 2.0] Special Ammo Kits:")
-		
-		local specialAmmoList = vgui.Create("DIconLayout", specialAmmoCategory)
-		
-		specialAmmoList:SetPos(10,25)
-		specialAmmoList:SetSize(ammoPanel:GetWide(), ammoPanel:GetTall())
-		specialAmmoList:SetSpaceY(10)
-		specialAmmoList:SetSpaceX(10)
-		
-		local specialAmmoArray = {}
-		specialAmmoArray[1] = scripted_ents.Get("cw_ammo_40mm")
-		specialAmmoArray[2] = scripted_ents.Get("cw_ammo_fraggrenades")
-		--specialAmmoArray[3] = scripted_ents.Get("item_rpg_round")
-		
-		for k, v in pairs(specialAmmoArray) do
-			local icon = vgui.Create("SpawnIcon", specialAmmoList)
-			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
-			specialAmmoList:Add(icon)
-			icon.DoClick = function(icon)
-				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
-			end
-		end	
 		
 		--- HL2 Ammo Start ---
 	
@@ -208,126 +180,6 @@ function addButtons(Menu)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
 		end
-		
-		--- Sights ---
-		
-		local sightsCategory = vgui.Create("DCollapsibleCategory", entitiesPanel)
-		sightsCategory:SetPos(0,100)
-		sightsCategory:SetSize(entitiesPanel:GetWide(),100)
-		sightsCategory:SetLabel("[CW 2.0] Weapon Sights:")
-		
-		local sightsList = vgui.Create("DIconLayout", sightsCategory)
-		
-		sightsList:SetPos(10,25)
-		sightsList:SetSize(entitiesPanel:GetWide(), entitiesPanel:GetTall())
-		sightsList:SetSpaceY(10)
-		sightsList:SetSpaceX(10)
-		
-		local sightsArray = {}
-		sightsArray[1] = scripted_ents.Get("cw_attpack_sights_cqb")
-		sightsArray[2] = scripted_ents.Get("cw_attpack_sights_midrange")
-		sightsArray[3] = scripted_ents.Get("cw_attpack_sights_longrange")
-		sightsArray[4] = scripted_ents.Get("cw_attpack_sights_sniper")
-		
-		
-		for k, v in pairs(sightsArray) do
-			local icon = vgui.Create("SpawnIcon", sightsList)
-			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
-			sightsList:Add(icon)
-			icon.DoClick = function(icon)
-				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
-			end
-		end
-		
-		--- Attachments ---
-		
-		local attachmentsCategory = vgui.Create("DCollapsibleCategory", entitiesPanel)
-		attachmentsCategory:SetPos(0,100)
-		attachmentsCategory:SetSize(entitiesPanel:GetWide(),100)
-		attachmentsCategory:SetLabel("[CW 2.0] Sight Attachments:")
-		
-		local attachmentsList = vgui.Create("DIconLayout", attachmentsCategory)
-		
-		attachmentsList:SetPos(10,25)
-		attachmentsList:SetSize(entitiesPanel:GetWide(), entitiesPanel:GetTall())
-		attachmentsList:SetSpaceY(10)
-		attachmentsList:SetSpaceX(10)
-		
-		local attachmentsArray = {}
-		attachmentsArray[1] = scripted_ents.Get("cw_attpack_sights_cqb")
-		attachmentsArray[2] = scripted_ents.Get("cw_attpack_sights_midrange")
-		attachmentsArray[3] = scripted_ents.Get("cw_attpack_sights_longrange")
-		attachmentsArray[4] = scripted_ents.Get("cw_attpack_sights_sniper")
-		
-		
-		for k, v in pairs(attachmentsArray) do
-			local icon = vgui.Create("SpawnIcon", attachmentsList)
-			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
-			attachmentsList:Add(icon)
-			icon.DoClick = function(icon)
-				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
-			end
-		end
-		
-		local attachmentsCategory = vgui.Create("DCollapsibleCategory", entitiesPanel)
-		attachmentsCategory:SetPos(0,200)
-		attachmentsCategory:SetSize(entitiesPanel:GetWide(),100)
-		attachmentsCategory:SetLabel("[CW 2.0] Miscellaneous Attachments:")
-		
-		local attachmentsList = vgui.Create("DIconLayout", attachmentsCategory)
-		
-		attachmentsList:SetPos(10,25)
-		attachmentsList:SetSize(entitiesPanel:GetWide(), entitiesPanel:GetTall())
-		attachmentsList:SetSpaceY(10)
-		attachmentsList:SetSpaceX(10)
-		
-		local attachmentsArray = {}
-		attachmentsArray[1] = scripted_ents.Get("cw_attpack_suppressors")
-		attachmentsArray[2] = scripted_ents.Get("cw_attpack_various")
-		attachmentsArray[3] = scripted_ents.Get("x_cw_extra_g4p_attpack")
-		
-		
-		for k, v in pairs(attachmentsArray) do
-			local icon = vgui.Create("SpawnIcon", attachmentsList)
-			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
-			attachmentsList:Add(icon)
-			icon.DoClick = function(icon)
-				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
-			end
-		end
-		
-		--- Ammo types ---
-		
-		local caliberCategory = vgui.Create("DCollapsibleCategory", entitiesPanel)
-		caliberCategory:SetPos(0,300)
-		caliberCategory:SetSize(entitiesPanel:GetWide(),100)
-		caliberCategory:SetLabel("[CW 2.0] Caliber Upgrades:")
-		
-		local caliberList = vgui.Create("DIconLayout", caliberCategory)
-		
-		caliberList:SetPos(10,25)
-		caliberList:SetSize(entitiesPanel:GetWide(), entitiesPanel:GetTall())
-		caliberList:SetSpaceY(10)
-		caliberList:SetSpaceX(10)
-		
-		local caliberArray = {}
-		caliberArray[1] = scripted_ents.Get("cw_attpack_ammotypes_shotguns")
-		caliberArray[2] = scripted_ents.Get("cw_attpack_ammotypes_rifles")
-		
-		
-		for k, v in pairs(caliberArray) do
-			local icon = vgui.Create("SpawnIcon", caliberList)
-			icon:SetModel(v["Model"])
-			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
-			caliberList:Add(icon)
-			icon.DoClick = function(icon)
-				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
-			end
-		end
-		
 		
 	end
 	
