@@ -42,8 +42,6 @@ function ENT:Initialize()
 end
 
 function ENT:Use(activator, caller)
-
-	local plyClass = PLAYER_CLASSES[activator:GetNWInt("playerClass")]
 	
 	if (activator:IsPlayer()) then
 		if ( activator:GetNWBool("danguBLVest")==true ) then
@@ -52,12 +50,24 @@ function ENT:Use(activator, caller)
 		activator:GetActiveWeapon():SendWeaponAnim( ACT_VM_DRAW )
 		activator:PrintMessage(HUD_PRINTTALK, "Ballistic vest equipped.")
 		
-		if (plyClass.name == "Machinegunner") or (plyClass.name == "Demolitionist") then
+		if (GAMEMODE_NAME == "capturetheflag") then
 		
-			activator:SetWalkSpeed(150)
-			activator:SetRunSpeed(230)
-			activator:SetJumpPower(200)
+			local plyClass = PLAYER_CLASSES[activator:GetNWInt("playerClass")]
 		
+			if (plyClass.name == "Machinegunner") or (plyClass.name == "Demolitionist") then
+		
+				activator:SetWalkSpeed(150)
+				activator:SetRunSpeed(230)
+				activator:SetJumpPower(200)
+		
+			else
+		
+				activator:SetWalkSpeed(150)
+				activator:SetRunSpeed(250)
+				activator:SetJumpPower(200)
+		
+			end
+			
 		else
 		
 			activator:SetWalkSpeed(150)
