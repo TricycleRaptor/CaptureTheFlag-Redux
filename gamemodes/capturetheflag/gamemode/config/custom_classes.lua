@@ -39,7 +39,7 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_crowbar", "tfa_ins2_spectre", "tfa_ins2_tt33", "weapon_nmrih_molotov", "weapon_vfire_gascan", "weapon_extinguisher"}
+		weapons = {"weapon_crowbar", "tfa_ins2_spectre", "tfa_ins2_m1911", "weapon_nmrih_molotov", "weapon_vfire_gascan", "weapon_extinguisher"}
 	},
 	{
 		name = "Engineer",
@@ -60,6 +60,6 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_physcannon", "weapon_crowbar", "tfa_ins2_mp7", "tfa_ins2_m9", "weapon_medkit"}
+		weapons = {"weapon_physcannon", "weapon_crowbar", "tfa_ins2_mp7", "tfa_ins2_m9", "tfa_ins2_m67", "weapon_medkit"}
 	}
 }
