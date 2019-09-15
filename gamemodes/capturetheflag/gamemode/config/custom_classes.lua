@@ -18,7 +18,7 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_crowbar", "tfa_ins2_mk14ebr", "tfa_ins2_usp_match", "weapon_rpw_binoculars"}
+		weapons = {"weapon_crowbar", "tfa_ins2_m40a1", "tfa_ins2_usp_match", "weapon_rpw_binoculars"}
 	},
 	{
 		name = "Machinegunner",
