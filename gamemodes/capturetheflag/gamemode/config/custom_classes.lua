@@ -39,7 +39,7 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_crowbar", "tfa_ins2_spectre", "tfa_ins2_m1911", "weapon_nmrih_molotov", "weapon_vfire_gascan", "weapon_extinguisher"}
+		weapons = {"weapon_crowbar", "tfa_ins2_spectre", "tfa_ins2_cz75", "weapon_nmrih_molotov", "weapon_vfire_gascan", "weapon_extinguisher"}
 	},
 	{
 		name = "Engineer",
