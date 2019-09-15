@@ -25,14 +25,14 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 250,
-		weapons = {"weapon_crowbar", "tfa_ins2_minimi", "tfa_ins2_cz75", "tfa_ins2_f1"}
+		weapons = {"weapon_crowbar", "tfa_ins2_minimi", "tfa_ins2_qsz92", "tfa_ins2_f1"}
 	},
 	{
 		name = "Demolitionist",
 		health = 100,
 		walkspeed = 200,
 		runspeed = 250,
-		weapons = {"weapon_crowbar", "weapon_rpg", "tfa_ins2_spas12", "tfa_ins2_cz75", "weapon_slam", "tfa_ins2_f1"}
+		weapons = {"weapon_crowbar", "weapon_rpg", "tfa_ins2_spas12", "tfa_ins2_qsz92", "weapon_slam", "tfa_ins2_f1"}
 	},
 	{
 		name = "Arsonist",
@@ -46,7 +46,7 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 260,
-		weapons = {"weapon_physcannon", "weapon_crowbar", "tfa_ins2_m590", "tfa_ins2_m9", "weapon_simrepair", "alydus_fortificationbuildertablet", "weapon_extinguisher"}
+		weapons = {"weapon_physcannon", "weapon_crowbar", "tfa_ins2_m590", "tfa_ins2_cz75", "weapon_simrepair", "alydus_fortificationbuildertablet", "weapon_extinguisher"}
 	},
 	{
 		name = "Scout",
