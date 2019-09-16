@@ -86,6 +86,7 @@ function addButtons(Menu)
 		generalAmmoArray[3] = scripted_ents.Get("tfa_ammo_ar2")
 		generalAmmoArray[4] = scripted_ents.Get("tfa_ammo_buckshot")
 		generalAmmoArray[5] = scripted_ents.Get("tfa_ammo_357")
+		generalAmmoArray[6] = scripted_ents.Get("tfa_ammo_sniper_rounds")
 		
 		for k, v in pairs(generalAmmoArray) do
 			local icon = vgui.Create("SpawnIcon", generalAmmoList)
@@ -100,7 +101,7 @@ function addButtons(Menu)
 		--- HL2 Ammo Start ---
 	
 		local hl2AmmoCategory = vgui.Create("DCollapsibleCategory", ammoPanel)
-		hl2AmmoCategory:SetPos(0,200)
+		hl2AmmoCategory:SetPos(0,100)
 		hl2AmmoCategory:SetSize(ammoPanel:GetWide(),100)
 		hl2AmmoCategory:SetLabel("[HL2] Additional Munitions:")
 		
