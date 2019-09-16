@@ -505,12 +505,14 @@ function GM:PlayerLoadout( ply )
 	
 		ply:StripWeapons()
 		RestoreTools(ply)
+		ply:StripWeapon("gmod_camera")
 		
 		-- Check player class
 		local plyClass = PLAYER_CLASSES[ply:GetNWInt("playerClass")]
 		-- Equip class weapons
 		for k, v in pairs(plyClass.weapons) do
 			ply:Give(v)
+			ply:StripWeapon("gmod_camera")
 		end
 		
 	elseif ply.IsCaptain and !TeamSetUp[ply:Team()] then
@@ -523,6 +525,7 @@ function GM:PlayerLoadout( ply )
 		-- Equip class weapons
 		for k, v in pairs(plyClass.weapons) do
 			ply:Give(v)
+			ply:StripWeapon("gmod_camera")
 		end
 		
 	else
@@ -533,6 +536,8 @@ function GM:PlayerLoadout( ply )
 		-- Equip class weapons
 		for k, v in pairs(plyClass.weapons) do
 			ply:Give(v)
+			ply:StripWeapon("gmod_camera")
+			
 		end
 		
 	end
