@@ -579,8 +579,8 @@ function AlertThink()
 
 		draw.DrawText(TimeText, "MyScoreAndTime", (ScrW() / 2) + 650, 0, Color(255,255,0,TimeA), TEXT_ALIGN_CENTER)
 
-		draw.DrawText(Scores[1] .. ":", "MyScoreAndTime", ScrW() / 2 + colonWidth / 50, 0, Color(255,255,0,Scorea), TEXT_ALIGN_RIGHT)
-		draw.DrawText(tostring(Scores[2]), "MyScoreAndTime", ScrW() / 2 + colonWidth / 50, 0, Color(255, 255, 0, Scorea), TEXT_ALIGN_LEFT)
+		draw.DrawText(Scores[1] .. ":", "MyScoreAndTime", (ScrW() / 2 + colonWidth / 50) + 670, 0, Color(255,255,0,Scorea), TEXT_ALIGN_RIGHT)
+		draw.DrawText(tostring(Scores[2]), "MyScoreAndTime", (ScrW() / 2 + colonWidth / 50) + 670, 0, Color(255, 255, 0, Scorea), TEXT_ALIGN_LEFT)
 		
 		-- Add Balance
 		draw.RoundedBox(10, 70, ScrH() - 1075, 130, 30, Color(120, 120, 120, 180))
