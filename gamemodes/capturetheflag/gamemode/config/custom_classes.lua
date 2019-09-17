@@ -11,7 +11,7 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_crowbar", "tfa_ins2_m4a1", "tfa_ins2_m9", "tfa_ins2_m67"}
+		weapons = {"weapon_crowbar", "tfa_ins2_acr", "tfa_ins2_m9", "tfa_ins2_m67"}
 	},
 	{
 		name = "Marksman",
@@ -51,15 +51,15 @@ PLAYER_CLASSES = {
 	{
 		name = "Scout",
 		health = 100,
-		walkspeed = 220,
-		runspeed = 280,
-		weapons = {"weapon_physcannon", "weapon_crowbar", "tfa_ins2_mp5k", "tfa_ins2_usp_match", "weapon_rpw_binoculars_scout", "climb_swep2"}
+		walkspeed = 230,
+		runspeed = 300,
+		weapons = {"weapon_crowbar", "tfa_ins2_mp5k", "tfa_ins2_usp_match", "weapon_rpw_binoculars_scout", "climb_swep2"}
 	},
 	{
 		name = "Medic",
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_physcannon", "weapon_crowbar", "tfa_ins2_mp7", "tfa_ins2_m9", "tfa_ins2_m67", "weapon_medkit"}
+		weapons = {"weapon_crowbar", "tfa_ins2_mp7", "tfa_ins2_m9", "tfa_ins2_m67", "weapon_medkit"}
 	}
 }
