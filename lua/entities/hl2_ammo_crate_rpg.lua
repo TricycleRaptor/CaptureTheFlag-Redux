@@ -10,7 +10,7 @@ ENT.Category		= "Half-Life 2"
 ENT.Cost			= 500
 ENT.Model			= "models/Items/ammoCrate_Rockets.mdl"
 
-ENT.Spawnable		= true
+ENT.Spawnable		= false
 ENT.AdminOnly		= false
 
 if SERVER then
