@@ -45,4 +45,4 @@ ENT.RotorRadius = 310
 ENT.MaxHealth = 1600
 
 ENT.MaxPrimaryAmmo = 100
-ENT.MaxSecondaryAmmo = 12
+ENT.MaxSecondaryAmmo = 0
