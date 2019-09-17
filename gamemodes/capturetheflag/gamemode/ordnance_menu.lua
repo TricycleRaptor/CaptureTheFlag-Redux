@@ -153,6 +153,8 @@ function addButtons(Menu)
 		LocalPlayer():EmitSound(ButtonNoise)
 		local entitiesPanel = Menu:Add("EntitiesPanel")
 		
+		--- Vest Category ---
+		
 		local vestCategory = vgui.Create("DCollapsibleCategory", entitiesPanel)
 		vestCategory:SetPos(0,0)
 		vestCategory:SetSize(entitiesPanel:GetWide(),100)
@@ -177,6 +179,37 @@ function addButtons(Menu)
 			icon:SetModel(v["MdlRef"])
 			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
 			vestList:Add(icon)
+			icon.DoClick = function(icon)
+				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
+			end
+		end
+		
+		--- Emplacements Category ---
+		
+		local turretCategory = vgui.Create("DCollapsibleCategory", entitiesPanel)
+		turretCategory:SetPos(0,100)
+		turretCategory:SetSize(entitiesPanel:GetWide(),100)
+		turretCategory:SetLabel("[Emplacements] Mounted Weapons:")
+		
+		local turretList = vgui.Create("DIconLayout", turretCategory)
+		
+		turretList:SetPos(10,25)
+		turretList:SetSize(entitiesPanel:GetWide(), entitiesPanel:GetTall())
+		turretList:SetSpaceY(10)
+		turretList:SetSpaceX(10)
+		
+		local turretArray = {}
+		turretArray[1] = scripted_ents.Get("turret_bullets2")
+		turretArray[2] = scripted_ents.Get("turret_bullets")
+		turretArray[3] = scripted_ents.Get("turret_grenade")
+		turretArray[4] = scripted_ents.Get("turret_rail")
+		
+		
+		for k, v in pairs(turretArray) do
+			local icon = vgui.Create("SpawnIcon", turretList)
+			icon:SetModel(v["Model"])
+			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
+			turretList:Add(icon)
 			icon.DoClick = function(icon)
 				LocalPlayer():ConCommand("ctf_buyentity "..v["ClassName"])
 			end
@@ -211,7 +244,7 @@ function addButtons(Menu)
 		local vehiclesPanel = Menu:Add("VehiclesPanel")
 		
 		local airCategory = vgui.Create("DCollapsibleCategory", vehiclesPanel)
-		airCategory:SetPos(0,0) -- Set the second value by the number determined below (100)
+		airCategory:SetPos(0,170) -- Set the second value by the number determined below (100)
 		airCategory:SetSize(vehiclesPanel:GetWide(),100) --Change 100 for more than one line
 		airCategory:SetLabel("[LFS] Air Vehicles:")
 		
@@ -224,9 +257,8 @@ function addButtons(Menu)
 		airList:SetSpaceX(10)
 		
 		local airArray = {}
-		airArray[1] = scripted_ents.Get("lunasflightschool_spitfire")
-		airArray[2] = scripted_ents.Get("lunasflightschool_combineheli")
-		airArray[3] = scripted_ents.Get("lfs_crysis_vtol")
+		airArray[1] = scripted_ents.Get("lunasflightschool_combineheli")
+		airArray[2] = scripted_ents.Get("lunasflightschool_ah6")
 		
 		for k, v in pairs(airArray) do
 			local icon = vgui.Create("SpawnIcon", airList)
@@ -241,7 +273,7 @@ function addButtons(Menu)
 		--- Simfphys Start --
 		
 		local simfphysCategory = vgui.Create("DCollapsibleCategory", vehiclesPanel)
-		simfphysCategory:SetPos(0,100) -- Set the second value by the number determined below (100)
+		simfphysCategory:SetPos(0,0) -- Set the second value by the number determined below (100)
 		simfphysCategory:SetSize(vehiclesPanel:GetWide(),100) --Change 100 for more than one line
 		simfphysCategory:SetLabel("[Simfphys] Vehicles:")
 		
