@@ -244,9 +244,9 @@ function addButtons(Menu)
 		local vehiclesPanel = Menu:Add("VehiclesPanel")
 		
 		local airCategory = vgui.Create("DCollapsibleCategory", vehiclesPanel)
-		airCategory:SetPos(0,170) -- Set the second value by the number determined below (100)
+		airCategory:SetPos(0,300) -- Set the second value by the number determined below (100)
 		airCategory:SetSize(vehiclesPanel:GetWide(),100) --Change 100 for more than one line
-		airCategory:SetLabel("[LFS] Air Vehicles:")
+		airCategory:SetLabel("[LFS] Helicopters:")
 		
 		--- Air Vehicles Start ---
 		
@@ -266,34 +266,88 @@ function addButtons(Menu)
 			icon:SetToolTip(v["PrintName"].."\nCost: "..v["Cost"].."cR")
 			airList:Add(icon)
 			icon.DoClick = function(icon)
-				LocalPlayer():ConCommand("ctf_buyLFSVehicle "..v["ClassName"])
+				LocalPlayer():ConCommand("ctf_LFS_buyvehicle "..v["ClassName"])
 			end
 		end
 		
-		--- Simfphys Start --
+		--- Prewar Start --
 		
-		local simfphysCategory = vgui.Create("DCollapsibleCategory", vehiclesPanel)
-		simfphysCategory:SetPos(0,0) -- Set the second value by the number determined below (100)
-		simfphysCategory:SetSize(vehiclesPanel:GetWide(),100) --Change 100 for more than one line
-		simfphysCategory:SetLabel("[Simfphys] Vehicles:")
+		local simfphysPrewarCategory = vgui.Create("DCollapsibleCategory", vehiclesPanel)
+		simfphysPrewarCategory:SetPos(0,0) -- Set the second value by the number determined below (100)
+		simfphysPrewarCategory:SetSize(vehiclesPanel:GetWide(),100) --Change 100 for more than one line
+		simfphysPrewarCategory:SetLabel("[Simfphys] Civilian:")
 		
-		local simfphysList = vgui.Create("DIconLayout", simfphysCategory)
+		local simfphysPrewarList = vgui.Create("DIconLayout", simfphysPrewarCategory)
 		
-		simfphysList:SetPos(10,25)
-		simfphysList:SetSize(vehiclesPanel:GetWide(), vehiclesPanel:GetTall())
-		simfphysList:SetSpaceY(10)
-		simfphysList:SetSpaceX(10)
+		simfphysPrewarList:SetPos(10,25)
+		simfphysPrewarList:SetSize(vehiclesPanel:GetWide(), vehiclesPanel:GetTall())
+		simfphysPrewarList:SetSpaceY(10)
+		simfphysPrewarList:SetSpaceX(10)
 		
-		local vehicleList = list.Get( "simfphys_vehicles" ) -- Call modified list
-		local vehicle = vehicleList[ vname ]
+		local vehiclePrewarList = list.Get( "simfphys_ctf_prewar" ) -- Call modified list
+		local vehiclePrewar = vehiclePrewarList[ vname ]
 		
-		for k, v in pairs(vehicleList) do
-			local icon = vgui.Create("SpawnIcon", simfphysList)
+		for k, v in pairs(vehiclePrewarList) do
+			local icon = vgui.Create("SpawnIcon", simfphysPrewarList)
 			icon:SetModel(v["Model"])
 			icon:SetToolTip(v["Name"].."\nCost: "..v["Cost"].."cR")
-			simfphysList:Add(icon)
+			simfphysPrewarList:Add(icon)
 			icon.DoClick = function(icon)
-				LocalPlayer():ConCommand("ctf_simfphys_buyvehicle "..k)
+				LocalPlayer():ConCommand("ctf_simfphys_buyprewar "..k)
+			end
+		end
+		
+		--- Recon Start ---
+		
+		local simfphysReconCategory = vgui.Create("DCollapsibleCategory", vehiclesPanel)
+		simfphysReconCategory:SetPos(0,100) -- Set the second value by the number determined below (100)
+		simfphysReconCategory:SetSize(vehiclesPanel:GetWide(),100) --Change 100 for more than one line
+		simfphysReconCategory:SetLabel("[Simfphys] Recon:")
+		
+		local simfphysReconList = vgui.Create("DIconLayout", simfphysReconCategory)
+		
+		simfphysReconList:SetPos(10,25)
+		simfphysReconList:SetSize(vehiclesPanel:GetWide(), vehiclesPanel:GetTall())
+		simfphysReconList:SetSpaceY(10)
+		simfphysReconList:SetSpaceX(10)
+		
+		local vehicleReconList = list.Get( "simfphys_ctf_recon" ) -- Call modified list
+		local vehicleRecon = vehicleReconList[ vname ]
+		
+		for k, v in pairs(vehicleReconList) do
+			local icon = vgui.Create("SpawnIcon", simfphysReconList)
+			icon:SetModel(v["Model"])
+			icon:SetToolTip(v["Name"].."\nCost: "..v["Cost"].."cR")
+			simfphysReconList:Add(icon)
+			icon.DoClick = function(icon)
+				LocalPlayer():ConCommand("ctf_simfphys_buyrecon "..k)
+			end
+		end
+		
+		--- Tanks Start ---
+		
+		local simfphysTanksCategory = vgui.Create("DCollapsibleCategory", vehiclesPanel)
+		simfphysTanksCategory:SetPos(0,200) -- Set the second value by the number determined below (100)
+		simfphysTanksCategory:SetSize(vehiclesPanel:GetWide(),100) --Change 100 for more than one line
+		simfphysTanksCategory:SetLabel("[Simfphys] Tanks:")
+		
+		local simfphysTankList = vgui.Create("DIconLayout", simfphysTanksCategory)
+		
+		simfphysTankList:SetPos(10,25)
+		simfphysTankList:SetSize(vehiclesPanel:GetWide(), vehiclesPanel:GetTall())
+		simfphysTankList:SetSpaceY(10)
+		simfphysTankList:SetSpaceX(10)
+		
+		local vehicleTankList = list.Get( "simfphys_ctf_tanks" ) -- Call modified list
+		local vehicleTank = vehicleTankList[ vname ]
+		
+		for k, v in pairs(vehicleTankList) do
+			local icon = vgui.Create("SpawnIcon", simfphysTankList)
+			icon:SetModel(v["Model"])
+			icon:SetToolTip(v["Name"].."\nCost: "..v["Cost"].."cR")
+			simfphysTankList:Add(icon)
+			icon.DoClick = function(icon)
+				LocalPlayer():ConCommand("ctf_simfphys_buytank "..k)
 			end
 		end
 		
