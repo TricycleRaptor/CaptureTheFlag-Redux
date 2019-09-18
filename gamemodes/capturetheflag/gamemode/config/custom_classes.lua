@@ -10,14 +10,14 @@ PLAYER_CLASSES = {
 		name = "Rifleman",
 		health = 100,
 		walkspeed = 200,
-		runspeed = 280,
+		runspeed = 290,
 		weapons = {"weapon_crowbar", "tfa_ins2_acr", "tfa_ins2_m9", "tfa_ins2_m67"}
 	},
 	{
 		name = "Marksman",
 		health = 100,
 		walkspeed = 200,
-		runspeed = 280,
+		runspeed = 290,
 		weapons = {"weapon_crowbar", "tfa_ins2_m40a1", "tfa_ins2_usp_match", "weapon_rpw_binoculars"}
 	},
 	{
@@ -38,14 +38,14 @@ PLAYER_CLASSES = {
 		name = "Arsonist",
 		health = 100,
 		walkspeed = 200,
-		runspeed = 280,
+		runspeed = 290,
 		weapons = {"weapon_crowbar", "tfa_ins2_spectre", "tfa_ins2_cz75", "weapon_nmrih_molotov", "weapon_vfire_gascan", "weapon_extinguisher"}
 	},
 	{
 		name = "Engineer",
 		health = 100,
 		walkspeed = 200,
-		runspeed = 260,
+		runspeed = 270,
 		weapons = {"weapon_physcannon", "weapon_crowbar", "tfa_ins2_m590", "tfa_ins2_cz75", "weapon_simrepair", "alydus_fortificationbuildertablet", "weapon_extinguisher"}
 	},
 	{
@@ -59,7 +59,7 @@ PLAYER_CLASSES = {
 		name = "Medic",
 		health = 100,
 		walkspeed = 200,
-		runspeed = 280,
+		runspeed = 290,
 		weapons = {"weapon_crowbar", "tfa_ins2_mp7", "tfa_ins2_m9", "tfa_ins2_m67", "weapon_medkit"}
 	}
 }
