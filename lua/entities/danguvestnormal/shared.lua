@@ -63,7 +63,7 @@ function ENT:Use(activator, caller)
 			else
 		
 				activator:SetWalkSpeed(150)
-				activator:SetRunSpeed(250)
+				activator:SetRunSpeed(270)
 				activator:SetJumpPower(200)
 		
 			end
