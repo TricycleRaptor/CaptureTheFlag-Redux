@@ -39,7 +39,7 @@ for i=1,2 do
 	Icon[i] = vgui.Create( "DImage" )
 	Icon[i]:SetImage( "icons/flag_icon.png" )
 	Icon[i]:SetImageColor( Color(150,150,150,150) )
-	Icon[i]:Show()
+	--Icon[i]:Show()
 
 	IconCarried[i] = vgui.Create( "DImage" )
 	IconCarried[i]:SetImage( "icons/flag_icon_carried.png" )
@@ -236,7 +236,7 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
 		if(LocalPlayer():GetEyeTrace().Entity:IsPlayer()) then -- Determine if the entity is a player
 			if(LocalPlayer():GetEyeTrace().Entity:Team() == 1) then -- Determine if the player is on red team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 3, 3, 1 ) -- Color red team
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 ) -- Color red team
 			elseif (LocalPlayer():GetEyeTrace().Entity:Team() == 2) then -- Determine if the player is on blue team
 				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 ) -- Color blue team
 			end
@@ -247,7 +247,7 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
 		if(LocalPlayer():GetEyeTrace().Entity:IsVehicle()) then -- Determine if the entity is a vehicle
 			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then -- Determine if the vehicle is owned by red team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 3, 3, 1 ) -- Color red team
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 ) -- Color red team
 			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then -- Determine if the vehicle is owned by blue team
 				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 ) -- Color blue team
 			end
@@ -258,7 +258,7 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
 		if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flag" and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flagbase") then -- Determine if the entity is a vehicle and is not a flag
 			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then -- Determine if the vehicle is owned by red team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 0, 0 ), 3, 3, 1 ) -- Color red team
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 ) -- Color red team
 			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then -- Determine if the player is owned by blue team
 				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 ) -- Color blue team
 			end
@@ -285,13 +285,19 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 		end
 	end
 
-	halo.Add(flagteam1, Color( 255, 0, 0 ), 2, 2, 1, true, true)
+	halo.Add(flagteam1, Color( 255, 71, 71 ), 2, 2, 1, true, true)
 	halo.Add(flagteam2, Color( 100, 100, 255 ), 2, 2, 1, true, true)
 	
 end )
 
 surface.CreateFont( "MyScoreAndTime", {
 	size = ScrH() / 8,
+	weight = 550,
+	font = "Arial"
+} )
+
+surface.CreateFont( "RaptorFont", {
+	size = ScrH() / 50,
 	weight = 550,
 	font = "Arial"
 } )
@@ -538,7 +544,9 @@ function AlertThink()
 		MText = ""
 	end
 
-	local TimeText = hours .. ":" .. MText .. minutes .. ":" .. SText .. seconds
+	local TimeText = "Setup: " .. hours .. ":" .. MText .. minutes .. ":" .. SText .. seconds
+	local RedScore = Scores[1]
+	local BlueScore = Scores[2]
 
 	if MatchHasBegun then
 		Scorea = 255
@@ -577,14 +585,10 @@ function AlertThink()
 		local colonWidth, colonHeight = surface.GetTextSize(":")
 		local deathWidth, deathHeight = surface.GetTextSize(deathText)
 
-		draw.DrawText(TimeText, "MyScoreAndTime", (ScrW() / 2) + 650, 0, Color(255,255,0,TimeA), TEXT_ALIGN_CENTER)
-
-		draw.DrawText(Scores[1] .. ":", "MyScoreAndTime", (ScrW() / 2 + colonWidth / 50) + 670, 0, Color(255,255,0,Scorea), TEXT_ALIGN_RIGHT)
-		draw.DrawText(tostring(Scores[2]), "MyScoreAndTime", (ScrW() / 2 + colonWidth / 50) + 670, 0, Color(255, 255, 0, Scorea), TEXT_ALIGN_LEFT)
-		
-		-- Add Balance
-		draw.RoundedBox(10, 70, ScrH() - 1075, 130, 30, Color(120, 120, 120, 180))
-		draw.SimpleText("Balance: " .. LocalPlayer():GetNWInt("playerMoney").."cR", "DermaDefaultBold", 80, ScrH() - 1067, Color(255, 255, 255, 255), 0)
+		draw.DrawText(TimeText, "RaptorFont", (ScrW() / 2) - 826, (ScrH()/ 2) - 510, Color(255,255,255,TimeA), TEXT_ALIGN_CENTER)
+		draw.SimpleText("Balance: " .. LocalPlayer():GetNWInt("playerMoney").. "cR", "RaptorFont", (ScrW() / 2) - 883, (ScrH()/ 2) - 530, Color(255, 255, 255, 255), 0)
+		draw.DrawText("Red Score: " ..Scores[1], "RaptorFont", (ScrW() / 2 + colonWidth / 50) - 832, (ScrH()/ 2) - 510, Color(255,71,71,Scorea), TEXT_ALIGN_CENTER)
+		draw.DrawText("Blue Score: " ..Scores[2], "RaptorFont", (ScrW() / 2 + colonWidth / 50) - 831, (ScrH()/ 2) - 490, Color(100,100,255,Scorea), TEXT_ALIGN_CENTER)
 
 		if (showDeath) then
 			surface.SetDrawColor(65, 65, 65, 65)
