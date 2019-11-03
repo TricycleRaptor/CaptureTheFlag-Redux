@@ -735,7 +735,7 @@ function classMenu()
 	end
 	
 	local Button5 = vgui.Create( "DButton", Frame )
-	Button5:SetText( "Arsonist" )
+	Button5:SetText( "Support" )
 	Button5:SetTextColor( Color( 255, 255, 255 ) )
 	Button5:SetPos( 100, 250 )
 	Button5:SetSize( 100, 30 )
@@ -745,10 +745,10 @@ function classMenu()
 	
 	Button5.DoClick = function()
 		
-		-- Call player table value for arsonist
+		-- Call player table value for support
 		RunConsoleCommand( "ctf_setclass", "6" )
 		
-		LocalPlayer():ChatPrint( "[CTF]: Arsonist class selected. Loadout will be applied on respawn." )
+		LocalPlayer():ChatPrint( "[CTF]: Support class selected. Loadout will be applied on respawn." )
 		Frame:Close()
 		
 	end
