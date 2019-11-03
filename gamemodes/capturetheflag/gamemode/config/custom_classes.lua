@@ -60,6 +60,6 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 300,
-		weapons = {"weapon_crowbar", "tfa_ins2_mp7", "tfa_ins2_m9", "tfa_ins2_qsz92", "weapon_medkit"}
+		weapons = {"weapon_crowbar", "tfa_ins2_mp7", "tfa_ins2_qsz92", "tfa_misc_st5stunner" ,"weapon_medkit"}
 	}
 }
