@@ -11,7 +11,7 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 300,
-		weapons = {"weapon_crowbar", "tfa_ins2_m4a1", "tfa_ins2_qsz92", "tfa_ins2_m67"}
+		weapons = {"weapon_crowbar", "tfa_ins2_acrc", "tfa_ins2_qsz92", "tfa_ins2_m67"}
 	},
 	{
 		name = "Marksman",
@@ -25,14 +25,14 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_crowbar", "tfa_ins2_galil_ace", "tfa_ins2_qsz92", "tfa_ins2_f1"}
+		weapons = {"weapon_crowbar", "tfa_ins2_rpk12", "tfa_ins2_qsz92", "tfa_ins2_f1"}
 	},
 	{
 		name = "Demolitionist",
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_crowbar", "weapon_rpg", "tfa_ins2_mp5k", "tfa_ins2_qsz92", "weapon_slam", "tfa_ins2_f1"}
+		weapons = {"weapon_crowbar", "weapon_rpg", "tfa_ins2_mwr_p90", "tfa_ins2_qsz92", "weapon_slam", "tfa_ins2_f1"}
 	},
 	{
 		name = "Support",
@@ -53,7 +53,7 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 230,
 		runspeed = 310,
-		weapons = {"weapon_crowbar", "tfa_ins2_spectre", "tfa_ins2_qsz92", "weapon_rpw_binoculars_scout", "climb_swep2"}
+		weapons = {"weapon_crowbar", "tfa_ins2_mp5k", "tfa_ins2_qsz92", "weapon_rpw_binoculars_scout", "climb_swep2"}
 	},
 	{
 		name = "Medic",
