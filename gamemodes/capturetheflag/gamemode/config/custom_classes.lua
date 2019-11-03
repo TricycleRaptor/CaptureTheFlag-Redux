@@ -18,14 +18,14 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 300,
-		weapons = {"weapon_crowbar", "tfa_ins2_m40a1", "tfa_ins2_qsz92", "weapon_rpw_binoculars"}
+		weapons = {"weapon_crowbar", "tfa_ins2_mk14ebr", "tfa_ins2_qsz92", "weapon_rpw_binoculars"}
 	},
 	{
 		name = "Machinegunner",
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_crowbar", "tfa_ins2_minimi", "tfa_ins2_qsz92", "tfa_ins2_f1"}
+		weapons = {"weapon_crowbar", "tfa_ins2_galil_ace", "tfa_ins2_qsz92", "tfa_ins2_f1"}
 	},
 	{
 		name = "Demolitionist",
