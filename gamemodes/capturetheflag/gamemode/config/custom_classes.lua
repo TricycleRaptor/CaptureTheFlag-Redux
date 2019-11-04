@@ -46,7 +46,7 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 290,
-		weapons = {"weapon_physcannon", "weapon_crowbar", "tfa_ins2_m590", "tfa_ins2_qsz92", "weapon_simrepair", "alydus_fortificationbuildertablet", "weapon_extinguisher"}
+		weapons = {"weapon_physcannon", "weapon_crowbar", "tfa_ins2_m590o", "tfa_ins2_qsz92", "weapon_simrepair", "alydus_fortificationbuildertablet", "weapon_extinguisher"}
 	},
 	{
 		name = "Scout",
