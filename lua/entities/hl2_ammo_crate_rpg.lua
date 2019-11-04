@@ -22,7 +22,7 @@ function ENT:Initialize()
 	self:DrawShadow(false)
 	
 	self.ammo_crate_rpg = ents.Create("item_ammo_crate")
-	self.ammo_crate_rpg:SetPos( self:GetPos() + Vector(0,0,-48))
+	self.ammo_crate_rpg:SetPos( self:GetPos() + Vector(0,0,-15))
 	self.ammo_crate_rpg:SetAngles( self:GetAngles() )
 	self.ammo_crate_rpg:SetKeyValue( "AmmoType", 3 )
 	self.ammo_crate_rpg:SetOwner( self.Owner )
