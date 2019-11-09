@@ -32,7 +32,7 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_crowbar", "weapon_rpg", "tfa_ins2_aug", "tfa_ins2_qsz92", "weapon_slam", "tfa_ins2_f1"}
+		weapons = {"weapon_crowbar", "weapon_rpg", "tfa_ins2_aug", "tfa_ins2_qsz92", "weapon_simmines", "weapon_slam"}
 	},
 	{
 		name = "Support",
