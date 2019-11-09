@@ -585,12 +585,12 @@ function AlertThink()
 		local colonWidth, colonHeight = surface.GetTextSize(":")
 		local deathWidth, deathHeight = surface.GetTextSize(deathText)
 		
-		draw.RoundedBox( 5, (ScrW() / 2) - 895, (ScrH()/ 2) - 535, 165, 53, Color(90, 90, 90, 110))
-		draw.DrawText(TimeText, "RaptorFont", (ScrW() / 2) - 826, (ScrH()/ 2) - 510, Color(255,255,255,TimeA), TEXT_ALIGN_CENTER)
-		draw.SimpleText("Balance: " .. LocalPlayer():GetNWInt("playerMoney").. "cR", "RaptorFont", (ScrW() / 2) - 883, (ScrH()/ 2) - 530, Color(255, 255, 255, 255), 0)
-		draw.DrawText(Scores[1], "RaptorFont", (ScrW() / 2 + colonWidth / 50) - 823, (ScrH()/ 2) - 510, Color(255,71,71,Scorea), TEXT_ALIGN_CENTER)
-		draw.DrawText(Scores[2], "RaptorFont", (ScrW() / 2 + colonWidth / 50) - 798, (ScrH()/ 2) - 510, Color(100,100,255,Scorea), TEXT_ALIGN_CENTER)
-		draw.DrawText("Score: " .. "   - ","RaptorFont", (ScrW() / 2) - 843, (ScrH()/ 2) - 510, Color(255, 255, 255, Scorea), TEXT_ALIGN_CENTER)
+		draw.RoundedBox( 5, (ScrW() / 29), (ScrH()/ 140), 165, 53, Color(90, 90, 90, 110))
+		draw.DrawText(TimeText, "RaptorFont", (ScrW() / 14), (ScrH()/ 34), Color(255,255,255,TimeA), TEXT_ALIGN_CENTER)
+		draw.SimpleText("Balance: " .. LocalPlayer():GetNWInt("playerMoney").. "cR", "RaptorFont", (ScrW() / 24), (ScrH()/ 90), Color(255, 255, 255, 255), 0)
+		draw.DrawText(Scores[1], "RaptorFont", (ScrW() / 11.5 + colonWidth / 50), (ScrH()/ 34), Color(255,71,71,Scorea), TEXT_ALIGN_CENTER)
+		draw.DrawText(Scores[2], "RaptorFont", (ScrW() / 13.8 + colonWidth / 50), (ScrH()/ 34), Color(100,100,255,Scorea), TEXT_ALIGN_CENTER)
+		draw.DrawText("Score: " .. "   - ","RaptorFont", (ScrW() / 16), (ScrH()/ 34), Color(255, 255, 255, Scorea), TEXT_ALIGN_CENTER)
 
 		if (showDeath) then
 			surface.SetDrawColor(65, 65, 65, 65)
