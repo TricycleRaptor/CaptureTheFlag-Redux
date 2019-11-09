@@ -492,7 +492,7 @@ function AlertThink()
 	local TimeA = 0
 	local SText = ""
 	local MText = ""
-	local Scorea = 0
+	local ScoreA = 0
 	local seconds = math.floor(TimeLeft) % 60
 	local minutes = math.floor(TimeLeft / 60) % 60
 	local hours = math.floor(TimeLeft / (60 * 60))
@@ -549,7 +549,7 @@ function AlertThink()
 	local BlueScore = Scores[2]
 
 	if MatchHasBegun then
-		Scorea = 255
+		ScoreA = 255
 	end
 
 	local function TeamDisplay()
@@ -582,15 +582,15 @@ function AlertThink()
 		IconDropped[2]:SetPos(ScrW() / 2 + AlertSize2 / 4, ScrH() - AlertSize2)
 
 		surface.SetFont( "MyScoreAndTime" )
-		local colonWidth, colonHeight = surface.GetTextSize(":")
+		local colonWidth, colonwHeight = surface.GetTextSize(":")
 		local deathWidth, deathHeight = surface.GetTextSize(deathText)
 		
 		draw.RoundedBox( 5, (ScrW() / 29), (ScrH()/ 140), 165, 53, Color(90, 90, 90, 110))
-		draw.DrawText(TimeText, "RaptorFont", (ScrW() / 14), (ScrH()/ 34), Color(255,255,255,TimeA), TEXT_ALIGN_CENTER)
+		draw.DrawText(TimeText, "RaptorFont", (ScrW() / 24), (ScrH()/ 34), Color(255,255,255,TimeA), TEXT_ALIGN_LEFT) --TimeA
 		draw.SimpleText("Balance: " .. LocalPlayer():GetNWInt("playerMoney").. "cR", "RaptorFont", (ScrW() / 24), (ScrH()/ 90), Color(255, 255, 255, 255), 0)
-		draw.DrawText(Scores[1], "RaptorFont", (ScrW() / 11.5 + colonWidth / 50), (ScrH()/ 34), Color(255,71,71,Scorea), TEXT_ALIGN_CENTER)
-		draw.DrawText(Scores[2], "RaptorFont", (ScrW() / 13.8 + colonWidth / 50), (ScrH()/ 34), Color(100,100,255,Scorea), TEXT_ALIGN_CENTER)
-		draw.DrawText("Score: " .. "   - ","RaptorFont", (ScrW() / 16), (ScrH()/ 34), Color(255, 255, 255, Scorea), TEXT_ALIGN_CENTER)
+		draw.DrawText(Scores[1], "RaptorFont", (ScrW() / 12.5 + colonWidth / 50), (ScrH()/ 34), Color(255,71,71,ScoreA), TEXT_ALIGN_LEFT) --ScoreA
+		draw.DrawText(Scores[2], "RaptorFont", (ScrW() / 10.6 + colonWidth / 50), (ScrH()/ 34), Color(100,100,255,ScoreA), TEXT_ALIGN_LEFT) --ScoreA
+		draw.DrawText("Scores: " .. "     -","RaptorFont", (ScrW() / 24), (ScrH()/ 34), Color(255, 255, 255, ScoreA), TEXT_ALIGN_LEFT) --ScoreA
 
 		if (showDeath) then
 			surface.SetDrawColor(65, 65, 65, 65)
