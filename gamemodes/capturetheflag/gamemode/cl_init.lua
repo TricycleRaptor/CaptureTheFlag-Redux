@@ -585,7 +585,7 @@ function AlertThink()
 		local colonWidth, colonwHeight = surface.GetTextSize(":")
 		local deathWidth, deathHeight = surface.GetTextSize(deathText)
 		
-		draw.RoundedBox( 5, (ScrW() / 29), (ScrH()/ 140), 165, 53, Color(90, 90, 90, 110))
+		--draw.RoundedBox( 5, (ScrW() / 29), (ScrH()/ 140), 165, 53, Color(90, 90, 90, 110))
 		draw.DrawText(TimeText, "RaptorFont", (ScrW() / 24), (ScrH()/ 34), Color(255,255,255,TimeA), TEXT_ALIGN_LEFT) --TimeA
 		draw.SimpleText("Balance: " .. LocalPlayer():GetNWInt("playerMoney").. "cR", "RaptorFont", (ScrW() / 24), (ScrH()/ 90), Color(255, 255, 255, 255), 0)
 		draw.DrawText(Scores[1], "RaptorFont", (ScrW() / 12.5 + colonWidth / 50), (ScrH()/ 34), Color(255,71,71,ScoreA), TEXT_ALIGN_LEFT) --ScoreA
