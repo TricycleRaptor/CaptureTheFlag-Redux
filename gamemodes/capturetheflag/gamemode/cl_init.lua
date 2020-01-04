@@ -256,7 +256,7 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 	
 	-- LFS Halos
 	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
-		if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flag" and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flagbase") then -- Determine if the entity is a vehicle and is not a flag
+		if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_spawnarea" and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flag" and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flagbase") then -- Determine if the entity is a vehicle and is not a flag
 			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then -- Determine if the vehicle is owned by red team
 				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 ) -- Color red team
 			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then -- Determine if the player is owned by blue team
@@ -266,29 +266,69 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 	end
 	
 	-- No-Z Flag Halos
-	local flagteam1 = {}
-	local flagteam2 = {}
+	-- local flagteam1 = {}
+	-- local flagteam2 = {}
+
+	-- for k, v in pairs(ents.FindByClass("ctf_flag")) do
+		-- if v:GetNWInt("OwningTeam") == 1 then
+			-- table.insert(flagteam1, v)
+		-- elseif v:GetNWInt("OwningTeam") == 2 then
+			-- table.insert(flagteam2, v)
+		-- end
+	-- endz
+	
+	-- for k, v in pairs(ents.FindByClass("ctf_flagbase")) do
+		-- if v:GetNWInt("OwningTeam") == 1 then
+			-- table.insert(flagteam1, v)
+		-- elseif v:GetNWInt("OwningTeam") == 2 then
+			-- table.insert(flagteam2, v)
+		-- end
+	-- end
+
+	-- halo.Add(flagteam1, Color( 255, 71, 71 ), 2, 2, 1, true, true)
+	-- halo.Add(flagteam2, Color( 100, 100, 255 ), 2, 2, 1, true, true)
+	
+end )
+
+hook.Add("PreDrawEffects", "CTF_flagRender", function()
+
+	local ang = LocalPlayer():EyeAngles()
+	ang:RotateAroundAxis(ang:Forward(),90)
+	ang:RotateAroundAxis(ang:Right(),90)
+
+	local flagMat = Material( "icons/flag_icon.png" )
+	
+	local flag1vector = Vector(0,0,0)
+	local flag2vector = Vector(0,0,0)
 
 	for k, v in pairs(ents.FindByClass("ctf_flag")) do
 		if v:GetNWInt("OwningTeam") == 1 then
-			table.insert(flagteam1, v)
+		
+			flag1vector = v:GetPos() 
+			flag1vector = flag1vector + Vector(0,0,150)
+			local flag1pos = flag1vector:ToScreen()
+			
+			cam.Start2D()
+				surface.SetDrawColor( 100, 71, 71, 255 )
+				surface.SetMaterial( flagMat )
+				surface.DrawTexturedRect( flag1pos.x,flag1pos.y, 40,40)
+			cam.End2D()
+			
 		elseif v:GetNWInt("OwningTeam") == 2 then
-			table.insert(flagteam2, v)
+		
+			flag2vector = v:GetPos()
+			local flag2pos = flag2vector:ToScreen()
+			
+			cam.Start2D()
+				surface.SetDrawColor( 100, 100, 255, 255 )
+				surface.SetMaterial( flagMat )
+				surface.DrawTexturedRect( flag2pos.x,flag2pos.y, 40,40)
+			cam.End2D()
+			
 		end
 	end
 	
-	for k, v in pairs(ents.FindByClass("ctf_flagbase")) do
-		if v:GetNWInt("OwningTeam") == 1 then
-			table.insert(flagteam1, v)
-		elseif v:GetNWInt("OwningTeam") == 2 then
-			table.insert(flagteam2, v)
-		end
-	end
-
-	halo.Add(flagteam1, Color( 255, 71, 71 ), 2, 2, 1, true, true)
-	halo.Add(flagteam2, Color( 100, 100, 255 ), 2, 2, 1, true, true)
-	
-end )
+end)
 
 surface.CreateFont( "MyScoreAndTime", {
 	size = ScrH() / 8,
