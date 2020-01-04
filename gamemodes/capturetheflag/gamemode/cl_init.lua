@@ -317,6 +317,7 @@ hook.Add("PreDrawEffects", "CTF_flagRender", function()
 		elseif v:GetNWInt("OwningTeam") == 2 then
 		
 			flag2vector = v:GetPos()
+			flag2vector = flag2vector + Vector(0,0,150)
 			local flag2pos = flag2vector:ToScreen()
 			
 			cam.Start2D()
