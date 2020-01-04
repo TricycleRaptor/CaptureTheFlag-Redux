@@ -309,7 +309,7 @@ hook.Add("PreDrawEffects", "CTF_flagRender", function()
 			local flag1pos = flag1vector:ToScreen()
 			
 			cam.Start2D()
-				surface.SetDrawColor( 100, 71, 71, 255 )
+				surface.SetDrawColor( 255, 71, 71, 255 )
 				surface.SetMaterial( flagMat )
 				surface.DrawTexturedRect( flag1pos.x,flag1pos.y, 40,40)
 			cam.End2D()
