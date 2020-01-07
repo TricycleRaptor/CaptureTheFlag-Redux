@@ -367,8 +367,16 @@ function GM:PlayerSpawn( ply )
 	if Time / 60 < CTF_Time:GetFloat() then
 		ply.DoOnce = 1
 	end
+	
+	if (!MatchHasBegun) then
+	
+		ply:GodEnable()
+	
+	end
 
 	if (MatchHasBegun) then
+	
+		ply:GodDisable()
 	
 		-- Start the timer when the match begins
 		timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
@@ -470,8 +478,7 @@ function GM:PlayerInitialSpawn( ply )
 
 	UpdateAllValues(ply)
 	joining( ply )
-	ply:ConCommand( "ctf_start" )
-	ply:ConCommand( "ctf_open_classmenu" ) 
+	ply:ConCommand( "ctf_team" )
 	
 end
 
@@ -631,18 +638,18 @@ function doBuild(team, pos, ply)
 		return
 	end
 
-	-- local tr = util.TraceHull( {
-		-- start = pos + Vector(0,0,1),
-		-- endpos = pos + Vector(0,0,2),
-		-- filter = ply,
-		-- mins = Vector(-200, -200, 0),
-		-- maxs = Vector(200, 200, 50)
-	-- } )
+	local tr = util.TraceHull( {
+		start = pos + Vector(0,0,1),
+		endpos = pos + Vector(0,0,2),
+		filter = ply,
+		mins = Vector(-200, -200, 0),
+		maxs = Vector(200, 200, 50)
+	} )
 
-	-- if (tr.Hit) then
-		-- ply:ChatPrint( "[CTF]: This location is invalid! Not enough space." )
-		-- return
-	-- end
+	if (tr.Hit) then
+		ply:ChatPrint( "[CTF]: This location is invalid! Not enough space." )
+		return
+	end
 	
 
 	TeamLocations[team] = pos
