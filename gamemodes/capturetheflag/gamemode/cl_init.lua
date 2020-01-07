@@ -395,7 +395,7 @@ function set_team()
 	PickTeam = vgui.Create( "DFrame" )
 	PickTeam:SetPos( ScrW() / 2 - frameWidth / 2, ScrH() / 2 - ScrH() / 4 )
 	PickTeam:SetSize( frameWidth, ScrH() / 2 )
-	PickTeam:SetTitle( "Choose your team" )
+	PickTeam:SetTitle( "[CTF] Team Select:" )
 	PickTeam:SetVisible( true )
 	PickTeam:SetDraggable( false )
 	PickTeam:ShowCloseButton( false )
@@ -417,6 +417,7 @@ function set_team()
 	PickTeamR:SetImage( "buttons/red_button.png" )
 	PickTeamR.DoClick = function()
 		RunConsoleCommand( "ctf_setteam", "1" )
+		RunConsoleCommand( "ctf_open_classmenu" ) 
 		PickTeam:Remove()
 		PickTeam = nil
 	end
@@ -427,6 +428,7 @@ function set_team()
 	PickTeamB:SetImage( "buttons/blue_button.png" )
 	PickTeamB.DoClick = function()
 		RunConsoleCommand( "ctf_setteam", "2" )
+		RunConsoleCommand( "ctf_open_classmenu" ) 
 		PickTeam:Remove()
 		PickTeam = nil
 	end
@@ -442,7 +444,7 @@ function set_team()
 	end
 	grid:AddItem(PickTeamS)
 end
-concommand.Add( "ctf_start", set_team )
+concommand.Add( "ctf_team", set_team )
 
 function PropProtection.HUDPaint()
 	if not IsValid(LocalPlayer()) or not ShowPP then
@@ -696,7 +698,7 @@ function classMenu()
 	Frame:MakePopup()
 	Frame:ShowCloseButton(true)
 	Frame.Paint = function( self, w, h ) -- 'function Frame:Paint( w, h )' works too
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 60, 60,60, 255 ) ) -- Draw a red box instead of the frame
+		draw.RoundedBox( 6, 0, 0, w, h, Color( 60, 60,60, 255 ) )
 	end
 
 	local Button1 = vgui.Create( "DButton", Frame )
@@ -705,7 +707,7 @@ function classMenu()
 	Button1:SetPos( 100, 50 )
 	Button1:SetSize( 100, 30 )
 	Button1.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
 	end
 
 	Button1.DoClick = function()
@@ -724,7 +726,7 @@ function classMenu()
 	Button2:SetPos( 100, 100 )
 	Button2:SetSize( 100, 30 )
 	Button2.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
 	end
 	
 	Button2.DoClick = function()
@@ -743,7 +745,7 @@ function classMenu()
 	Button3:SetPos( 100, 150 )
 	Button3:SetSize( 100, 30 )
 	Button3.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
 	end
 	
 	Button3.DoClick = function()
@@ -762,7 +764,7 @@ function classMenu()
 	Button4:SetPos( 100, 200 )
 	Button4:SetSize( 100, 30 )
 	Button4.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
 	end
 	
 	Button4.DoClick = function()
@@ -781,7 +783,7 @@ function classMenu()
 	Button5:SetPos( 100, 250 )
 	Button5:SetSize( 100, 30 )
 	Button5.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
 	end
 	
 	Button5.DoClick = function()
@@ -800,7 +802,7 @@ function classMenu()
 	Button6:SetPos( 100, 300 )
 	Button6:SetSize( 100, 30 )
 	Button6.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
 	end
 	
 	Button6.DoClick = function()
@@ -819,7 +821,7 @@ function classMenu()
 	Button7:SetPos( 100, 350 )
 	Button7:SetSize( 100, 30 )
 	Button7.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
 	end
 	
 	Button7.DoClick = function()
@@ -838,7 +840,7 @@ function classMenu()
 	Button8:SetPos( 100, 400 )
 	Button8:SetSize( 100, 30 )
 	Button8.Paint = function( self, w, h )
-		draw.RoundedBox( 0, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
 	end
 	
 	Button8.DoClick = function()
