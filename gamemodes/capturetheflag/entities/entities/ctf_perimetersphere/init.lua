@@ -12,7 +12,7 @@ function ENT:Initialize()
 	self.Entity.IsSphere = true
 	self.Entity.CanMove = 0
 	self.Entity:SetModelScale(self.scale, 0)
-	self.Entity:SetRenderMode(RENDERMODE_TRANSALPHA)
+	self.Entity:SetRenderMode(RENDERMODE_NONE)
 	self.Entity:SetColor(Color(0,0,0,0))
 end
 
@@ -25,6 +25,7 @@ function ENT:Think()
 			
 			-- ent:ChatPrint( "[CTF]: You have entered your base." )
 			-- Can open ordnance menu check
+			ent:SetNWBool("canBuy", true)
 			
 		elseif ent:IsValid() and ent:IsPlayer() and ent:Team() != self.Entity:GetNWInt("Team") and ent:Team() != 3 then
 		
@@ -44,15 +45,8 @@ function ENT:Think()
 
 		if ent:IsValid() and team == self.Entity:GetNWInt("Team") and table.HasValue(sphericalents,ent) == false then
 			if ent:IsPlayer() then
-				--ent:ExitVehicle()
-				--ent:Spawn()
-			elseif ent.IsBase then
-				ent:SetPos(self.Entity:GetPos() + Vector(-100,0,10))
-				ent:SetAngles(Angle(0,0,0))
-			elseif ent.IsSpawnArea then
-				ent:SetPos(self.Entity:GetPos() + Vector(100,0,5))
-				ent:SetAngles(Angle(0,0,0))
-			end
+			ent:SetNWBool("canBuy", false)
+			else end
 		end
 		self.Entity:SetModelScale(GetConVar("ctf_buildzonescale"):GetFloat())
 		
