@@ -1,11 +1,21 @@
 ButtonNoise = Sound("buttons/lightswitch2.wav")
+DenyNoise = Sound("buttons/button2.wav")
+OpenNoise = Sound("npc/scanner/scanner_scan1.wav")
+CloseNoise = Sound("npc/scanner/scanner_scan2.wav")
 
 local Menu
 
 function ordnanceMenu()
 
-	if(Menu == nil) then
+	if (LocalPlayer():GetNWBool("canBuy") == false) then
 	
+		LocalPlayer():EmitSound(DenyNoise)
+	
+	return end
+
+	if(Menu == nil) then
+		
+		LocalPlayer():EmitSound(OpenNoise)
 		Menu = vgui.Create("DFrame")
 		Menu:SetSize(750,500)
 		Menu:SetPos(ScrW()/2 - 325, ScrH()/2 - 250)
@@ -20,7 +30,7 @@ function ordnanceMenu()
 			surface.SetDrawColor(40,40,40,255)
 			surface.DrawRect(0,24,Menu:GetWide(),1)
 		end
-	
+		
 		addButtons(Menu)
 		gui.EnableScreenClicker(true)
 		
@@ -29,9 +39,11 @@ function ordnanceMenu()
 		if(Menu:IsVisible()) then
 			Menu:SetVisible(false)
 			gui.EnableScreenClicker(false)
+			LocalPlayer():EmitSound(CloseNoise)
 		else
 			Menu:SetVisible(true)
 			gui.EnableScreenClicker(true)
+			LocalPlayer():EmitSound(OpenNoise)
 		end
 		
 	end
@@ -114,6 +126,8 @@ function addButtons(Menu)
 		
 		local hl2AmmoArray = {}
 		hl2AmmoArray[1] = scripted_ents.Get("hl2_ammo_crate_rpg")
+		hl2AmmoArray[2] = scripted_ents.Get("hl2_ammo_crate_ar2")
+		hl2AmmoArray[3] = scripted_ents.Get("hl2_ammo_crate_smg")
 		
 		for k, v in pairs(hl2AmmoArray) do
 			local icon = vgui.Create("SpawnIcon", hl2AmmoList)
