@@ -4,7 +4,7 @@ include( 'ordnance_menu.lua' )
 
 BeginNoise = Sound("ctf/intro.wav")
 DeployNoise = Sound("ambient/levels/streetwar/city_battle13.wav")
-BaseAppear = Sound("npc/scanner/scanner_nearmiss2.wav")
+BaseAppear = Sound("npc/scanner/scanner_nearmiss1.wav")
 ScoreNoise = Sound("ctf/captured.wav")
 PickupNoise = Sound("ctf/taken.wav")
 DropNoise = Sound("ctf/dropped.wav")
@@ -13,7 +13,6 @@ ReturnNoise = Sound("ctf/recovered.wav")
 //WinNoise = Sound("")
 
 LocalPlayer().canbuild = 1
-LocalPlayer().canbuy = 1
 
 MatchHasBegun = false
 BaseSet = {false, false}
@@ -43,7 +42,7 @@ for i=1,2 do
 
 	IconCarried[i] = vgui.Create( "DImage" )
 	IconCarried[i]:SetImage( "icons/flag_icon_carried.png" )
-	IconCarried[i]:Show() // Might not be necessary
+	IconCarried[i]:Show() -- Might not be necessary
 	IconCarried[i]:SetVisible(false)
 
 	IconDropped[i] = vgui.Create( "DImage" )
@@ -233,60 +232,38 @@ net.Receive("UpdateRespawn", UpdateRespawn)
 hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 
 	-- Player halos
-	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
-		if(LocalPlayer():GetEyeTrace().Entity:IsPlayer()) then -- Determine if the entity is a player
-			if(LocalPlayer():GetEyeTrace().Entity:Team() == 1) then -- Determine if the player is on red team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 ) -- Color red team
-			elseif (LocalPlayer():GetEyeTrace().Entity:Team() == 2) then -- Determine if the player is on blue team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 ) -- Color blue team
+	if (LocalPlayer():GetEyeTrace()) then
+		if(LocalPlayer():GetEyeTrace().Entity:IsPlayer()) then
+			if(LocalPlayer():GetEyeTrace().Entity:Team() == 1) then
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
+			elseif (LocalPlayer():GetEyeTrace().Entity:Team() == 2) then
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
 			end
 		end
 	end 
 	
 	-- Vehicle halos
-	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
-		if(LocalPlayer():GetEyeTrace().Entity:IsVehicle()) then -- Determine if the entity is a vehicle
-			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then -- Determine if the vehicle is owned by red team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 ) -- Color red team
-			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then -- Determine if the vehicle is owned by blue team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 ) -- Color blue team
+	if (LocalPlayer():GetEyeTrace()) then
+		if(LocalPlayer():GetEyeTrace().Entity:IsVehicle()) then
+			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
+			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
 			end
 		end
 	end
 	
 	-- LFS Halos
-	if (LocalPlayer():GetEyeTrace()) then -- Determine entity player is looking at
-		if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_spawnarea" and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flag" and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flagbase") then -- Determine if the entity is a vehicle and is not a flag
-			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then -- Determine if the vehicle is owned by red team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 ) -- Color red team
-			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then -- Determine if the player is owned by blue team
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 ) -- Color blue team
+	if (LocalPlayer():GetEyeTrace()) then
+		if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_spawnarea" and 
+		LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flag" and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flagbase") then
+			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
+			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then
+				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
 			end
 		end
 	end
-	
-	-- No-Z Flag Halos
-	-- local flagteam1 = {}
-	-- local flagteam2 = {}
-
-	-- for k, v in pairs(ents.FindByClass("ctf_flag")) do
-		-- if v:GetNWInt("OwningTeam") == 1 then
-			-- table.insert(flagteam1, v)
-		-- elseif v:GetNWInt("OwningTeam") == 2 then
-			-- table.insert(flagteam2, v)
-		-- end
-	-- endz
-	
-	-- for k, v in pairs(ents.FindByClass("ctf_flagbase")) do
-		-- if v:GetNWInt("OwningTeam") == 1 then
-			-- table.insert(flagteam1, v)
-		-- elseif v:GetNWInt("OwningTeam") == 2 then
-			-- table.insert(flagteam2, v)
-		-- end
-	-- end
-
-	-- halo.Add(flagteam1, Color( 255, 71, 71 ), 2, 2, 1, true, true)
-	-- halo.Add(flagteam2, Color( 100, 100, 255 ), 2, 2, 1, true, true)
 	
 end )
 
@@ -366,21 +343,6 @@ local function UnrestrictMenu()
 end
 net.Receive("UnrestrictMenu", UnrestrictMenu)
 
-local function UnrestrictOrdnanceMenu()
-
-	LocalPlayer().canbuy = 1
-
-end
-net.Receive("UnrestrictOrdnanceMenu", UnrestrictOrdnanceMenu)
-
-local function RestrictOrdnanceMenu()
-
-	LocalPlayer().canbuy = 0
-
-end
-net.Receive("RestrictOrdnanceMenu", RestrictOrdnanceMenu)
-
-
 function set_team()
 
 	local buttonSizeY = ScrH() / 8
@@ -417,7 +379,9 @@ function set_team()
 	PickTeamR:SetImage( "buttons/red_button.png" )
 	PickTeamR.DoClick = function()
 		RunConsoleCommand( "ctf_setteam", "1" )
+		RunConsoleCommand( "ctf_setclass", "1" )
 		RunConsoleCommand( "ctf_open_classmenu" ) 
+		LocalPlayer():SetNWBool("canBuy", false)
 		PickTeam:Remove()
 		PickTeam = nil
 	end
@@ -428,7 +392,9 @@ function set_team()
 	PickTeamB:SetImage( "buttons/blue_button.png" )
 	PickTeamB.DoClick = function()
 		RunConsoleCommand( "ctf_setteam", "2" )
-		RunConsoleCommand( "ctf_open_classmenu" ) 
+		RunConsoleCommand( "ctf_setclass", "1" )
+		RunConsoleCommand( "ctf_open_classmenu" )
+		LocalPlayer():SetNWBool("canBuy", false)
 		PickTeam:Remove()
 		PickTeam = nil
 	end
@@ -439,6 +405,7 @@ function set_team()
 	PickTeamS:SetImage( "buttons/spectators_button.png" ) 
 	PickTeamS.DoClick = function()
 		RunConsoleCommand( "ctf_spectate" )
+		LocalPlayer():SetNWBool("canBuy", false)
 		PickTeam:Remove()
 		PickTeam = nil
 	end
