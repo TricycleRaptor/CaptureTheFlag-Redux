@@ -44,8 +44,8 @@ resource.AddFile( "ctf/recovered.wav" )
 
 util.AddNetworkString("RestrictMenu")
 util.AddNetworkString("UnrestrictMenu")
-util.AddNetworkString("RestrictOrdnanceMenu")
-util.AddNetworkString("UnrestrictOrdnanceMenu")
+--util.AddNetworkString("RestrictOrdnanceMenu")
+--util.AddNetworkString("UnrestrictOrdnanceMenu")
 util.AddNetworkString("BaseSet")
 util.AddNetworkString("MatchBegin")
 util.AddNetworkString("ctf_TimeUpdate")
@@ -378,8 +378,8 @@ function GM:PlayerSpawn( ply )
 	
 		ply:GodDisable()
 	
-		-- Start the timer when the match begins
-		timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
+		timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() 
+		ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
 	
 		net.Start("RestrictMenu")
 		net.Send(ply)
@@ -475,6 +475,7 @@ function GM:PlayerInitialSpawn( ply )
 
 	ply:SetNWInt("playerClass", 1)
 	ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_startingbalance"):GetFloat()))
+	ply:SetNWBool("canBuy", false)
 
 	UpdateAllValues(ply)
 	joining( ply )
@@ -638,18 +639,18 @@ function doBuild(team, pos, ply)
 		return
 	end
 
-	local tr = util.TraceHull( {
-		start = pos + Vector(0,0,1),
-		endpos = pos + Vector(0,0,2),
-		filter = ply,
-		mins = Vector(-200, -200, 0),
-		maxs = Vector(200, 200, 50)
-	} )
+	-- local tr = util.TraceHull( {
+		-- start = pos + Vector(0,0,1),
+		-- endpos = pos + Vector(0,0,2),
+		-- filter = ply,
+		-- mins = Vector(-200, -200, 0),
+		-- maxs = Vector(200, 200, 50)
+	-- } )
 
-	if (tr.Hit) then
-		ply:ChatPrint( "[CTF]: This location is invalid! Not enough space." )
-		return
-	end
+	-- if (tr.Hit) then
+		-- ply:ChatPrint( "[CTF]: This location is invalid! Not enough space." )
+		-- return
+	-- end
 	
 
 	TeamLocations[team] = pos
@@ -678,13 +679,13 @@ function doBuild(team, pos, ply)
 	
 	PropProtection.TeamMakePropOwner(team, ConSphere)
 	
-	-- Experimental base perimeter determination (Working, theoretically)--
-	-- PerimeterSphere = ents.Create("CTF_PerimeterSphere")
-	-- PerimeterSphere:SetPos(pos)
-	-- PerimeterSphere:SetNWInt("Team", team)
-	-- PerimeterSphere:SetGravity(0)
-	-- PerimeterSphere:Spawn()
-	-- PerimeterSphere:SetModelScale(GetConVar("ctf_buildzonescale"):GetFloat())
+	--Experimental base perimeter determination (Working, theoretically)
+	PerimeterSphere = ents.Create("CTF_PerimeterSphere")
+	PerimeterSphere:SetPos(pos)
+	PerimeterSphere:SetNWInt("Team", team)
+	PerimeterSphere:SetGravity(0)
+	PerimeterSphere:Spawn()
+	PerimeterSphere:SetModelScale(GetConVar("ctf_buildzonescale"):GetFloat())
 	
 	FlagBase = ents.Create("CTF_FlagBase")
 	FlagBase:SetPos(pos + Vector(-100,0,0))
@@ -846,7 +847,7 @@ function GM:Think()
 		net.Start("MatchBegin")
 		net.Broadcast()
 		for k,v in pairs(ents.GetAll()) do
-			if v.IsSphere then
+			if v.IsSphere and v:GetClass() ~= "ctf_perimetersphere" then
 				v:Remove()
 			elseif v.IsBase or v.IsSpawnArea then
 				v:GetPhysicsObject():EnableMotion(false)
