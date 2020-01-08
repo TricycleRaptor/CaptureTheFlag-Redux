@@ -32,14 +32,14 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_crowbar", "weapon_rpg", "tfa_ins2_aug", "tfa_ins2_qsz92", "weapon_simmines", "weapon_slam"}
+		weapons = {"weapon_crowbar", "weapon_rpg", "tfa_ins2_mwr_p90", "tfa_ins2_qsz92", "weapon_simmines", "weapon_slam"}
 	},
 	{
 		name = "Support",
 		health = 100,
 		walkspeed = 200,
 		runspeed = 300,
-		weapons = {"weapon_crowbar", "tfa_ins2_spas12", "tfa_ins2_qsz92", "tfa_misc_st5stunner", "tfa_fml_hl2_ammo_drop_pistol", "weapon_extinguisher","tfa_fml_hl2_ammo_drop_smg1","tfa_fml_hl2_ammo_drop_ar2","tfa_fml_hl2_ammo_drop_shotgun"}
+		weapons = {"weapon_crowbar", "tfa_ins2_spas12", "tfa_ins2_qsz92", "tfa_misc_st5stunner", "tfa_fml_hl2_ammo_drop_pistol","tfa_fml_hl2_ammo_drop_smg1","tfa_fml_hl2_ammo_drop_ar2","tfa_fml_hl2_ammo_drop_shotgun"}
 	},
 	{
 		name = "Engineer",
@@ -51,9 +51,9 @@ PLAYER_CLASSES = {
 	{
 		name = "Scout",
 		health = 100,
-		walkspeed = 230,
-		runspeed = 310,
-		weapons = {"weapon_crowbar", "tfa_ins2_mp5k", "tfa_ins2_qsz92", "weapon_rpw_binoculars_scout", "climb_swep2"}
+		walkspeed = 220,
+		runspeed = 320,
+		weapons = {"weapon_crowbar", "tfa_ins2_krissv", "tfa_ins2_qsz92", "weapon_rpw_binoculars_scout", "climb_swep2"}
 	},
 	{
 		name = "Medic",
