@@ -25,7 +25,7 @@ PLAYER_CLASSES = {
 		health = 100,
 		walkspeed = 200,
 		runspeed = 280,
-		weapons = {"weapon_crowbar", "tfa_ins2_rpk12", "tfa_ins2_qsz92", "tfa_ins2_f1"}
+		weapons = {"weapon_crowbar", "tfa_ins2_rpk_74m", "tfa_ins2_qsz92", "tfa_ins2_f1"}
 	},
 	{
 		name = "Demolitionist",
