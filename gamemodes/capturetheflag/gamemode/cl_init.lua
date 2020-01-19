@@ -6,11 +6,14 @@ BeginNoise = Sound("ctf/intro.wav")
 DeployNoise = Sound("ambient/levels/streetwar/city_battle13.wav")
 BaseAppear = Sound("npc/scanner/scanner_nearmiss1.wav")
 ScoreNoise = Sound("ctf/captured.wav")
+ScoreNoise2 = Sound("ambient/levels/citadel/weapon_disintegrate2.wav")
 PickupNoise = Sound("ctf/taken.wav")
+PickupNoise2 = Sound("ambient/levels/canals/windchime2.wav")
 DropNoise = Sound("ctf/dropped.wav")
+DropNoise2 = Sound("ambient/alarms/warningbell1.wav")
 ReturnNoise = Sound("ctf/recovered.wav")
-//LoseNoise = Sound("")
-//WinNoise = Sound("")
+LoseNoise = Sound("vo/npc/vortigaunt/itishonor.wav")
+WinNoise = Sound("vo/npc/vortigaunt/vques01.wav")
 
 LocalPlayer().canbuild = 1
 
@@ -136,6 +139,7 @@ local function HandleFlagDropped(len, ply)
 	FlagsCarried[team] = false
 	FlagCarrier[team] = NULL
 	LocalPlayer():EmitSound(DropNoise)
+	LocalPlayer():EmitSound(DropNoise2)
 	IconDropped[team]:SetVisible(true)
 	IconCarried[team]:SetVisible(false)
 	IconTimer[team] = CurTime()
@@ -158,6 +162,8 @@ local function HandleFlagPickedUp(len, ply)
 	IconTimer[team] = CurTime()
 
 	LocalPlayer():EmitSound(PickupNoise)
+	LocalPlayer():EmitSound(PickupNoise2)
+	
 end
 net.Receive("FlagPickedUp", HandleFlagPickedUp)
 
@@ -183,11 +189,7 @@ local function HandleTeamScored(len, ply)
 	Scores[scoredTeam] = newScore
 
 	LocalPlayer():EmitSound(ScoreNoise)
-	if scoredTeam != LocalPlayer():Team() && LocalPlayer():Team() <= 2 then
-		//LocalPlayer():EmitSound(LoseNoise)
-	elseif LocalPlayer():Team() <= 2 then
-		//LocalPlayer():EmitSound(WinNoise)
-	end
+	LocalPlayer():EmitSound(ScoreNoise2)
 
 	for i=1,2 do
 		IconCarried[i]:SetVisible(false)
@@ -211,6 +213,18 @@ local function HandleGameEnded(len, ply)
 		victoryLogo:SetImage( "icons/blue_win_logo.png" )
 		victoryText:SetImage( "icons/blue_win_text.png" )
 	end
+	
+	timer.Simple(2, function()
+	
+		local winningTeam = net.ReadFloat()
+		
+		if(winningTeam == LocalPlayer():Team()) then
+			LocalPlayer():EmitSound(WinNoise)
+		else
+			LocalPlayer():EmitSound(LoseNoise)
+		end
+	
+	end)
 
 	victoryLogo:Show()
 	victoryText:Show()
@@ -255,8 +269,7 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 	
 	-- LFS Halos
 	if (LocalPlayer():GetEyeTrace()) then
-		if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_spawnarea" and 
-		LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flag" and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flagbase") then
+		if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() == "lunasflightschool_combineheli" or LocalPlayer():GetEyeTrace().Entity:GetClass() == "lunasflightschool_ah6") then
 			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then
 				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
 			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then
@@ -381,7 +394,7 @@ function set_team()
 		RunConsoleCommand( "ctf_setteam", "1" )
 		RunConsoleCommand( "ctf_setclass", "1" )
 		RunConsoleCommand( "ctf_open_classmenu" ) 
-		LocalPlayer():SetNWBool("canBuy", false)
+		--LocalPlayer():SetPlayerColor(Vector(255 / 255, 71 / 255, 71 / 255))
 		PickTeam:Remove()
 		PickTeam = nil
 	end
@@ -394,7 +407,7 @@ function set_team()
 		RunConsoleCommand( "ctf_setteam", "2" )
 		RunConsoleCommand( "ctf_setclass", "1" )
 		RunConsoleCommand( "ctf_open_classmenu" )
-		LocalPlayer():SetNWBool("canBuy", false)
+		--LocalPlayer():SetPlayerColor(Vector(100 / 255, 100 / 255, 255 / 255))
 		PickTeam:Remove()
 		PickTeam = nil
 	end
@@ -405,7 +418,6 @@ function set_team()
 	PickTeamS:SetImage( "buttons/spectators_button.png" ) 
 	PickTeamS.DoClick = function()
 		RunConsoleCommand( "ctf_spectate" )
-		LocalPlayer():SetNWBool("canBuy", false)
 		PickTeam:Remove()
 		PickTeam = nil
 	end
