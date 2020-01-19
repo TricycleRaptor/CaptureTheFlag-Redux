@@ -44,8 +44,6 @@ resource.AddFile( "ctf/recovered.wav" )
 
 util.AddNetworkString("RestrictMenu")
 util.AddNetworkString("UnrestrictMenu")
---util.AddNetworkString("RestrictOrdnanceMenu")
---util.AddNetworkString("UnrestrictOrdnanceMenu")
 util.AddNetworkString("BaseSet")
 util.AddNetworkString("MatchBegin")
 util.AddNetworkString("ctf_TimeUpdate")
@@ -58,6 +56,7 @@ util.AddNetworkString("FlagReturned")
 util.AddNetworkString("GameEnded")
 util.AddNetworkString("NotifyDeath")
 util.AddNetworkString("UpdateRespawn")
+util.AddNetworkString( "sendMenu" )
 
 include( 'shared.lua' )
 include ( 'concommands.lua' )
@@ -356,6 +355,8 @@ function GM:PlayerSpawn( ply )
 	ply:SetHealth(plyClass.health)
 	ply:SetWalkSpeed(plyClass.walkspeed)
 	ply:SetRunSpeed(plyClass.runspeed)
+	ply:SetNWBool("canBuy", false)
+	ply:SetNWBool("menuOpen", false)
 
 	hook.Call("PlayerLoadout", ply)
 
@@ -382,7 +383,10 @@ function GM:PlayerSpawn( ply )
 		ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
 	
 		net.Start("RestrictMenu")
-		net.Send(ply)
+		
+		if(!ply:IsAdmin() or !ply:IsSuperAdmin()) then
+			net.Send(ply)
+		end
 		
 	else
 		
@@ -485,7 +489,7 @@ end
 
 function GM:PlayerCanPickupWeapon(ply, wep)
 	if MatchHasBegun and (wep:GetClass() == "weapon_physgun" or wep:GetClass() == "gmod_tool") or ply:Team() == 3 then
-		wep:Remove()
+			wep:Remove()
 		return false
 	end
 	return true
@@ -545,7 +549,6 @@ function GM:PlayerLoadout( ply )
 		for k, v in pairs(plyClass.weapons) do
 			ply:Give(v)
 			ply:StripWeapon("gmod_camera")
-			
 		end
 		
 	end
@@ -563,7 +566,7 @@ end
 function ctf_setteam( ply, cmd, args, argStr)
 	local teamNum = tonumber(args[1])
 	if (teamNum == nil) then
-		ply:ConCommand("ctf_start")
+		ply:ConCommand("ctf_team")
 		return
 	end
 
@@ -763,7 +766,7 @@ function RestoreTools(ply)
 		player_manager.RunClass( ply, "Loadout" )
 		ply:StripWeapon("weapon_physgun")
 		ply:StripWeapon("gmod_tool")
-		ply:SelectWeapon("weapon_crowbar")
+		ply:SelectWeapon("weapon_crowbar")	
 	end
 end
 
@@ -801,7 +804,7 @@ function ResetWorld()
 		UpdateAllValues(ply)
 		joining( ply )
 		ply:UnLock()
-		ply:ConCommand( "ctf_start" )
+		ply:ConCommand( "ctf_team" )
 		ply:Spawn()
 	end
 end
@@ -820,6 +823,19 @@ end
 
 LastTimeLeft = math.ceil(CTF_Time:GetFloat() * 60 - Time)
 function GM:Think()
+
+	net.Receive("sendMenu",function() -- Potential security risk
+	
+		local bool = net.ReadBool()
+			for k,ply in pairs(player.GetAll()) do
+				if(bool == false) then
+					ply:Freeze(false)
+				else if (bool == true) then
+					ply:Freeze(true)
+				end
+			end
+		end
+	end)
 
 	if buildTime != CTF_Time:GetFloat() then
 		buildTime = CTF_Time:GetFloat()
