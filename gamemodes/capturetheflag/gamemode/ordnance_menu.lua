@@ -7,26 +7,23 @@ local Menu
 
 function ordnanceMenu()
 
-	if (LocalPlayer():GetNWBool("canBuy") == false) then
-	
-		LocalPlayer():EmitSound(DenyNoise)
-	
-	return end
-
 	if(Menu == nil) then
+	
+		if(LocalPlayer():GetNWBool("canBuy") == false) then 
+			LocalPlayer():EmitSound(DenyNoise)
+		return end
 		
 		LocalPlayer():EmitSound(OpenNoise)
 		Menu = vgui.Create("DFrame")
 		Menu:SetSize(750,500)
 		Menu:SetPos(ScrW()/2 - 325, ScrH()/2 - 250)
-		Menu:SetTitle("[CTF] Ordnance Selection Menu")
+		Menu:SetTitle("[CTF]: Ordnance Selection Menu")
 		Menu:SetDraggable(true)
 		Menu:ShowCloseButton(false)
 		Menu:SetDeleteOnClose(false)
 		Menu.Paint = function()
 			surface.SetDrawColor(60,60,60,255)
 			surface.DrawRect(0,0,Menu:GetWide(),Menu:GetTall())
-			
 			surface.SetDrawColor(40,40,40,255)
 			surface.DrawRect(0,24,Menu:GetWide(),1)
 		end
@@ -34,19 +31,41 @@ function ordnanceMenu()
 		addButtons(Menu)
 		gui.EnableScreenClicker(true)
 		
+		net.Start("sendMenu")
+		net.WriteBool(true)
+		net.SendToServer()
+		
 	else
 	
-		if(Menu:IsVisible()) then
+		if(Menu:IsVisible() or LocalPlayer():GetNWBool("canBuy") == false) then
+		
+			if (LocalPlayer():GetNWBool("canBuy") == false) then
+				Menu:SetVisible(false)
+				gui.EnableScreenClicker(false)
+				LocalPlayer():EmitSound(DenyNoise)
+			return end
+			
 			Menu:SetVisible(false)
 			gui.EnableScreenClicker(false)
 			LocalPlayer():EmitSound(CloseNoise)
+			net.Start("sendMenu")
+			net.WriteBool(false)
+			net.SendToServer()
+			
 		else
+		
 			Menu:SetVisible(true)
 			gui.EnableScreenClicker(true)
 			LocalPlayer():EmitSound(OpenNoise)
+			
+			net.Start("sendMenu")
+			net.WriteBool(true)
+			net.SendToServer()
+			
 		end
 		
 	end
+	
 end
 concommand.Add( "ctf_open_ordnancemenu", ordnanceMenu )
 
