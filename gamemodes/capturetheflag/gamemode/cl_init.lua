@@ -1,6 +1,7 @@
 include( 'cl_scoreboard.lua' )
 include( 'shared.lua' )
 include( 'ordnance_menu.lua' )
+include( 'class_menu.lua' )
 
 BeginNoise = Sound("ctf/intro.wav")
 DeployNoise = Sound("ambient/levels/streetwar/city_battle13.wav")
@@ -247,37 +248,42 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 
 	-- Player halos
 	if (LocalPlayer():GetEyeTrace()) then
-		if(LocalPlayer():GetEyeTrace().Entity:IsPlayer()) then
-			if(LocalPlayer():GetEyeTrace().Entity:Team() == 1) then
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
-			elseif (LocalPlayer():GetEyeTrace().Entity:Team() == 2) then
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
+		if (IsValid(LocalPlayer():GetEyeTrace().Entity)) then
+			if(LocalPlayer():GetEyeTrace().Entity:IsPlayer()) then
+				if(LocalPlayer():GetEyeTrace().Entity:Team() == 1) then
+					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
+				elseif (LocalPlayer():GetEyeTrace().Entity:Team() == 2) then
+					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
+				end
 			end
 		end
 	end 
 	
 	-- Vehicle halos
 	if (LocalPlayer():GetEyeTrace()) then
-		if(LocalPlayer():GetEyeTrace().Entity:IsVehicle()) then
-			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
-			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
+		if (IsValid(LocalPlayer():GetEyeTrace().Entity)) then
+			if(LocalPlayer():GetEyeTrace().Entity:IsVehicle()) then
+				if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then
+					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
+				elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then
+					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
+				end
 			end
-		end
+		end	
 	end
 	
-	-- LFS Halos
+	-- Entity halos
 	if (LocalPlayer():GetEyeTrace()) then
-		if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() == "lunasflightschool_combineheli" or LocalPlayer():GetEyeTrace().Entity:GetClass() == "lunasflightschool_ah6") then
-			if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
-			elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then
-				halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
+		if (IsValid(LocalPlayer():GetEyeTrace().Entity)) then
+			if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flag" or LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flagbase") then
+				if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then
+					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
+				elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then
+					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
+				end
 			end
 		end
 	end
-	
 end )
 
 hook.Add("PreDrawEffects", "CTF_flagRender", function()
@@ -287,9 +293,12 @@ hook.Add("PreDrawEffects", "CTF_flagRender", function()
 	ang:RotateAroundAxis(ang:Right(),90)
 
 	local flagMat = Material( "icons/flag_icon.png" )
+	local baseMat = Material( "icons/base_icon.png" )
 	
 	local flag1vector = Vector(0,0,0)
 	local flag2vector = Vector(0,0,0)
+	local base1vector = Vector(0,0,0)
+	local base2vector = Vector(0,0,0)
 
 	for k, v in pairs(ents.FindByClass("ctf_flag")) do
 		if v:GetNWInt("OwningTeam") == 1 then
@@ -298,6 +307,7 @@ hook.Add("PreDrawEffects", "CTF_flagRender", function()
 			flag1vector = flag1vector + Vector(0,0,150)
 			local flag1pos = flag1vector:ToScreen()
 			
+			cam.IgnoreZ(true)
 			cam.Start2D()
 				surface.SetDrawColor( 255, 71, 71, 255 )
 				surface.SetMaterial( flagMat )
@@ -310,6 +320,7 @@ hook.Add("PreDrawEffects", "CTF_flagRender", function()
 			flag2vector = flag2vector + Vector(0,0,150)
 			local flag2pos = flag2vector:ToScreen()
 			
+			cam.IgnoreZ(true)
 			cam.Start2D()
 				surface.SetDrawColor( 100, 100, 255, 255 )
 				surface.SetMaterial( flagMat )
@@ -318,6 +329,36 @@ hook.Add("PreDrawEffects", "CTF_flagRender", function()
 			
 		end
 	end
+	
+	-- for k, v in pairs(ents.FindByClass("ctf_flagbase")) do
+		-- if v:GetNWInt("OwningTeam") == 1 then
+		
+			-- base1vector = v:GetPos() 
+			-- base1vector = base1vector + Vector(0,0,0)
+			-- local base1pos = base1vector:ToScreen()
+			
+			-- cam.IgnoreZ(true)
+			-- cam.Start2D()
+				-- surface.SetDrawColor( 255, 71, 71, 255 )
+				-- surface.SetMaterial( baseMat )
+				-- surface.DrawTexturedRect( base1pos.x,base1pos.y, 40,40)
+			-- cam.End2D()
+			
+		-- elseif v:GetNWInt("OwningTeam") == 2 then
+		
+			-- base2vector = v:GetPos()
+			-- base2vector = base2vector + Vector(0,0,0)
+			-- local base2pos = base2vector:ToScreen()
+			
+			-- cam.IgnoreZ(true)
+			-- cam.Start2D()
+				-- surface.SetDrawColor( 100, 100, 255, 255 )
+				-- surface.SetMaterial( baseMat )
+				-- surface.DrawTexturedRect( base2pos.x,base2pos.y, 40,40)
+			-- cam.End2D()
+			
+		-- end
+	-- end
 	
 end)
 
@@ -667,170 +708,3 @@ function VictoryThink()
 	end
 end
 hook.Add("Think", "VictoryThink", VictoryThink)
-
-function classMenu()
-
-	local Frame = vgui.Create( "DFrame" )
-	Frame:SetTitle( "[CTF] Class Selection Menu" )
-	Frame:SetSize( 300, 470 )
-	Frame:Center()
-	Frame:MakePopup()
-	Frame:ShowCloseButton(true)
-	Frame.Paint = function( self, w, h ) -- 'function Frame:Paint( w, h )' works too
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 60, 60,60, 255 ) )
-	end
-
-	local Button1 = vgui.Create( "DButton", Frame )
-	Button1:SetText( "Rifleman" )
-	Button1:SetTextColor( Color( 255, 255, 255 ) )
-	Button1:SetPos( 100, 50 )
-	Button1:SetSize( 100, 30 )
-	Button1.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
-
-	Button1.DoClick = function()
-		
-		-- Call player table value for rifleman
-		RunConsoleCommand( "ctf_setclass", "2" )
-		
-		LocalPlayer():ChatPrint( "[CTF]: Rifleman class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
-	
-	local Button2 = vgui.Create( "DButton", Frame )
-	Button2:SetText( "Marksman" )
-	Button2:SetTextColor( Color( 255, 255, 255 ) )
-	Button2:SetPos( 100, 100 )
-	Button2:SetSize( 100, 30 )
-	Button2.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
-	
-	Button2.DoClick = function()
-		
-		-- Call player table value for marksman
-		RunConsoleCommand( "ctf_setclass", "3" )
-		
-		LocalPlayer():ChatPrint( "[CTF]: Marksman class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
-	
-	local Button3 = vgui.Create( "DButton", Frame )
-	Button3:SetText( "Gunner" )
-	Button3:SetTextColor( Color( 255, 255, 255 ) )
-	Button3:SetPos( 100, 150 )
-	Button3:SetSize( 100, 30 )
-	Button3.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
-	
-	Button3.DoClick = function()
-		
-		-- Call player table value for gunner
-		RunConsoleCommand( "ctf_setclass", "4" )
-		
-		LocalPlayer():ChatPrint( "[CTF]: Gunner class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
-	
-	local Button4 = vgui.Create( "DButton", Frame )
-	Button4:SetText( "Demolitionist" )
-	Button4:SetTextColor( Color( 255, 255, 255 ) )
-	Button4:SetPos( 100, 200 )
-	Button4:SetSize( 100, 30 )
-	Button4.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
-	
-	Button4.DoClick = function()
-		
-		-- Call player table value for demolitionist
-		RunConsoleCommand( "ctf_setclass", "5" )
-		
-		LocalPlayer():ChatPrint( "[CTF]: Demolitionist class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
-	
-	local Button5 = vgui.Create( "DButton", Frame )
-	Button5:SetText( "Support" )
-	Button5:SetTextColor( Color( 255, 255, 255 ) )
-	Button5:SetPos( 100, 250 )
-	Button5:SetSize( 100, 30 )
-	Button5.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
-	
-	Button5.DoClick = function()
-		
-		-- Call player table value for support
-		RunConsoleCommand( "ctf_setclass", "6" )
-		
-		LocalPlayer():ChatPrint( "[CTF]: Support class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
-	
-	local Button6 = vgui.Create( "DButton", Frame )
-	Button6:SetText( "Engineer" )
-	Button6:SetTextColor( Color( 255, 255, 255 ) )
-	Button6:SetPos( 100, 300 )
-	Button6:SetSize( 100, 30 )
-	Button6.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
-	
-	Button6.DoClick = function()
-		
-		-- Call player table value for engineer
-		RunConsoleCommand( "ctf_setclass", "7" )
-		
-		LocalPlayer():ChatPrint( "[CTF]: Engineer class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
-	
-	local Button7 = vgui.Create( "DButton", Frame )
-	Button7:SetText( "Scout" )
-	Button7:SetTextColor( Color( 255, 255, 255 ) )
-	Button7:SetPos( 100, 350 )
-	Button7:SetSize( 100, 30 )
-	Button7.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
-	
-	Button7.DoClick = function()
-		
-		-- Call player table value for scout
-		RunConsoleCommand( "ctf_setclass", "8" )
-		
-		LocalPlayer():ChatPrint( "[CTF]: Scout class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
-	
-	local Button8 = vgui.Create( "DButton", Frame )
-	Button8:SetText( "Medic" )
-	Button8:SetTextColor( Color( 255, 255, 255 ) )
-	Button8:SetPos( 100, 400 )
-	Button8:SetSize( 100, 30 )
-	Button8.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
-	
-	Button8.DoClick = function()
-		
-		-- Call player table value for medic
-		RunConsoleCommand( "ctf_setclass", "9" )
-		
-		LocalPlayer():ChatPrint( "[CTF]: Medic class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
-
-end
-concommand.Add( "ctf_open_classmenu", classMenu )
