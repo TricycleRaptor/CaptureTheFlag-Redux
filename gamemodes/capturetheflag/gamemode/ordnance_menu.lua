@@ -147,6 +147,7 @@ function addButtons(Menu)
 		hl2AmmoArray[1] = scripted_ents.Get("hl2_ammo_crate_rpg")
 		hl2AmmoArray[2] = scripted_ents.Get("hl2_ammo_crate_ar2")
 		hl2AmmoArray[3] = scripted_ents.Get("hl2_ammo_crate_smg")
+		hl2AmmoArray[4] = scripted_ents.Get("hl2_ammo_crate_shotgun")
 		
 		for k, v in pairs(hl2AmmoArray) do
 			local icon = vgui.Create("SpawnIcon", hl2AmmoList)
