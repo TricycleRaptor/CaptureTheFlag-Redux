@@ -32,6 +32,7 @@ resource.AddFile( "materials/icons/blue_win_text.png" )
 resource.AddFile( "materials/icons/flag_icon.png" )
 resource.AddFile( "materials/icons/flag_icon_carried.png" )
 resource.AddFile( "materials/icons/flag_icon_dropped.png" )
+resource.AddFile( "materials/icons/base_icon.png" )
 resource.AddFile( "materials/icons/red_win_logo.png" )
 resource.AddFile( "materials/icons/red_win_text.png" )
 
@@ -806,6 +807,8 @@ function ResetWorld()
 		ply:UnLock()
 		ply:ConCommand( "ctf_team" )
 		ply:Spawn()
+		ply:SetNWInt("playerMoney", 0)
+		ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_startingbalance"):GetFloat()))
 	end
 end
 
