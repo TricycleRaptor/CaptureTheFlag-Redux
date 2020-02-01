@@ -330,35 +330,35 @@ hook.Add("PreDrawEffects", "CTF_flagRender", function()
 		end
 	end
 	
-	-- for k, v in pairs(ents.FindByClass("ctf_flagbase")) do
-		-- if v:GetNWInt("OwningTeam") == 1 then
+	for k, v in pairs(ents.FindByClass("ctf_flagbase")) do
+		if v:GetNWInt("OwningTeam") == 1 then
 		
-			-- base1vector = v:GetPos() 
-			-- base1vector = base1vector + Vector(0,0,0)
-			-- local base1pos = base1vector:ToScreen()
+			base1vector = v:GetPos() 
+			base1vector = base1vector + Vector(0,0,2000)
+			local base1pos = base1vector:ToScreen()
 			
-			-- cam.IgnoreZ(true)
-			-- cam.Start2D()
-				-- surface.SetDrawColor( 255, 71, 71, 255 )
-				-- surface.SetMaterial( baseMat )
-				-- surface.DrawTexturedRect( base1pos.x,base1pos.y, 40,40)
-			-- cam.End2D()
+			cam.IgnoreZ(true)
+			cam.Start2D()
+				surface.SetDrawColor( 255, 71, 71, 255 )
+				surface.SetMaterial( baseMat )
+				surface.DrawTexturedRect( base1pos.x,base1pos.y, 40,40)
+			cam.End2D()
 			
-		-- elseif v:GetNWInt("OwningTeam") == 2 then
+		elseif v:GetNWInt("OwningTeam") == 2 then
 		
-			-- base2vector = v:GetPos()
-			-- base2vector = base2vector + Vector(0,0,0)
-			-- local base2pos = base2vector:ToScreen()
+			base2vector = v:GetPos()
+			base2vector = base2vector + Vector(0,0,2000)
+			local base2pos = base2vector:ToScreen()
 			
-			-- cam.IgnoreZ(true)
-			-- cam.Start2D()
-				-- surface.SetDrawColor( 100, 100, 255, 255 )
-				-- surface.SetMaterial( baseMat )
-				-- surface.DrawTexturedRect( base2pos.x,base2pos.y, 40,40)
-			-- cam.End2D()
+			cam.IgnoreZ(true)
+			cam.Start2D()
+				surface.SetDrawColor( 100, 100, 255, 255 )
+				surface.SetMaterial( baseMat )
+				surface.DrawTexturedRect( base2pos.x ,base2pos.y, 40,40)
+			cam.End2D()
 			
-		-- end
-	-- end
+		end
+	end
 	
 end)
 
