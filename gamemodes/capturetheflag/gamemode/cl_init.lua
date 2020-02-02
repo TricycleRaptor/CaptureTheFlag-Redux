@@ -272,10 +272,10 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 		end	
 	end
 	
-	-- Entity halos
+	-- LFS Halos
 	if (LocalPlayer():GetEyeTrace()) then
 		if (IsValid(LocalPlayer():GetEyeTrace().Entity)) then
-			if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flag" or LocalPlayer():GetEyeTrace().Entity:GetClass() ~= "ctf_flagbase") then
+			if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() == "lunasflightschool_combineheli" or LocalPlayer():GetEyeTrace().Entity:GetClass() == "lunasflightschool_ah6") then
 				if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then
 					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
 				elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then
