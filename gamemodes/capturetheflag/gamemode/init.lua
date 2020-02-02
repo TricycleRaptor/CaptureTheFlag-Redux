@@ -827,14 +827,6 @@ end
 LastTimeLeft = math.ceil(CTF_Time:GetFloat() * 60 - Time)
 function GM:Think()
 
-	for k,ply in pairs(player.GetAll()) do
-		if (ply:GetNWBool("menuOpen") == true) then
-			ply:Freeze(true)
-		elseif (ply:GetNWBool("menuOpen") == false) then
-			ply:Freeze(false)
-		end
-	end
-
 	if buildTime != CTF_Time:GetFloat() then
 		buildTime = CTF_Time:GetFloat()
 		net.Start("ctf_TimeUpdate")
