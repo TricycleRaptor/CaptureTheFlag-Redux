@@ -5,6 +5,18 @@ CloseNoise = Sound("npc/scanner/scanner_scan2.wav")
 
 local Menu
 
+function GM:Think()
+
+	if(Menu ~= nil) then
+		if ((Menu:IsVisible() == true) and LocalPlayer():GetNWBool("canBuy") == false) then
+			Menu:SetVisible(false)
+			gui.EnableScreenClicker(false)
+			LocalPlayer():EmitSound(DenyNoise)
+		end
+	end
+	
+end
+
 function ordnanceMenu()
 
 	if(Menu == nil) then
@@ -29,11 +41,7 @@ function ordnanceMenu()
 		end
 		
 		addButtons(Menu)
-		gui.EnableScreenClicker(true)
-		
-		net.Start("sendMenu")
-		net.WriteBool(true)
-		net.SendToServer()
+		gui.EnableScreenClicker(true)	
 		
 	else
 	
@@ -48,19 +56,12 @@ function ordnanceMenu()
 			Menu:SetVisible(false)
 			gui.EnableScreenClicker(false)
 			LocalPlayer():EmitSound(CloseNoise)
-			net.Start("sendMenu")
-			net.WriteBool(false)
-			net.SendToServer()
 			
 		else
 		
 			Menu:SetVisible(true)
 			gui.EnableScreenClicker(true)
 			LocalPlayer():EmitSound(OpenNoise)
-			
-			net.Start("sendMenu")
-			net.WriteBool(true)
-			net.SendToServer()
 			
 		end
 		
