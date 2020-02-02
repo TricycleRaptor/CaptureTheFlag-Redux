@@ -57,7 +57,7 @@ util.AddNetworkString("FlagReturned")
 util.AddNetworkString("GameEnded")
 util.AddNetworkString("NotifyDeath")
 util.AddNetworkString("UpdateRespawn")
-util.AddNetworkString( "sendMenu" )
+util.AddNetworkString("sendMenu")
 
 include( 'shared.lua' )
 include ( 'concommands.lua' )
@@ -827,18 +827,13 @@ end
 LastTimeLeft = math.ceil(CTF_Time:GetFloat() * 60 - Time)
 function GM:Think()
 
-	net.Receive("sendMenu",function() -- Potential security risk
-	
-		local bool = net.ReadBool()
-			for k,ply in pairs(player.GetAll()) do
-				if(bool == false) then
-					ply:Freeze(false)
-				else if (bool == true) then
-					ply:Freeze(true)
-				end
-			end
+	for k,ply in pairs(player.GetAll()) do
+		if (ply:GetNWBool("menuOpen") == true) then
+			ply:Freeze(true)
+		elseif (ply:GetNWBool("menuOpen") == false) then
+			ply:Freeze(false)
 		end
-	end)
+	end
 
 	if buildTime != CTF_Time:GetFloat() then
 		buildTime = CTF_Time:GetFloat()
