@@ -852,6 +852,13 @@ function GM:Think()
 		MatchHasBegun = true
 		net.Start("MatchBegin")
 		net.Broadcast()
+		
+		-- Prevent players from using sandbox spawning commands after the match has started
+		concommand.Remove("gm_spawn")
+		concommand.Remove("gm_spawnsent")
+		concommand.Remove("gm_spawnswep")
+		concommand.Remove("gm_spawnvehicle")
+		
 		for k,v in pairs(ents.GetAll()) do
 			if v.IsSphere and v:GetClass() ~= "ctf_perimetersphere" then
 				v:Remove()
@@ -859,6 +866,7 @@ function GM:Think()
 				v:GetPhysicsObject():EnableMotion(false)
 			end
 		end
+		
 		for k,v in pairs(player.GetAll()) do
 			v:StripWeapons()
 			RestoreTools(v)
@@ -877,6 +885,7 @@ function GM:Think()
 				ply:SetNWInt("playerMoney", newMoney)
 				ply:ChatPrint( "[CTF]: Passive salary paid.")
 			end
+			
 		end)
 		
 	end
@@ -903,7 +912,7 @@ end
 
 function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
 	if ( attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) ) then
-		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (math.floor(damageTaken / 2.5))) -- Award player $1 per point of damage
+		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (math.floor(damageTaken / 2.5))) -- Award player for damage done
 	end
 end
 
