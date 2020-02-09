@@ -23,6 +23,7 @@ BaseSet = {false, false}
 FlagsDropped = {false, false}
 FlagsCarried = {false, false}
 Scores = {0,0}
+FlagScores = {0,0}
 
 FlagCarrier = {NULL, NULL}
 Icon = {NULL, NULL}
@@ -74,8 +75,6 @@ local function HandleUpdateAllValues(len, ply)
 	TimeLeft = net.ReadFloat()
 	ShowPP = net.ReadBool()
 	RespawnTime = net.ReadFloat()
-
-	print("Data Received")
 
 	for i=1,2 do
 		local c = Color(255,75,75,255)
@@ -493,14 +492,6 @@ function PropProtection.HUDPaint()
 	end
 end
 hook.Add("HUDPaint", "PropProtection.HUDPaint", PropProtection.HUDPaint)
-
-function GM:ScoreboardShow()
-
-end
-
-function GM:ScoreboardHide()
-
-end
 
 function ButtonThink()
 
