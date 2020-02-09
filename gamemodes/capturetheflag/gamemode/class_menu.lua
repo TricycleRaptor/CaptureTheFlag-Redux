@@ -1,171 +1,1614 @@
+include( 'config/class_weapons.lua' )
+include( 'config/secondary_weapons.lua' )
+include( 'config/class_equipment.lua' )
+
 ButtonNoise = Sound("buttons/lightswitch2.wav")
-DenyNoise = Sound("buttons/button2.wav")
-OpenNoise = Sound("npc/scanner/scanner_scan1.wav")
-CloseNoise = Sound("npc/scanner/scanner_scan2.wav")
+ChooseNoise = Sound("items/ammo_pickup.wav")
+OpenNoise2 = Sound("npc/scanner/scanner_scan4.wav")
+ConfirmNoise = Sound("buttons/button14.wav")
+DenyNoise = Sound("buttons/button8.wav")
+
+local selectedPrimary
+local selectedSecondary
+local selectedEquipment
 
 function classMenu()
 
 	local Frame = vgui.Create( "DFrame" )
-	Frame:SetTitle( "[CTF] Class Selection Menu" )
-	Frame:SetSize( 300, 470 )
-	Frame:Center()
-	Frame:MakePopup()
-	Frame:ShowCloseButton(true)
-	Frame.Paint = function( self, w, h ) -- 'function Frame:Paint( w, h )' works too
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 60, 60,60, 255 ) )
-	end
+		Frame:SetTitle( "[CTF]: Class Selection Menu" )
+		Frame:SetSize( 800, 460 )
+		Frame:Center()
+		Frame:MakePopup()
+		Frame:ShowCloseButton(false)
+		Frame:SetDraggable(true)
 
-	local Button1 = vgui.Create( "DButton", Frame )
-	Button1:SetText( "Rifleman" )
-	Button1:SetTextColor( Color( 255, 255, 255 ) )
-	Button1:SetPos( 100, 50 )
-	Button1:SetSize( 100, 30 )
-	Button1.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
+		LocalPlayer():EmitSound(OpenNoise2)
 
-	Button1.DoClick = function()
+		Frame.Paint = function( self, w, h ) -- 'function Frame:Paint( w, h )' works too
+			draw.RoundedBox( 6, 0, 0, w, h, Color( 60, 60,60, 255 ) )
+		end
+
+		-- Rifleman button
+
+		local Button1 = vgui.Create( "DButton", Frame )
+			Button1:SetText( "Rifleman" )
+			Button1:SetTextColor( Color( 255, 255, 255 ) )
+			Button1:SetPos( 25, 50 )
+			Button1:SetSize( 100, 30 )
+			Button1.Paint = function( self, w, h )
+				draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		end
+
+		Button1.DoClick = function()
+
+		-- Begin Panels ---
+
+			selectedPrimary = nil
+			selectedSecondary = nil
+			selectedEquipment = nil
+
+			LocalPlayer():EmitSound(ButtonNoise)
+			local broadPanel = Frame:Add("SelectionPanel")
+
+			local classDescPanel = vgui.Create("DPanel", broadPanel)
+				classDescPanel:SetPos(25,50)
+				classDescPanel:SetSize(600,50)
+				classDescPanel:SetBackgroundColor(Color(84,84,84))
+				classDescPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
+			end
+
+			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
+				weaponIconPanel:SetPos(25,125)
+				weaponIconPanel:SetSize(600,175)
+				weaponIconPanel:SetBackgroundColor(Color(84,84,84))
+				weaponIconPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(65,65,65) )
+			end
+
+			local ConfirmButton = vgui.Create( "DButton", broadPanel )
+				ConfirmButton:SetText( "CONFIRM" )
+				ConfirmButton:SetTextColor( Color( 255, 255, 255 ) )
+				ConfirmButton:SetPos( 270, 400 )
+				ConfirmButton:SetSize( 120, 30 )
+				ConfirmButton.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) )
+			end
+
+			ConfirmButton.DoClick = function()
+
+				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
+					LocalPlayer():EmitSound(DenyNoise)
+				else
+					RunConsoleCommand("ctf_setclass", 2)
+
+					net.Start("receivePrimaryWeapon")
+						net.WriteString(selectedPrimary)
+					net.SendToServer()
+
+					net.Start("receiveSecondaryWeapon")
+						net.WriteString(selectedSecondary)
+					net.SendToServer()
+
+					net.Start("receiveEquipment")
+						net.WriteString(selectedEquipment)
+					net.SendToServer()
+
+					LocalPlayer():EmitSound(ConfirmNoise)
+					LocalPlayer():ChatPrint( "[CTF]: Rifleman class selected. Loadout will be applied on respawn." )
+					Frame:Close()
+				end
+
+			end
+			
+			-- End Panels ---
+
+			--- Begin Primary Weapon ---
+
+			local riflemanPrimaryList = list.Get("weapons_rifleman_primary")
+
+			local riflemanPrimary = vgui.Create( "DComboBox", broadPanel )
+				riflemanPrimary:SetPos( 70, 310 )
+				riflemanPrimary:SetSize( 150, 20 )
+				riflemanPrimary:SetValue("Select Primary Weapon")
+
+				local primaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				primaryIcon:SetSize( 400, 400)
+				primaryIcon:SetPos(-60,-255)
+				primaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0))
+				function primaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(riflemanPrimaryList) do
+
+					riflemanPrimary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				riflemanPrimary.OnSelect = function( self, index, value )
+
+					selectedPrimary = riflemanPrimary:GetOptionData(index)
+					
+					if(value == "ARC-C") then
+						selectedModel = "models/weapons/w_acrc.mdl"
+					elseif (value == "SCAR-L") then
+						selectedModel = "models/weapons/tfa_ins2/w_scarl.mdl"
+					end
+
+					primaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			--- End Primary Weapon ---
+
+			--- Begin Secondary Weapon ---
+
+			local riflemanSecondaryList = list.Get("ctf_sidearms")
+			
+			local riflemanSecondary = vgui.Create( "DComboBox", broadPanel )
+				riflemanSecondary:SetPos( 255, 310 )
+				riflemanSecondary:SetSize( 150, 20 )
+				riflemanSecondary:SetValue("Select Secondary Weapon")
+
+				local secondaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				secondaryIcon:SetSize( 600, 600)
+				secondaryIcon:SetPos(0,-425)
+				secondaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function secondaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(riflemanSecondaryList) do
+
+					riflemanSecondary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				riflemanSecondary.OnSelect = function( self, index, value )
+
+					selectedSecondary = riflemanSecondary:GetOptionData(index)
+
+					if(value == "QSZ-92") then
+						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
+					elseif (value == "Beretta M9") then
+						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
+					elseif (value == "H&K USP Match") then
+						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
+					end
+
+					secondaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- Begin Equipment --
+
+			local riflemanEquipmentList = list.Get("grenades_list")
+			
+			local riflemanEquipment = vgui.Create( "DComboBox", broadPanel )
+				riflemanEquipment:SetPos( 440, 310 )
+				riflemanEquipment:SetSize( 150, 20 )
+				riflemanEquipment:SetValue("Select Equipment")
+
+				local equipmentIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				equipmentIcon:SetSize( 600, 600)
+				equipmentIcon:SetPos(165,-425)
+				equipmentIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function equipmentIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(riflemanEquipmentList) do
+
+					riflemanEquipment:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				riflemanEquipment.OnSelect = function( self, index, value )
+
+					selectedEquipment = riflemanEquipment:GetOptionData(index)
+
+					if(value == "M67 Offensive Grenade") then
+						selectedModel = "models/weapons/tfa_ins2/w_m67.mdl"
+					elseif (value == "F1 Defensive Grenade") then
+						selectedModel = "models/weapons/tfa_ins2/w_f1.mdl"
+					elseif (value == "ST5 Stun Grenade") then
+						selectedModel = "models/items/tfa_st5/st5_ammo.mdl"
+					end
+
+					equipmentIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- End Equipment
 		
-		-- Call player table value for rifleman
-		RunConsoleCommand( "ctf_setclass", "2" )
-		
-		LocalPlayer():ChatPrint( "[CTF]: Rifleman class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
+		end
+
+		-- Marksman button
 	
-	local Button2 = vgui.Create( "DButton", Frame )
-	Button2:SetText( "Marksman" )
-	Button2:SetTextColor( Color( 255, 255, 255 ) )
-	Button2:SetPos( 100, 100 )
-	Button2:SetSize( 100, 30 )
-	Button2.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
+		local Button2 = vgui.Create( "DButton", Frame )
+			Button2:SetText( "Marksman" )
+			Button2:SetTextColor( Color( 255, 255, 255 ) )
+			Button2:SetPos( 25, 100 )
+			Button2:SetSize( 100, 30 )
+			Button2.Paint = function( self, w, h )
+				draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		end
 	
-	Button2.DoClick = function()
+		Button2.DoClick = function()
+
+			selectedPrimary = nil
+			selectedSecondary = nil
+			selectedEquipment = nil
 		
-		-- Call player table value for marksman
-		RunConsoleCommand( "ctf_setclass", "3" )
+			LocalPlayer():EmitSound(ButtonNoise)
+			local broadPanel = Frame:Add("SelectionPanel")
+
+			local classDescPanel = vgui.Create("DPanel", broadPanel)
+				classDescPanel:SetPos(25,50)
+				classDescPanel:SetSize(600,50)
+				classDescPanel:SetBackgroundColor(Color(84,84,84))
+				classDescPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
+			end
+
+			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
+				weaponIconPanel:SetPos(25,125)
+				weaponIconPanel:SetSize(600,175)
+				weaponIconPanel:SetBackgroundColor(Color(84,84,84))
+				weaponIconPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(65,65,65) )
+			end
+
+			local ConfirmButton = vgui.Create( "DButton", broadPanel )
+				ConfirmButton:SetText( "CONFIRM" )
+				ConfirmButton:SetTextColor( Color( 255, 255, 255 ) )
+				ConfirmButton:SetPos( 270, 400 )
+				ConfirmButton:SetSize( 120, 30 )
+				ConfirmButton.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) )
+			end
+
+			ConfirmButton.DoClick = function()
+
+				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
+					LocalPlayer():EmitSound(DenyNoise)
+				else
+					RunConsoleCommand("ctf_setclass", 3)
+
+					net.Start("receivePrimaryWeapon")
+						net.WriteString(selectedPrimary)
+					net.SendToServer()
+
+					net.Start("receiveSecondaryWeapon")
+						net.WriteString(selectedSecondary)
+					net.SendToServer()
+
+					net.Start("receiveEquipment")
+						net.WriteString(selectedEquipment)
+					net.SendToServer()
+
+					LocalPlayer():EmitSound(ConfirmNoise)
+					LocalPlayer():ChatPrint( "[CTF]: Marksman class selected. Loadout will be applied on respawn." )
+					Frame:Close()
+				end
+
+			end
+
+			--- Begin Primary Weapon ---
+
+			local marksmanPrimaryList = list.Get("weapons_marksman_primary")
+
+			local marksmanPrimary = vgui.Create( "DComboBox", broadPanel )
+				marksmanPrimary:SetPos( 70, 310 )
+				marksmanPrimary:SetSize( 150, 20 )
+				marksmanPrimary:SetValue("Select Primary Weapon")
+
+				local primaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				primaryIcon:SetSize( 400, 400)
+				primaryIcon:SetPos(-60,-255)
+				primaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0))
+				function primaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(marksmanPrimaryList) do
+
+					marksmanPrimary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				marksmanPrimary.OnSelect = function( self, index, value )
+
+					selectedPrimary = marksmanPrimary:GetOptionData(index)
+					
+					if(value == "MK. 14 EBR") then
+						selectedModel = "models/weapons/tfa_ins2/w_m14ebr.mdl"
+					elseif (value == "GOL Magnum") then
+						selectedModel = "models/weapons/tfa_ins2/w_gol.mdl"
+					end
+
+					primaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			--- End Primary Weapon ---
+
+			--- Begin Secondary Weapon ---
+
+			local marksmanSecondaryList = list.Get("ctf_sidearms")
+			
+			local marksmanSecondary = vgui.Create( "DComboBox", broadPanel )
+				marksmanSecondary:SetPos( 255, 310 )
+				marksmanSecondary:SetSize( 150, 20 )
+				marksmanSecondary:SetValue("Select Secondary Weapon")
+
+				local secondaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				secondaryIcon:SetSize( 600, 600)
+				secondaryIcon:SetPos(0,-425)
+				secondaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function secondaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(marksmanSecondaryList) do
+
+					marksmanSecondary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				marksmanSecondary.OnSelect = function( self, index, value )
+
+					selectedSecondary = marksmanSecondary:GetOptionData(index)
+
+					if(value == "QSZ-92") then
+						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
+					elseif (value == "Beretta M9") then
+						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
+					elseif (value == "H&K USP Match") then
+						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
+					end
+
+					secondaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- Begin Equipment --
+
+			local marksmanEquipmentList = list.Get("binoculars_list")
+			
+			local marksmanEquipment = vgui.Create( "DComboBox", broadPanel )
+				marksmanEquipment:SetPos( 440, 310 )
+				marksmanEquipment:SetSize( 150, 20 )
+				marksmanEquipment:SetValue("Select Equipment")
+
+				local equipmentIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				equipmentIcon:SetSize( 600, 600)
+				equipmentIcon:SetPos(165,-425)
+				equipmentIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function equipmentIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(marksmanEquipmentList) do
+
+					marksmanEquipment:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				marksmanEquipment.OnSelect = function( self, index, value )
+
+					selectedEquipment = marksmanEquipment:GetOptionData(index)
+
+					if(value == "Standard Binoculars") then
+						selectedModel = "models/weapons/w_binocularsbp.mdl"
+					elseif (value == "Explorer Binoculars") then
+						selectedModel = "models/weapons/w_binoculars_uk.mdl"
+					elseif (value == "Nightvision Binoculars") then
+						selectedModel = "models/weapons/w_nvbinoculars.mdl"
+					elseif (value == "Scout Binoculars") then
+						selectedModel = "models/weapons/w_binoculars_usa.mdl"
+					elseif (value == "Vintage Binoculars") then
+						selectedModel = "models/weapons/w_binoculars_ger.mdl"
+					end
+
+					equipmentIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- End Equipment
 		
-		LocalPlayer():ChatPrint( "[CTF]: Marksman class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
+		end
 	
-	local Button3 = vgui.Create( "DButton", Frame )
-	Button3:SetText( "Gunner" )
-	Button3:SetTextColor( Color( 255, 255, 255 ) )
-	Button3:SetPos( 100, 150 )
-	Button3:SetSize( 100, 30 )
-	Button3.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
+		-- Gunner button
+
+		local Button3 = vgui.Create( "DButton", Frame )
+			Button3:SetText( "Gunner" )
+			Button3:SetTextColor( Color( 255, 255, 255 ) )
+			Button3:SetPos( 25, 150 )
+			Button3:SetSize( 100, 30 )
+			Button3.Paint = function( self, w, h )
+			draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		end
 	
-	Button3.DoClick = function()
+		Button3.DoClick = function()
 		
-		-- Call player table value for gunner
-		RunConsoleCommand( "ctf_setclass", "4" )
+			LocalPlayer():EmitSound(ButtonNoise)
+
+			-- Begin Panels ---
+
+			selectedPrimary = nil
+			selectedSecondary = nil
+			selectedEquipment = nil
+
+			LocalPlayer():EmitSound(ButtonNoise)
+			local broadPanel = Frame:Add("SelectionPanel")
+
+			local classDescPanel = vgui.Create("DPanel", broadPanel)
+				classDescPanel:SetPos(25,50)
+				classDescPanel:SetSize(600,50)
+				classDescPanel:SetBackgroundColor(Color(84,84,84))
+				classDescPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
+			end
+
+			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
+				weaponIconPanel:SetPos(25,125)
+				weaponIconPanel:SetSize(600,175)
+				weaponIconPanel:SetBackgroundColor(Color(84,84,84))
+				weaponIconPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(65,65,65) )
+			end
+
+			local ConfirmButton = vgui.Create( "DButton", broadPanel )
+				ConfirmButton:SetText( "CONFIRM" )
+				ConfirmButton:SetTextColor( Color( 255, 255, 255 ) )
+				ConfirmButton:SetPos( 270, 400 )
+				ConfirmButton:SetSize( 120, 30 )
+				ConfirmButton.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) )
+			end
+
+			ConfirmButton.DoClick = function()
+
+				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
+					LocalPlayer():EmitSound(DenyNoise)
+				else
+					RunConsoleCommand("ctf_setclass", 4)
+
+					net.Start("receivePrimaryWeapon")
+						net.WriteString(selectedPrimary)
+					net.SendToServer()
+
+					net.Start("receiveSecondaryWeapon")
+						net.WriteString(selectedSecondary)
+					net.SendToServer()
+
+					net.Start("receiveEquipment")
+						net.WriteString(selectedEquipment)
+					net.SendToServer()
+
+					LocalPlayer():EmitSound(ConfirmNoise)
+					LocalPlayer():ChatPrint( "[CTF]: Gunner class selected. Loadout will be applied on respawn." )
+					Frame:Close()
+				end
+
+			end
+			
+			-- End Panels ---
+
+			--- Begin Primary Weapon ---
+
+			local gunnerPrimaryList = list.Get("weapons_gunner_primary")
+
+			local gunnerPrimary = vgui.Create( "DComboBox", broadPanel )
+				gunnerPrimary:SetPos( 70, 310 )
+				gunnerPrimary:SetSize( 150, 20 )
+				gunnerPrimary:SetValue("Select Primary Weapon")
+
+				local primaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				primaryIcon:SetSize( 400, 400)
+				primaryIcon:SetPos(-60,-255)
+				primaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0))
+				function primaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(gunnerPrimaryList) do
+
+					gunnerPrimary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				gunnerPrimary.OnSelect = function( self, index, value )
+
+					selectedPrimary = gunnerPrimary:GetOptionData(index)
+					
+					if(value == "RPK-74m") then
+						selectedModel = "models/weapons/w_rpk_74m.mdl"
+					elseif (value == "M60") then
+						selectedModel = "models/weapons/w_nam_m60.mdl"
+					end
+
+					primaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			--- End Primary Weapon ---
+
+			--- Begin Secondary Weapon ---
+
+			local gunnerSecondaryList = list.Get("ctf_sidearms")
+			
+			local gunnerSecondary = vgui.Create( "DComboBox", broadPanel )
+				gunnerSecondary:SetPos( 255, 310 )
+				gunnerSecondary:SetSize( 150, 20 )
+				gunnerSecondary:SetValue("Select Secondary Weapon")
+
+				local secondaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				secondaryIcon:SetSize( 600, 600)
+				secondaryIcon:SetPos(0,-425)
+				secondaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function secondaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(gunnerSecondaryList) do
+
+					gunnerSecondary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				gunnerSecondary.OnSelect = function( self, index, value )
+
+					selectedSecondary = gunnerSecondary:GetOptionData(index)
+
+					if(value == "QSZ-92") then
+						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
+					elseif (value == "Beretta M9") then
+						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
+					elseif (value == "H&K USP Match") then
+						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
+					end
+
+					secondaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- Begin Equipment --
+
+			local gunnerEquipmentList = list.Get("grenades_list")
+			
+			local gunnerEquipment = vgui.Create( "DComboBox", broadPanel )
+				gunnerEquipment:SetPos( 440, 310 )
+				gunnerEquipment:SetSize( 150, 20 )
+				gunnerEquipment:SetValue("Select Equipment")
+
+				local equipmentIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				equipmentIcon:SetSize( 600, 600)
+				equipmentIcon:SetPos(165,-425)
+				equipmentIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function equipmentIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(gunnerEquipmentList) do
+
+					gunnerEquipment:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				gunnerEquipment.OnSelect = function( self, index, value )
+
+					selectedEquipment = gunnerEquipment:GetOptionData(index)
+
+					if(value == "M67 Offensive Grenade") then
+						selectedModel = "models/weapons/tfa_ins2/w_m67.mdl"
+					elseif (value == "F1 Defensive Grenade") then
+						selectedModel = "models/weapons/tfa_ins2/w_f1.mdl"
+					elseif (value == "ST5 Stun Grenade") then
+						selectedModel = "models/items/tfa_st5/st5_ammo.mdl"
+					end
+
+					equipmentIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- End Equipment
 		
-		LocalPlayer():ChatPrint( "[CTF]: Gunner class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
+		end
 	
-	local Button4 = vgui.Create( "DButton", Frame )
-	Button4:SetText( "Demolitionist" )
-	Button4:SetTextColor( Color( 255, 255, 255 ) )
-	Button4:SetPos( 100, 200 )
-	Button4:SetSize( 100, 30 )
-	Button4.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
+		-- Demolitionist button
+
+		local Button4 = vgui.Create( "DButton", Frame )
+			Button4:SetText( "Demolitionist" )
+			Button4:SetTextColor( Color( 255, 255, 255 ) )
+			Button4:SetPos( 25, 200 )
+			Button4:SetSize( 100, 30 )
+			Button4.Paint = function( self, w, h )
+			draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		end
 	
-	Button4.DoClick = function()
+		Button4.DoClick = function()
 		
-		-- Call player table value for demolitionist
-		RunConsoleCommand( "ctf_setclass", "5" )
+			-- Begin Panels ---
+
+			selectedPrimary = nil
+			selectedSecondary = nil
+			selectedEquipment = nil
+
+			LocalPlayer():EmitSound(ButtonNoise)
+			local broadPanel = Frame:Add("SelectionPanel")
+
+			local classDescPanel = vgui.Create("DPanel", broadPanel)
+				classDescPanel:SetPos(25,50)
+				classDescPanel:SetSize(600,50)
+				classDescPanel:SetBackgroundColor(Color(84,84,84))
+				classDescPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
+			end
+
+			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
+				weaponIconPanel:SetPos(25,125)
+				weaponIconPanel:SetSize(600,175)
+				weaponIconPanel:SetBackgroundColor(Color(84,84,84))
+				weaponIconPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(65,65,65) )
+			end
+
+			local ConfirmButton = vgui.Create( "DButton", broadPanel )
+				ConfirmButton:SetText( "CONFIRM" )
+				ConfirmButton:SetTextColor( Color( 255, 255, 255 ) )
+				ConfirmButton:SetPos( 270, 400 )
+				ConfirmButton:SetSize( 120, 30 )
+				ConfirmButton.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) )
+			end
+
+			ConfirmButton.DoClick = function()
+
+				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
+					LocalPlayer():EmitSound(DenyNoise)
+				else
+					RunConsoleCommand("ctf_setclass", 5)
+
+					net.Start("receivePrimaryWeapon")
+						net.WriteString(selectedPrimary)
+					net.SendToServer()
+
+					net.Start("receiveSecondaryWeapon")
+						net.WriteString(selectedSecondary)
+					net.SendToServer()
+
+					net.Start("receiveEquipment")
+						net.WriteString(selectedEquipment)
+					net.SendToServer()
+
+					LocalPlayer():EmitSound(ConfirmNoise)
+					LocalPlayer():ChatPrint( "[CTF]: Demolitionist class selected. Loadout will be applied on respawn." )
+					Frame:Close()
+				end
+
+			end
+			
+			-- End Panels ---
+
+			--- Begin Primary Weapon ---
+
+			local demolitionistPrimaryList = list.Get("weapons_demolitionist_primary")
+
+			local demolitionistPrimary = vgui.Create( "DComboBox", broadPanel )
+				demolitionistPrimary:SetPos( 70, 310 )
+				demolitionistPrimary:SetSize( 150, 20 )
+				demolitionistPrimary:SetValue("Select Primary Weapon")
+
+				local primaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				primaryIcon:SetSize( 400, 400)
+				primaryIcon:SetPos(-70,-255)
+				primaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0))
+				function primaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(demolitionistPrimaryList) do
+
+					demolitionistPrimary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				demolitionistPrimary.OnSelect = function( self, index, value )
+
+					selectedPrimary = demolitionistPrimary:GetOptionData(index)
+					
+					if(value == "P90") then
+						selectedModel = "models/weapons/tfa_ins2/w_mwr_p90.mdl"
+						primaryIcon:SetSize( 420, 420)
+						primaryIcon:SetPos(-95,-260)
+					elseif (value == "H&K MP7") then
+						selectedModel = "models/weapons/tfa_ins2/w_mp7.mdl"
+						primaryIcon:SetSize( 400, 400)
+						primaryIcon:SetPos(-70,-255)
+					end
+
+					primaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			--- End Primary Weapon ---
+
+			--- Begin Secondary Weapon ---
+
+			local demolitionistSecondaryList = list.Get("ctf_sidearms")
+			
+			local demolitionistSecondary = vgui.Create( "DComboBox", broadPanel )
+				demolitionistSecondary:SetPos( 255, 310 )
+				demolitionistSecondary:SetSize( 150, 20 )
+				demolitionistSecondary:SetValue("Select Secondary Weapon")
+
+				local secondaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				secondaryIcon:SetSize( 600, 600)
+				secondaryIcon:SetPos(0,-425)
+				secondaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function secondaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(demolitionistSecondaryList) do
+
+					demolitionistSecondary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				demolitionistSecondary.OnSelect = function( self, index, value )
+
+					selectedSecondary = demolitionistSecondary:GetOptionData(index)
+
+					if(value == "QSZ-92") then
+						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
+					elseif (value == "Beretta M9") then
+						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
+					elseif (value == "H&K USP Match") then
+						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
+					end
+
+					secondaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- Begin Equipment --
+
+			local demolitionistEquipmentList = list.Get("demolitionists_list")
+			
+			local demolitionistEquipment = vgui.Create( "DComboBox", broadPanel )
+				demolitionistEquipment:SetPos( 440, 310 )
+				demolitionistEquipment:SetSize( 150, 20 )
+				demolitionistEquipment:SetValue("Select Equipment")
+
+				local equipmentIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				equipmentIcon:SetSize( 600, 600)
+				equipmentIcon:SetPos(165,-425)
+				equipmentIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function equipmentIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(demolitionistEquipmentList) do
+
+					demolitionistEquipment:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				demolitionistEquipment.OnSelect = function( self, index, value )
+
+					selectedEquipment = demolitionistEquipment:GetOptionData(index)
+
+					if(value == "Laser-Guided RPG") then
+						selectedModel = "models/weapons/w_rocket_launcher.mdl"
+						equipmentIcon:SetSize( 200, 200)
+						equipmentIcon:SetPos(420,-80)
+					elseif (value == "SLAMS/Mines") then
+						selectedModel = "models/weapons/w_slam.mdl"
+						equipmentIcon:SetSize( 600, 600)
+						equipmentIcon:SetPos(165,-425)
+					end
+
+					equipmentIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- End Equipment
 		
-		LocalPlayer():ChatPrint( "[CTF]: Demolitionist class selected. Loadout will be applied on respawn." )
-		Frame:Close()
+		end
 		
-	end
+		-- Support button
 	
-	local Button5 = vgui.Create( "DButton", Frame )
-	Button5:SetText( "Support" )
-	Button5:SetTextColor( Color( 255, 255, 255 ) )
-	Button5:SetPos( 100, 250 )
-	Button5:SetSize( 100, 30 )
-	Button5.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
+		local Button5 = vgui.Create( "DButton", Frame )
+			Button5:SetText( "Support" )
+			Button5:SetTextColor( Color( 255, 255, 255 ) )
+			Button5:SetPos( 25, 250 )
+			Button5:SetSize( 100, 30 )
+			Button5.Paint = function( self, w, h )
+			draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		end
 	
-	Button5.DoClick = function()
+		Button5.DoClick = function()
 		
-		-- Call player table value for support
-		RunConsoleCommand( "ctf_setclass", "6" )
+			-- Begin Panels ---
+
+			selectedPrimary = nil
+			selectedSecondary = nil
+			selectedEquipment = nil
+
+			LocalPlayer():EmitSound(ButtonNoise)
+			local broadPanel = Frame:Add("SelectionPanel")
+
+			local classDescPanel = vgui.Create("DPanel", broadPanel)
+				classDescPanel:SetPos(25,50)
+				classDescPanel:SetSize(600,50)
+				classDescPanel:SetBackgroundColor(Color(84,84,84))
+				classDescPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
+			end
+
+			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
+				weaponIconPanel:SetPos(25,125)
+				weaponIconPanel:SetSize(600,175)
+				weaponIconPanel:SetBackgroundColor(Color(84,84,84))
+				weaponIconPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(65,65,65) )
+			end
+
+			local ConfirmButton = vgui.Create( "DButton", broadPanel )
+				ConfirmButton:SetText( "CONFIRM" )
+				ConfirmButton:SetTextColor( Color( 255, 255, 255 ) )
+				ConfirmButton:SetPos( 270, 400 )
+				ConfirmButton:SetSize( 120, 30 )
+				ConfirmButton.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) )
+			end
+
+			ConfirmButton.DoClick = function()
+
+				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
+					LocalPlayer():EmitSound(DenyNoise)
+				else
+					RunConsoleCommand("ctf_setclass", 6)
+
+					net.Start("receivePrimaryWeapon")
+						net.WriteString(selectedPrimary)
+					net.SendToServer()
+
+					net.Start("receiveSecondaryWeapon")
+						net.WriteString(selectedSecondary)
+					net.SendToServer()
+
+					net.Start("receiveEquipment")
+						net.WriteString(selectedEquipment)
+					net.SendToServer()
+
+					LocalPlayer():EmitSound(ConfirmNoise)
+					LocalPlayer():ChatPrint( "[CTF]: Support class selected. Loadout will be applied on respawn." )
+					Frame:Close()
+				end
+
+			end
+			
+			-- End Panels ---
+
+			--- Begin Primary Weapon ---
+
+			local supportPrimaryList = list.Get("weapons_support_primary")
+
+			local supportPrimary = vgui.Create( "DComboBox", broadPanel )
+				supportPrimary:SetPos( 70, 310 )
+				supportPrimary:SetSize( 150, 20 )
+				supportPrimary:SetValue("Select Primary Weapon")
+
+				local primaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				primaryIcon:SetSize( 400, 400)
+				primaryIcon:SetPos(-60,-255)
+				primaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0))
+				function primaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(supportPrimaryList) do
+
+					supportPrimary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				supportPrimary.OnSelect = function( self, index, value )
+
+					selectedPrimary = supportPrimary:GetOptionData(index)
+					
+					if(value == "SPAS-12") then
+						selectedModel = "models/weapons/tfa_ins2/w_spas12_bri.mdl"
+					elseif (value == "M1014") then
+						selectedModel = "models/weapons/tfa_ins2/w_m1014.mdl"
+					end
+
+					primaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			--- End Primary Weapon ---
+
+			--- Begin Secondary Weapon ---
+
+			local supportSecondaryList = list.Get("ctf_sidearms")
+			
+			local supportSecondary = vgui.Create( "DComboBox", broadPanel )
+				supportSecondary:SetPos( 255, 310 )
+				supportSecondary:SetSize( 150, 20 )
+				supportSecondary:SetValue("Select Secondary Weapon")
+
+				local secondaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				secondaryIcon:SetSize( 600, 600)
+				secondaryIcon:SetPos(0,-425)
+				secondaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function secondaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(supportSecondaryList) do
+
+					supportSecondary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				supportSecondary.OnSelect = function( self, index, value )
+
+					selectedSecondary = supportSecondary:GetOptionData(index)
+
+					if(value == "QSZ-92") then
+						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
+					elseif (value == "Beretta M9") then
+						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
+					elseif (value == "H&K USP Match") then
+						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
+					end
+
+					secondaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- Begin Equipment --
+
+			local supportEquipmentList = list.Get("supplies_list")
+			
+			local supportEquipment = vgui.Create( "DComboBox", broadPanel )
+				supportEquipment:SetPos( 440, 310 )
+				supportEquipment:SetSize( 150, 20 )
+				supportEquipment:SetValue("Select Equipment")
+
+				local equipmentIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				equipmentIcon:SetSize( 550, 550)
+				equipmentIcon:SetPos(195,-375)
+				equipmentIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function equipmentIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(supportEquipmentList) do
+
+					supportEquipment:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				supportEquipment.OnSelect = function( self, index, value )
+
+					selectedEquipment = supportEquipment:GetOptionData(index)
+
+					if(value == "Rifle Ammo Supply" || value == "SMG Ammo Supply") then
+						selectedModel = "models/Items/BoxMRounds.mdl"
+					elseif (value == "SLAMS/Mines") then
+						selectedModel = "models/Items/BoxBuckshot.mdl"
+					elseif(value == "Shotgun Ammo Supply") then
+						selectedModel = "models/Items/BoxSRounds.mdl"
+					elseif(value == "Sniper Ammo Supply") then
+						selectedModel = "models/Items/sniper_round_box.mdl"
+					elseif(value == "Rocket Ammo Supply") then
+						selectedModel = "models/weapons/w_missile_closed.mdl"
+					elseif(value == "SLAM/Mine Supply") then
+						selectedModel = "models/weapons/w_slam.mdl"
+					elseif(value == "Pistol Ammo Supply") then
+						selectedModel = "models/Items/BoxSRounds.mdl"
+					end
+
+					equipmentIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- End Equipment
 		
-		LocalPlayer():ChatPrint( "[CTF]: Support class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
+		end
+
+		-- Engineer button
 	
-	local Button6 = vgui.Create( "DButton", Frame )
-	Button6:SetText( "Engineer" )
-	Button6:SetTextColor( Color( 255, 255, 255 ) )
-	Button6:SetPos( 100, 300 )
-	Button6:SetSize( 100, 30 )
-	Button6.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
+		local Button6 = vgui.Create( "DButton", Frame )
+			Button6:SetText( "Engineer" )
+			Button6:SetTextColor( Color( 255, 255, 255 ) )
+			Button6:SetPos( 25, 300 )
+			Button6:SetSize( 100, 30 )
+			Button6.Paint = function( self, w, h )
+			draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		end
 	
-	Button6.DoClick = function()
+		Button6.DoClick = function()
 		
-		-- Call player table value for engineer
-		RunConsoleCommand( "ctf_setclass", "7" )
+			-- Begin Panels ---
+
+			selectedPrimary = nil
+			selectedSecondary = nil
+			selectedEquipment = nil
+
+			LocalPlayer():EmitSound(ButtonNoise)
+			local broadPanel = Frame:Add("SelectionPanel")
+
+			local classDescPanel = vgui.Create("DPanel", broadPanel)
+				classDescPanel:SetPos(25,50)
+				classDescPanel:SetSize(600,50)
+				classDescPanel:SetBackgroundColor(Color(84,84,84))
+				classDescPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
+			end
+
+			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
+				weaponIconPanel:SetPos(25,125)
+				weaponIconPanel:SetSize(600,175)
+				weaponIconPanel:SetBackgroundColor(Color(84,84,84))
+				weaponIconPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(65,65,65) )
+			end
+
+			local ConfirmButton = vgui.Create( "DButton", broadPanel )
+				ConfirmButton:SetText( "CONFIRM" )
+				ConfirmButton:SetTextColor( Color( 255, 255, 255 ) )
+				ConfirmButton:SetPos( 270, 400 )
+				ConfirmButton:SetSize( 120, 30 )
+				ConfirmButton.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) )
+			end
+
+			ConfirmButton.DoClick = function()
+
+				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
+					LocalPlayer():EmitSound(DenyNoise)
+				else
+					RunConsoleCommand("ctf_setclass", 7)
+
+					net.Start("receivePrimaryWeapon")
+						net.WriteString(selectedPrimary)
+					net.SendToServer()
+
+					net.Start("receiveSecondaryWeapon")
+						net.WriteString(selectedSecondary)
+					net.SendToServer()
+
+					net.Start("receiveEquipment")
+						net.WriteString(selectedEquipment)
+					net.SendToServer()
+
+					LocalPlayer():EmitSound(ConfirmNoise)
+					LocalPlayer():ChatPrint( "[CTF]: Engineer class selected. Loadout will be applied on respawn." )
+					Frame:Close()
+				end
+
+			end
+			
+			-- End Panels ---
+
+			--- Begin Primary Weapon ---
+
+			local engineerPrimaryList = list.Get("weapons_engineer_primary")
+
+			local engineerPrimary = vgui.Create( "DComboBox", broadPanel )
+				engineerPrimary:SetPos( 70, 310 )
+				engineerPrimary:SetSize( 150, 20 )
+				engineerPrimary:SetValue("Select Primary Weapon")
+
+				local primaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				primaryIcon:SetSize( 400, 400)
+				primaryIcon:SetPos(-60,-255)
+				primaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0))
+				function primaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(engineerPrimaryList) do
+
+					engineerPrimary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				engineerPrimary.OnSelect = function( self, index, value )
+
+					selectedPrimary = engineerPrimary:GetOptionData(index)
+					
+					if(value == "Nova") then
+						selectedModel = "models/weapons/tfa_ins2/w_nova.mdl"
+					elseif (value == "M590A1") then
+						selectedModel = "models/weapons/tfa_ins2/w_m590_olli.mdl"
+					end
+
+					primaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			--- End Primary Weapon ---
+
+			--- Begin Secondary Weapon ---
+
+			local engineerSecondaryList = list.Get("ctf_sidearms")
+			
+			local engineerSecondary = vgui.Create( "DComboBox", broadPanel )
+				engineerSecondary:SetPos( 255, 310 )
+				engineerSecondary:SetSize( 150, 20 )
+				engineerSecondary:SetValue("Select Secondary Weapon")
+
+				local secondaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				secondaryIcon:SetSize( 600, 600)
+				secondaryIcon:SetPos(0,-425)
+				secondaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function secondaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(engineerSecondaryList) do
+
+					engineerSecondary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				engineerSecondary.OnSelect = function( self, index, value )
+
+					selectedSecondary = engineerSecondary:GetOptionData(index)
+
+					if(value == "QSZ-92") then
+						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
+					elseif (value == "Beretta M9") then
+						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
+					elseif (value == "H&K USP Match") then
+						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
+					end
+
+					secondaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- Begin Equipment --
+
+			local engineerEquipmentList = list.Get("engineers_list")
+			
+			local engineerEquipment = vgui.Create( "DComboBox", broadPanel )
+				engineerEquipment:SetPos( 440, 310 )
+				engineerEquipment:SetSize( 150, 20 )
+				engineerEquipment:SetValue("Select Equipment")
+
+				local equipmentIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				equipmentIcon:SetSize( 600, 600)
+				equipmentIcon:SetPos(165,-425)
+				equipmentIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function equipmentIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(engineerEquipmentList) do
+
+					engineerEquipment:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				engineerEquipment.OnSelect = function( self, index, value )
+
+					selectedEquipment = engineerEquipment:GetOptionData(index)
+
+					if(value == "Simfphys Repair Tool") then
+						selectedModel = "models/weapons/w_physics.mdl"
+						equipmentIcon:SetSize( 450, 450)
+						equipmentIcon:SetPos(285,-315)
+					elseif (value == "Fortification Tablet") then
+						selectedModel = "models/nirrti/tablet/tablet_sfm.mdl"
+					end
+
+					equipmentIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- End Equipment
 		
-		LocalPlayer():ChatPrint( "[CTF]: Engineer class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
+		end
+
+		-- Scout button
 	
-	local Button7 = vgui.Create( "DButton", Frame )
-	Button7:SetText( "Scout" )
-	Button7:SetTextColor( Color( 255, 255, 255 ) )
-	Button7:SetPos( 100, 350 )
-	Button7:SetSize( 100, 30 )
-	Button7.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
+		local Button7 = vgui.Create( "DButton", Frame )
+			Button7:SetText( "Scout" )
+			Button7:SetTextColor( Color( 255, 255, 255 ) )
+			Button7:SetPos( 25, 350 )
+			Button7:SetSize( 100, 30 )
+			Button7.Paint = function( self, w, h )
+			draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		end
 	
-	Button7.DoClick = function()
+		Button7.DoClick = function()
 		
-		-- Call player table value for scout
-		RunConsoleCommand( "ctf_setclass", "8" )
-		
-		LocalPlayer():ChatPrint( "[CTF]: Scout class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
+			-- Begin Panels ---
+
+			selectedPrimary = nil
+			selectedSecondary = nil
+			selectedEquipment = nil
+
+			LocalPlayer():EmitSound(ButtonNoise)
+			local broadPanel = Frame:Add("SelectionPanel")
+
+			local classDescPanel = vgui.Create("DPanel", broadPanel)
+				classDescPanel:SetPos(25,50)
+				classDescPanel:SetSize(600,50)
+				classDescPanel:SetBackgroundColor(Color(84,84,84))
+				classDescPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
+			end
+
+			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
+				weaponIconPanel:SetPos(25,125)
+				weaponIconPanel:SetSize(600,175)
+				weaponIconPanel:SetBackgroundColor(Color(84,84,84))
+				weaponIconPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(65,65,65) )
+			end
+
+			local ConfirmButton = vgui.Create( "DButton", broadPanel )
+				ConfirmButton:SetText( "CONFIRM" )
+				ConfirmButton:SetTextColor( Color( 255, 255, 255 ) )
+				ConfirmButton:SetPos( 270, 400 )
+				ConfirmButton:SetSize( 120, 30 )
+				ConfirmButton.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) )
+			end
+
+			ConfirmButton.DoClick = function()
+
+				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
+					LocalPlayer():EmitSound(DenyNoise)
+				else
+					RunConsoleCommand("ctf_setclass", 8)
+
+					net.Start("receivePrimaryWeapon")
+						net.WriteString(selectedPrimary)
+					net.SendToServer()
+
+					net.Start("receiveSecondaryWeapon")
+						net.WriteString(selectedSecondary)
+					net.SendToServer()
+
+					net.Start("receiveEquipment")
+						net.WriteString(selectedEquipment)
+					net.SendToServer()
+
+					LocalPlayer():EmitSound(ConfirmNoise)
+					LocalPlayer():ChatPrint( "[CTF]: Scout class selected. Loadout will be applied on respawn." )
+					Frame:Close()
+				end
+
+			end
+			
+			-- End Panels ---
+
+			--- Begin Primary Weapon ---
+
+			local scoutPrimaryList = list.Get("weapons_scout_primary")
+
+			local scoutPrimary = vgui.Create( "DComboBox", broadPanel )
+				scoutPrimary:SetPos( 70, 310 )
+				scoutPrimary:SetSize( 150, 20 )
+				scoutPrimary:SetValue("Select Primary Weapon")
+
+				local primaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				primaryIcon:SetSize( 400, 400)
+				primaryIcon:SetPos(-70,-255)
+				primaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0))
+				function primaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(scoutPrimaryList) do
+
+					scoutPrimary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				scoutPrimary.OnSelect = function( self, index, value )
+
+					selectedPrimary = scoutPrimary:GetOptionData(index)
+					
+					if(value == "H&K MP5K") then
+						selectedModel = "models/weapons/tfa_ins2/w_mp5k.mdl"
+						primaryIcon:SetSize( 420, 420)
+						primaryIcon:SetPos(-95,-260)
+					elseif (value == "KRISS VECTOR") then
+						selectedModel = "models/weapons/tfa_ins2/w_krissv.mdl"
+						primaryIcon:SetSize( 400, 400)
+						primaryIcon:SetPos(-70,-255)
+					end
+
+					primaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			--- End Primary Weapon ---
+
+			--- Begin Secondary Weapon ---
+
+			local scoutSecondaryList = list.Get("ctf_sidearms")
+			
+			local scoutSecondary = vgui.Create( "DComboBox", broadPanel )
+				scoutSecondary:SetPos( 255, 310 )
+				scoutSecondary:SetSize( 150, 20 )
+				scoutSecondary:SetValue("Select Secondary Weapon")
+
+				local secondaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				secondaryIcon:SetSize( 600, 600)
+				secondaryIcon:SetPos(0,-425)
+				secondaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function secondaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(scoutSecondaryList) do
+
+					scoutSecondary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				scoutSecondary.OnSelect = function( self, index, value )
+
+					selectedSecondary = scoutSecondary:GetOptionData(index)
+
+					if(value == "QSZ-92") then
+						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
+					elseif (value == "Beretta M9") then
+						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
+					elseif (value == "H&K USP Match") then
+						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
+					end
+
+					secondaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- Begin Equipment --
+
+			local scoutEquipmentList = list.Get("binoculars_list")
+			
+			local scoutEquipment = vgui.Create( "DComboBox", broadPanel )
+				scoutEquipment:SetPos( 440, 310 )
+				scoutEquipment:SetSize( 150, 20 )
+				scoutEquipment:SetValue("Select Equipment")
+
+				local equipmentIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				equipmentIcon:SetSize( 600, 600)
+				equipmentIcon:SetPos(165,-425)
+				equipmentIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function equipmentIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(scoutEquipmentList) do
+
+					scoutEquipment:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				scoutEquipment.OnSelect = function( self, index, value )
+
+					selectedEquipment = scoutEquipment:GetOptionData(index)
+
+					if(value == "Standard Binoculars") then
+						selectedModel = "models/weapons/w_binocularsbp.mdl"
+					elseif (value == "Explorer Binoculars") then
+						selectedModel = "models/weapons/w_binoculars_uk.mdl"
+					elseif (value == "Nightvision Binoculars") then
+						selectedModel = "models/weapons/w_nvbinoculars.mdl"
+					elseif (value == "Scout Binoculars") then
+						selectedModel = "models/weapons/w_binoculars_usa.mdl"
+					elseif (value == "Vintage Binoculars") then
+						selectedModel = "models/weapons/w_binoculars_ger.mdl"
+					end
+
+					equipmentIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- End Equipment
+
+		end
+
+		-- Medic button
 	
-	local Button8 = vgui.Create( "DButton", Frame )
-	Button8:SetText( "Medic" )
-	Button8:SetTextColor( Color( 255, 255, 255 ) )
-	Button8:SetPos( 100, 400 )
-	Button8:SetSize( 100, 30 )
-	Button8.Paint = function( self, w, h )
-		draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
-	end
+		local Button8 = vgui.Create( "DButton", Frame )
+			Button8:SetText( "Medic" )
+			Button8:SetTextColor( Color( 255, 255, 255 ) )
+			Button8:SetPos( 25, 400 )
+			Button8:SetSize( 100, 30 )
+			Button8.Paint = function( self, w, h )
+			draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) ) -- Draw a button
+		end
 	
-	Button8.DoClick = function()
+		Button8.DoClick = function()
 		
-		-- Call player table value for medic
-		RunConsoleCommand( "ctf_setclass", "9" )
+			-- Begin Panels ---
+
+			selectedPrimary = nil
+			selectedSecondary = nil
+			selectedEquipment = nil
+
+			LocalPlayer():EmitSound(ButtonNoise)
+			local broadPanel = Frame:Add("SelectionPanel")
+
+			local classDescPanel = vgui.Create("DPanel", broadPanel)
+				classDescPanel:SetPos(25,50)
+				classDescPanel:SetSize(600,50)
+				classDescPanel:SetBackgroundColor(Color(84,84,84))
+				classDescPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
+			end
+
+			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
+				weaponIconPanel:SetPos(25,125)
+				weaponIconPanel:SetSize(600,175)
+				weaponIconPanel:SetBackgroundColor(Color(84,84,84))
+				weaponIconPanel.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color(65,65,65) )
+			end
+
+			local ConfirmButton = vgui.Create( "DButton", broadPanel )
+				ConfirmButton:SetText( "CONFIRM" )
+				ConfirmButton:SetTextColor( Color( 255, 255, 255 ) )
+				ConfirmButton:SetPos( 270, 400 )
+				ConfirmButton:SetSize( 120, 30 )
+				ConfirmButton.Paint = function( self, w, h )
+					draw.RoundedBox( 6, 0, 0, w, h, Color( 40, 40, 40, 250 ) )
+			end
+
+			ConfirmButton.DoClick = function()
+
+				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
+					LocalPlayer():EmitSound(DenyNoise)
+				else
+					RunConsoleCommand("ctf_setclass", 9)
+
+					net.Start("receivePrimaryWeapon")
+						net.WriteString(selectedPrimary)
+					net.SendToServer()
+
+					net.Start("receiveSecondaryWeapon")
+						net.WriteString(selectedSecondary)
+					net.SendToServer()
+
+					net.Start("receiveEquipment")
+						net.WriteString(selectedEquipment)
+					net.SendToServer()
+
+					LocalPlayer():EmitSound(ConfirmNoise)
+					LocalPlayer():ChatPrint( "[CTF]: Medic class selected. Loadout will be applied on respawn." )
+					Frame:Close()
+				end
+
+			end
+			
+			-- End Panels ---
+
+			--- Begin Primary Weapon ---
+
+			local medicPrimaryList = list.Get("weapons_medic_primary")
+
+			local medicPrimary = vgui.Create( "DComboBox", broadPanel )
+				medicPrimary:SetPos( 70, 310 )
+				medicPrimary:SetSize( 150, 20 )
+				medicPrimary:SetValue("Select Primary Weapon")
+
+				local primaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				primaryIcon:SetSize( 400, 400)
+				primaryIcon:SetPos(-70,-255)
+				primaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0))
+				function primaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(medicPrimaryList) do
+
+					medicPrimary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				medicPrimary.OnSelect = function( self, index, value )
+
+					selectedPrimary = medicPrimary:GetOptionData(index)
+					
+					if(value == "H&K MP5K") then
+						selectedModel = "models/weapons/tfa_ins2/w_mp5k.mdl"
+					elseif (value == "H&K MP7") then
+						selectedModel = "models/weapons/tfa_ins2/w_mp7.mdl"
+					end
+
+					primaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			--- End Primary Weapon ---
+
+			--- Begin Secondary Weapon ---
+
+			local medicSecondaryList = list.Get("ctf_sidearms")
+			
+			local medicSecondary = vgui.Create( "DComboBox", broadPanel )
+				medicSecondary:SetPos( 255, 310 )
+				medicSecondary:SetSize( 150, 20 )
+				medicSecondary:SetValue("Select Secondary Weapon")
+
+				local secondaryIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				secondaryIcon:SetSize( 600, 600)
+				secondaryIcon:SetPos(0,-425)
+				secondaryIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function secondaryIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(medicSecondaryList) do
+
+					medicSecondary:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				medicSecondary.OnSelect = function( self, index, value )
+
+					selectedSecondary = medicSecondary:GetOptionData(index)
+
+					if(value == "QSZ-92") then
+						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
+					elseif (value == "Beretta M9") then
+						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
+					elseif (value == "H&K USP Match") then
+						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
+					end
+
+					secondaryIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- Begin Equipment --
+
+			local medicEquipmentList = list.Get("grenades_list")
+			
+			local medicEquipment = vgui.Create( "DComboBox", broadPanel )
+				medicEquipment:SetPos( 440, 310 )
+				medicEquipment:SetSize( 150, 20 )
+				medicEquipment:SetValue("Select Equipment")
+
+				local equipmentIcon = vgui.Create( "DModelPanel", weaponIconPanel )
+				equipmentIcon:SetSize( 600, 600)
+				equipmentIcon:SetPos(165,-425)
+				equipmentIcon:SetDirectionalLight(BOX_FRONT, Color(0,0,0) )
+				function equipmentIcon:LayoutEntity( Entity ) return end
+
+				for k, v in pairs(medicEquipmentList) do
+
+					medicEquipment:AddChoice(v["Name"], v["Class"])
+
+				end
+
+				medicEquipment.OnSelect = function( self, index, value )
+
+					selectedEquipment = medicEquipment:GetOptionData(index)
+
+					if(value == "M67 Offensive Grenade") then
+						selectedModel = "models/weapons/tfa_ins2/w_m67.mdl"
+					elseif (value == "F1 Defensive Grenade") then
+						selectedModel = "models/weapons/tfa_ins2/w_f1.mdl"
+					elseif (value == "ST5 Stun Grenade") then
+						selectedModel = "models/items/tfa_st5/st5_ammo.mdl"
+					end
+
+					equipmentIcon:SetModel(selectedModel)
+					LocalPlayer():EmitSound(ChooseNoise)
+				
+				end
+
+			-- End Equipment
 		
-		LocalPlayer():ChatPrint( "[CTF]: Medic class selected. Loadout will be applied on respawn." )
-		Frame:Close()
-		
-	end
+		end
+
+		-- Entities Panel
+
+		PANEL = {}
+
+		function PANEL:Init()
+			self:SetSize(650,460)
+			self:SetPos(150,0)
+		end
+
+		function PANEL:Paint(w,h)
+			draw.RoundedBox(0,0,0,w,h, Color(70,70,70,255))
+		end
+		vgui.Register("SelectionPanel",PANEL, "Panel")
 
 end
 concommand.Add( "ctf_open_classmenu", classMenu )

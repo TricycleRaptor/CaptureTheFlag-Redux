@@ -2,6 +2,8 @@ AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "cl_scoreboard.lua" )
 AddCSLuaFile( "shared.lua" )
 AddCSLuaFile( "config/custom_classes.lua" )
+AddCSLuaFile( "config/class_weapons.lua" )
+AddCSLuaFile( "config/secondary_weapons.lua" )
 
 resource.AddFile( "models/CTF_Flag/ctf_flag.mdl" )
 resource.AddFile( "models/CTF_FlagBase/ctf_flagbase.mdl" )
@@ -51,6 +53,7 @@ util.AddNetworkString("ctf_TimeUpdate")
 util.AddNetworkString("UpdatePP")
 util.AddNetworkString("TeamScored")
 util.AddNetworkString("UpdateAllValues")
+util.AddNetworkString("scoreboardBroadcast")
 util.AddNetworkString("FlagDropped")
 util.AddNetworkString("FlagPickedUp")
 util.AddNetworkString("FlagReturned")
@@ -58,6 +61,10 @@ util.AddNetworkString("GameEnded")
 util.AddNetworkString("NotifyDeath")
 util.AddNetworkString("UpdateRespawn")
 util.AddNetworkString("sendMenu")
+
+util.AddNetworkString("receivePrimaryWeapon")
+util.AddNetworkString("receiveSecondaryWeapon")
+util.AddNetworkString("receiveEquipment")
 
 include( 'shared.lua' )
 include ( 'concommands.lua' )
@@ -147,8 +154,8 @@ function PropProtection.PhysGravGunPickup(ply, ent)
 	
 	if not PropProtection.PlayerCanTouch(ply, ent) then return false end
 end
-//hook.Add("GravGunPunt", "PropProtection.GravGunPunt", PropProtection.PhysGravGunPickup)
-//hook.Add("GravGunPickupAllowed", "PropProtection.GravGunPickupAllowed", PropProtection.PhysGravGunPickup)
+--hook.Add("GravGunPunt", "PropProtection.GravGunPunt", PropProtection.PhysGravGunPickup)
+--hook.Add("GravGunPickupAllowed", "PropProtection.GravGunPickupAllowed", PropProtection.PhysGravGunPickup)
 hook.Add("PhysgunPickup", "PropProtection.PhysgunPickup", PropProtection.PhysGravGunPickup)
 
 function PropProtection.FlagPunt(ply, ent)
@@ -162,18 +169,18 @@ function PropProtection.FlagPunt(ply, ent)
 end
 hook.Add("GravGunPunt", "PropProtection.GravGunPunt", PropProtection.FlagPunt)
 
--- function PropProtection.CanTool(ply, tr, mode)
-	-- if tr.HitWorld then
-		-- return
-	-- end
-	-- local ent = tr.Entity
-	-- if not IsValid(ent) or ent:IsPlayer() or ent.IsBase or ent.IsFlag or ent.IsSpawnArea then
-		-- return false
-	-- end
+function PropProtection.CanTool(ply, tr, mode)
+	if tr.HitWorld then
+		return
+	end
+	local ent = tr.Entity
+	if not IsValid(ent) or ent:IsPlayer() or ent.IsBase or ent.IsFlag or ent.IsSpawnArea then
+		return false
+	end
 
-	-- if not PropProtection.PlayerCanTouch(ply, ent) then return false end
--- end
--- hook.Add("CanTool", "PropProtection.CanTool", PropProtection.CanTool)
+	if not PropProtection.PlayerCanTouch(ply, ent) then return false end
+	end
+hook.Add("CanTool", "PropProtection.CanTool", PropProtection.CanTool)
 
 function PropProtection.EntityTakeDamageFireCheck(ent)
 	if not IsValid(ent) then
@@ -283,18 +290,20 @@ hook.Add("CanProperty", "PropProtection.CanProperty", PropProtection.CanProperty
 --------------------Force the use of buttons for key presses--------------
 -- numpad.OldActivate = numpad.Activate
 -- function numpad.Activate(ply, key, isButton)
-	-- if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+	-- if (isButton or DUMMYTHICC or not GetConVar("ctf_restrictkeys"):GetBool()) then
 		-- return numpad.OldActivate(ply, key, isButton)
 	-- end
 -- end
 
 -- numpad.OldDeactivate = numpad.Deactivate
 -- function numpad.Deactivate(ply, key, isButton)
-	-- if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+	-- if (isButton or DUMMYTHICC or not GetConVar("ctf_restrictkeys"):GetBool()) then
 		-- return numpad.OldDeactivate(ply, key, isButton)
 	-- end
 -- end
 --------------------------------Button Force End--------------------------
+
+-- Fix the DUMMYTHICC ^^^
 
 function UpdateAllValues(ply)
 
@@ -357,7 +366,6 @@ function GM:PlayerSpawn( ply )
 	ply:SetWalkSpeed(plyClass.walkspeed)
 	ply:SetRunSpeed(plyClass.runspeed)
 	ply:SetNWBool("canBuy", false)
-	ply:SetNWBool("menuOpen", false)
 
 	hook.Call("PlayerLoadout", ply)
 
@@ -379,9 +387,6 @@ function GM:PlayerSpawn( ply )
 	if (MatchHasBegun) then
 	
 		ply:GodDisable()
-	
-		timer.Create( "moneyTimer", (GetConVar("ctf_passivetimer"):GetFloat()), 0, function() 
-		ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_passiveincome"):GetFloat())) end) -- Passive award timer
 	
 		net.Start("RestrictMenu")
 		
@@ -483,6 +488,7 @@ function GM:PlayerInitialSpawn( ply )
 	ply:SetNWBool("canBuy", false)
 
 	UpdateAllValues(ply)
+
 	joining( ply )
 	ply:ConCommand( "ctf_team" )
 	
@@ -522,10 +528,29 @@ function GM:PlayerLoadout( ply )
 		
 		-- Check player class
 		local plyClass = PLAYER_CLASSES[ply:GetNWInt("playerClass")]
-		-- Equip class weapons
-		for k, v in pairs(plyClass.weapons) do
-			ply:Give(v)
-			ply:StripWeapon("gmod_camera")
+
+		local primaryWeapon = ply:GetNWString("selectedPrimary")
+		local secondaryWeapon = ply:GetNWString("selectedSecondary")
+		local equipment = ply:GetNWString("selectedEquipment")
+		ply:Give(primaryWeapon)
+		ply:Give(secondaryWeapon)
+		ply:Give(equipment)
+		ply:Give("weapon_crowbar")
+
+		if(equipment == "weapon_slam") then
+			ply:Give("weapon_simmines")
+		end
+
+		if((plyClass.name == "Engineer")) then
+			ply:Give("weapon_physcannon")
+		end
+
+		if((plyClass.name == "Scout")) then
+			ply:Give("climb_swep2")
+		end
+
+		if((plyClass.name == "Medic")) then
+			ply:Give("weapon_medkit")
 		end
 		
 	elseif ply.IsCaptain and !TeamSetUp[ply:Team()] then
@@ -535,10 +560,29 @@ function GM:PlayerLoadout( ply )
 		
 		-- Check player class
 		local plyClass = PLAYER_CLASSES[ply:GetNWInt("playerClass")]
-		-- Equip class weapons
-		for k, v in pairs(plyClass.weapons) do
-			ply:Give(v)
-			ply:StripWeapon("gmod_camera")
+
+		local primaryWeapon = ply:GetNWString("selectedPrimary")
+		local secondaryWeapon = ply:GetNWString("selectedSecondary")
+		local equipment = ply:GetNWString("selectedEquipment")
+		ply:Give(primaryWeapon)
+		ply:Give(secondaryWeapon)
+		ply:Give(equipment)
+		ply:Give("weapon_crowbar")
+
+		if(equipment == "weapon_slam") then
+			ply:Give("weapon_simmines")
+		end
+
+		if((plyClass.name == "Engineer")) then
+			ply:Give("weapon_physcannon")
+		end
+
+		if((plyClass.name == "Scout")) then
+			ply:Give("climb_swep2")
+		end
+
+		if((plyClass.name == "Medic")) then
+			ply:Give("weapon_medkit")
 		end
 		
 	else
@@ -546,10 +590,29 @@ function GM:PlayerLoadout( ply )
 		ply:StripWeapons()
 		-- Check player class
 		local plyClass = PLAYER_CLASSES[ply:GetNWInt("playerClass")]
-		-- Equip class weapons
-		for k, v in pairs(plyClass.weapons) do
-			ply:Give(v)
-			ply:StripWeapon("gmod_camera")
+
+		local primaryWeapon = ply:GetNWString("selectedPrimary")
+		local secondaryWeapon = ply:GetNWString("selectedSecondary")
+		local equipment = ply:GetNWString("selectedEquipment")
+		ply:Give(primaryWeapon)
+		ply:Give(secondaryWeapon)
+		ply:Give(equipment)
+		ply:Give("weapon_crowbar")
+
+		if(equipment == "weapon_slam") then
+			ply:Give("weapon_simmines")
+		end
+
+		if((plyClass.name == "Engineer")) then
+			ply:Give("weapon_physcannon")
+		end
+
+		if((plyClass.name == "Scout")) then
+			ply:Give("climb_swep2")
+		end
+
+		if((plyClass.name == "Medic")) then
+			ply:Give("weapon_medkit")
 		end
 		
 	end
@@ -643,18 +706,18 @@ function doBuild(team, pos, ply)
 		return
 	end
 
-	-- local tr = util.TraceHull( {
-		-- start = pos + Vector(0,0,1),
-		-- endpos = pos + Vector(0,0,2),
-		-- filter = ply,
-		-- mins = Vector(-200, -200, 0),
-		-- maxs = Vector(200, 200, 50)
-	-- } )
+	local tr = util.TraceHull( {
+		start = pos + Vector(0,0,1),
+		endpos = pos + Vector(0,0,2),
+		filter = ply,
+		mins = Vector(-200, -200, 0),
+		maxs = Vector(200, 200, 50)
+	} )
 
-	-- if (tr.Hit) then
-		-- ply:ChatPrint( "[CTF]: This location is invalid! Not enough space." )
-		-- return
-	-- end
+	if (tr.Hit) then
+		ply:ChatPrint( "[CTF]: This location is invalid! Not enough space." )
+		return
+	end
 	
 
 	TeamLocations[team] = pos
@@ -683,7 +746,6 @@ function doBuild(team, pos, ply)
 	
 	PropProtection.TeamMakePropOwner(team, ConSphere)
 	
-	--Experimental base perimeter determination (Working, theoretically)
 	PerimeterSphere = ents.Create("CTF_PerimeterSphere")
 	PerimeterSphere:SetPos(pos)
 	PerimeterSphere:SetNWInt("Team", team)
@@ -802,7 +864,9 @@ function ResetWorld()
 	game.CleanUpMap()
 
 	for k,ply in pairs(player.GetAll()) do
+
 		UpdateAllValues(ply)
+
 		joining( ply )
 		ply:UnLock()
 		ply:ConCommand( "ctf_team" )
@@ -825,6 +889,7 @@ function EndGame(team)
 end
 
 LastTimeLeft = math.ceil(CTF_Time:GetFloat() * 60 - Time)
+
 function GM:Think()
 
 	if buildTime != CTF_Time:GetFloat() then
@@ -927,3 +992,21 @@ util.AddNetworkString("OrdnanceMenu")
 function GM:ShowSpare2(ply)
 	ply:ConCommand("ctf_open_ordnancemenu")
 end
+
+net.Receive("receivePrimaryWeapon", function( len, ply )
+	if ( IsValid( ply ) and ply:IsPlayer() ) then
+		ply:SetNWString("selectedPrimary", net.ReadString())
+	else return end
+end )
+
+net.Receive("receiveSecondaryWeapon", function( len, ply )
+	if ( IsValid( ply ) and ply:IsPlayer() ) then
+		ply:SetNWString("selectedSecondary", net.ReadString())
+	else return end
+end )
+
+net.Receive("receiveEquipment", function( len, ply )
+	if ( IsValid( ply ) and ply:IsPlayer() ) then
+		ply:SetNWString("selectedEquipment", net.ReadString())
+	else return end
+end )
