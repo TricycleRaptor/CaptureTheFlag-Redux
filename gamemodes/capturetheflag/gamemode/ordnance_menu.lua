@@ -292,8 +292,9 @@ function addButtons(Menu)
 		airList:SetSpaceX(10)
 		
 		local airArray = {}
-		airArray[1] = scripted_ents.Get("lunasflightschool_combineheli")
-		airArray[2] = scripted_ents.Get("lunasflightschool_ah6")
+		airArray[1] = scripted_ents.Get("lunasflightschool_rebelheli")
+		airArray[2] = scripted_ents.Get("lunasflightschool_combineheli")
+		airArray[3] = scripted_ents.Get("lunasflightschool_ah6")
 		
 		for k, v in pairs(airArray) do
 			local icon = vgui.Create("SpawnIcon", airList)
