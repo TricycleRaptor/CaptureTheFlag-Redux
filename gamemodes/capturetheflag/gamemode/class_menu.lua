@@ -715,14 +715,14 @@ function classMenu()
 
 					selectedPrimary = demolitionistPrimary:GetOptionData(index)
 					
-					if(value == "P90") then
-						selectedModel = "models/weapons/tfa_ins2/w_mwr_p90.mdl"
+					if(value == "QBZ-97") then
+						selectedModel = "models/weapons/smc/qbz97/w_warface_t97.mdl"
 						primaryIcon:SetSize( 420, 420)
-						primaryIcon:SetPos(-95,-260)
+						primaryIcon:SetPos(-70,-270)
 					elseif (value == "H&K MP7") then
 						selectedModel = "models/weapons/tfa_ins2/w_mp7.mdl"
-						primaryIcon:SetSize( 400, 400)
-						primaryIcon:SetPos(-70,-255)
+						primaryIcon:SetSize( 460, 460)
+						primaryIcon:SetPos(-110,-300)
 					end
 
 					primaryIcon:SetModel(selectedModel)
