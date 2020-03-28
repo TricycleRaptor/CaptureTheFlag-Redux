@@ -45,8 +45,8 @@ PLAYER_CLASSES = {
 	{
 		name = "Scout",
 		health = 100,
-		walkspeed = 220,
-		runspeed = 320,
+		walkspeed = 250,
+		runspeed = 380,
 	},
 	{
 		name = "Medic",
