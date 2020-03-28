@@ -170,11 +170,11 @@ list.Set( "weapons_medic_primary", "tfa_ins2_mp7", V )
 
 local V = {
 
-	Name = "P90",
-	Model = "models/weapons/tfa_ins2/w_mwr_p90.mdl",
-	Class = "tfa_ins2_mwr_p90",
+	Name = "QBZ-97",
+	Model = "models/weapons/smc/qbz97/w_warface_t97.mdl",
+	Class = "tfa_ins2_norinco_qbz97",
 	Category = "Demolitionist Primary Weapon",
-	Description = "An SMG sporting a high capacity magazine and low spread, moderate recoil.",
+	Description = "A bullpup rifle sporting a high capacity magazine and low recoil.",
 
 }
 list.Set( "weapons_demolitionist_primary", "tfa_ins2_mwr_p90", V)
