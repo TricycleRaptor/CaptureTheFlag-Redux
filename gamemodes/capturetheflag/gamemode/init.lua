@@ -981,7 +981,7 @@ function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
 	end
 end
 
---------------------------------Menu Calls--------------------------
+--------------------------------Network Calls--------------------------
 
 
 function GM:ShowSpare1(ply)
@@ -994,19 +994,88 @@ function GM:ShowSpare2(ply)
 end
 
 net.Receive("receivePrimaryWeapon", function( len, ply )
+
+	local receivedPrimaryWeapon = net.ReadTable()
+	local plyClass = ply:GetNWInt("playerClass")
+
 	if ( IsValid( ply ) and ply:IsPlayer() ) then
-		ply:SetNWString("selectedPrimary", net.ReadString())
+
+		if(plyClass == receivedPrimaryWeapon.Category) then
+			ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
+		else
+			ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+		end
+	
 	else return end
+
 end )
 
 net.Receive("receiveSecondaryWeapon", function( len, ply )
 	if ( IsValid( ply ) and ply:IsPlayer() ) then
-		ply:SetNWString("selectedSecondary", net.ReadString())
+
+		local receivedSecondaryWeapon = net.ReadTable()
+
+		if (receivedSecondaryWeapon.Category == "Sidearms") then
+			ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
+		else
+			ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+		end
+		
 	else return end
 end )
 
 net.Receive("receiveEquipment", function( len, ply )
+
+	local receivedEquipment = net.ReadTable()
+	local plyClass = ply:GetNWInt("playerClass")
+
 	if ( IsValid( ply ) and ply:IsPlayer() ) then
-		ply:SetNWString("selectedEquipment", net.ReadString())
+
+		-- Validate Rifleman, Gunner, and Medic equipment
+		if (plyClass == 2 or plyClass == 4 or plyClass == 9) then
+			if(receivedEquipment.Category == "Grenades") then
+				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			else
+				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			end
+		end
+
+		-- Validate Marksman and Scout equipment
+		if (plyClass == 3 or plyClass == 8) then
+			if(receivedEquipment.Category == "Binoculars") then
+				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			else
+				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			end
+		end
+
+		-- Validate Support equipment
+		if (plyClass == 6) then
+			if(receivedEquipment.Category == "Throwable Ammo") then
+				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			else
+				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			end
+		end
+
+		-- Validate Engineer equipment
+		if (plyClass == 7) then
+			if(receivedEquipment.Category == "Toolkit") then
+				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			else
+				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			end
+		end
+
+		-- Validate Demolitionist equipment
+		if (plyClass == 5) then
+			if(receivedEquipment.Category == "Demolitions") then
+				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			else
+				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			end
+		end
+
 	else return end
+
 end )
