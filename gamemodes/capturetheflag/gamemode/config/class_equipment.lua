@@ -187,8 +187,8 @@ local V = {
 	Name = "Fortification Tablet",
 	Model = "models/nirrti/tablet/tablet_sfm.mdl",
 	Class = "alydus_fortificationbuildertablet",
-	Category = "Toolkits",
-	Description = "A tablet that provides the user access to fortification setups.",
+	Category = "Toolkit",
+	Description = "A tablet that provides access to fortification setups.",
 
 }
 list.Set( "engineers_list", "alydus_fortificationbuildertablet", V )
