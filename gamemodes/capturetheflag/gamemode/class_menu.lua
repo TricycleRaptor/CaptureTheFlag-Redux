@@ -89,15 +89,15 @@ function classMenu()
 					RunConsoleCommand("ctf_setclass", 2)
 
 					net.Start("receivePrimaryWeapon")
-						net.WriteString(selectedPrimary)
+						net.WriteTable(selectedPrimary)
 					net.SendToServer()
 
 					net.Start("receiveSecondaryWeapon")
-						net.WriteString(selectedSecondary)
+						net.WriteTable(selectedSecondary)
 					net.SendToServer()
 
 					net.Start("receiveEquipment")
-						net.WriteString(selectedEquipment)
+						net.WriteTable(selectedEquipment)
 					net.SendToServer()
 
 					LocalPlayer():EmitSound(ConfirmNoise)
@@ -126,7 +126,7 @@ function classMenu()
 
 				for k, v in pairs(riflemanPrimaryList) do
 
-					riflemanPrimary:AddChoice(v["Name"], v["Class"])
+					riflemanPrimary:AddChoice(v["Name"], v)
 
 				end
 
@@ -164,7 +164,7 @@ function classMenu()
 
 				for k, v in pairs(riflemanSecondaryList) do
 
-					riflemanSecondary:AddChoice(v["Name"], v["Class"])
+					riflemanSecondary:AddChoice(v["Name"], v)
 
 				end
 
@@ -202,7 +202,7 @@ function classMenu()
 
 				for k, v in pairs(riflemanEquipmentList) do
 
-					riflemanEquipment:AddChoice(v["Name"], v["Class"])
+					riflemanEquipment:AddChoice(v["Name"], v)
 
 				end
 
@@ -280,15 +280,15 @@ function classMenu()
 					RunConsoleCommand("ctf_setclass", 3)
 
 					net.Start("receivePrimaryWeapon")
-						net.WriteString(selectedPrimary)
+						net.WriteTable(selectedPrimary)
 					net.SendToServer()
 
 					net.Start("receiveSecondaryWeapon")
-						net.WriteString(selectedSecondary)
+						net.WriteTable(selectedSecondary)
 					net.SendToServer()
 
 					net.Start("receiveEquipment")
-						net.WriteString(selectedEquipment)
+						net.WriteTable(selectedEquipment)
 					net.SendToServer()
 
 					LocalPlayer():EmitSound(ConfirmNoise)
@@ -315,7 +315,7 @@ function classMenu()
 
 				for k, v in pairs(marksmanPrimaryList) do
 
-					marksmanPrimary:AddChoice(v["Name"], v["Class"])
+					marksmanPrimary:AddChoice(v["Name"], v)
 
 				end
 
@@ -353,7 +353,7 @@ function classMenu()
 
 				for k, v in pairs(marksmanSecondaryList) do
 
-					marksmanSecondary:AddChoice(v["Name"], v["Class"])
+					marksmanSecondary:AddChoice(v["Name"], v)
 
 				end
 
@@ -391,7 +391,7 @@ function classMenu()
 
 				for k, v in pairs(marksmanEquipmentList) do
 
-					marksmanEquipment:AddChoice(v["Name"], v["Class"])
+					marksmanEquipment:AddChoice(v["Name"], v)
 
 				end
 
@@ -477,15 +477,15 @@ function classMenu()
 					RunConsoleCommand("ctf_setclass", 4)
 
 					net.Start("receivePrimaryWeapon")
-						net.WriteString(selectedPrimary)
+						net.WriteTable(selectedPrimary)
 					net.SendToServer()
 
 					net.Start("receiveSecondaryWeapon")
-						net.WriteString(selectedSecondary)
+						net.WriteTable(selectedSecondary)
 					net.SendToServer()
 
 					net.Start("receiveEquipment")
-						net.WriteString(selectedEquipment)
+						net.WriteTable(selectedEquipment)
 					net.SendToServer()
 
 					LocalPlayer():EmitSound(ConfirmNoise)
@@ -514,7 +514,7 @@ function classMenu()
 
 				for k, v in pairs(gunnerPrimaryList) do
 
-					gunnerPrimary:AddChoice(v["Name"], v["Class"])
+					gunnerPrimary:AddChoice(v["Name"], v)
 
 				end
 
@@ -552,7 +552,7 @@ function classMenu()
 
 				for k, v in pairs(gunnerSecondaryList) do
 
-					gunnerSecondary:AddChoice(v["Name"], v["Class"])
+					gunnerSecondary:AddChoice(v["Name"], v)
 
 				end
 
@@ -590,7 +590,7 @@ function classMenu()
 
 				for k, v in pairs(gunnerEquipmentList) do
 
-					gunnerEquipment:AddChoice(v["Name"], v["Class"])
+					gunnerEquipment:AddChoice(v["Name"], v)
 
 				end
 
@@ -670,15 +670,15 @@ function classMenu()
 					RunConsoleCommand("ctf_setclass", 5)
 
 					net.Start("receivePrimaryWeapon")
-						net.WriteString(selectedPrimary)
+						net.WriteTable(selectedPrimary)
 					net.SendToServer()
 
 					net.Start("receiveSecondaryWeapon")
-						net.WriteString(selectedSecondary)
+						net.WriteTable(selectedSecondary)
 					net.SendToServer()
 
 					net.Start("receiveEquipment")
-						net.WriteString(selectedEquipment)
+						net.WriteTable(selectedEquipment)
 					net.SendToServer()
 
 					LocalPlayer():EmitSound(ConfirmNoise)
@@ -707,7 +707,7 @@ function classMenu()
 
 				for k, v in pairs(demolitionistPrimaryList) do
 
-					demolitionistPrimary:AddChoice(v["Name"], v["Class"])
+					demolitionistPrimary:AddChoice(v["Name"], v)
 
 				end
 
@@ -749,7 +749,7 @@ function classMenu()
 
 				for k, v in pairs(demolitionistSecondaryList) do
 
-					demolitionistSecondary:AddChoice(v["Name"], v["Class"])
+					demolitionistSecondary:AddChoice(v["Name"], v)
 
 				end
 
@@ -787,7 +787,7 @@ function classMenu()
 
 				for k, v in pairs(demolitionistEquipmentList) do
 
-					demolitionistEquipment:AddChoice(v["Name"], v["Class"])
+					demolitionistEquipment:AddChoice(v["Name"], v)
 
 				end
 
@@ -869,15 +869,15 @@ function classMenu()
 					RunConsoleCommand("ctf_setclass", 6)
 
 					net.Start("receivePrimaryWeapon")
-						net.WriteString(selectedPrimary)
+						net.WriteTable(selectedPrimary)
 					net.SendToServer()
 
 					net.Start("receiveSecondaryWeapon")
-						net.WriteString(selectedSecondary)
+						net.WriteTable(selectedSecondary)
 					net.SendToServer()
 
 					net.Start("receiveEquipment")
-						net.WriteString(selectedEquipment)
+						net.WriteTable(selectedEquipment)
 					net.SendToServer()
 
 					LocalPlayer():EmitSound(ConfirmNoise)
@@ -906,7 +906,7 @@ function classMenu()
 
 				for k, v in pairs(supportPrimaryList) do
 
-					supportPrimary:AddChoice(v["Name"], v["Class"])
+					supportPrimary:AddChoice(v["Name"], v)
 
 				end
 
@@ -944,7 +944,7 @@ function classMenu()
 
 				for k, v in pairs(supportSecondaryList) do
 
-					supportSecondary:AddChoice(v["Name"], v["Class"])
+					supportSecondary:AddChoice(v["Name"], v)
 
 				end
 
@@ -982,7 +982,7 @@ function classMenu()
 
 				for k, v in pairs(supportEquipmentList) do
 
-					supportEquipment:AddChoice(v["Name"], v["Class"])
+					supportEquipment:AddChoice(v["Name"], v)
 
 				end
 
@@ -1070,15 +1070,15 @@ function classMenu()
 					RunConsoleCommand("ctf_setclass", 7)
 
 					net.Start("receivePrimaryWeapon")
-						net.WriteString(selectedPrimary)
+						net.WriteTable(selectedPrimary)
 					net.SendToServer()
 
 					net.Start("receiveSecondaryWeapon")
-						net.WriteString(selectedSecondary)
+						net.WriteTable(selectedSecondary)
 					net.SendToServer()
 
 					net.Start("receiveEquipment")
-						net.WriteString(selectedEquipment)
+						net.WriteTable(selectedEquipment)
 					net.SendToServer()
 
 					LocalPlayer():EmitSound(ConfirmNoise)
@@ -1107,7 +1107,7 @@ function classMenu()
 
 				for k, v in pairs(engineerPrimaryList) do
 
-					engineerPrimary:AddChoice(v["Name"], v["Class"])
+					engineerPrimary:AddChoice(v["Name"], v)
 
 				end
 
@@ -1145,7 +1145,7 @@ function classMenu()
 
 				for k, v in pairs(engineerSecondaryList) do
 
-					engineerSecondary:AddChoice(v["Name"], v["Class"])
+					engineerSecondary:AddChoice(v["Name"], v)
 
 				end
 
@@ -1183,7 +1183,7 @@ function classMenu()
 
 				for k, v in pairs(engineerEquipmentList) do
 
-					engineerEquipment:AddChoice(v["Name"], v["Class"])
+					engineerEquipment:AddChoice(v["Name"], v)
 
 				end
 
@@ -1263,15 +1263,15 @@ function classMenu()
 					RunConsoleCommand("ctf_setclass", 8)
 
 					net.Start("receivePrimaryWeapon")
-						net.WriteString(selectedPrimary)
+						net.WriteTable(selectedPrimary)
 					net.SendToServer()
 
 					net.Start("receiveSecondaryWeapon")
-						net.WriteString(selectedSecondary)
+						net.WriteTable(selectedSecondary)
 					net.SendToServer()
 
 					net.Start("receiveEquipment")
-						net.WriteString(selectedEquipment)
+						net.WriteTable(selectedEquipment)
 					net.SendToServer()
 
 					LocalPlayer():EmitSound(ConfirmNoise)
@@ -1300,7 +1300,7 @@ function classMenu()
 
 				for k, v in pairs(scoutPrimaryList) do
 
-					scoutPrimary:AddChoice(v["Name"], v["Class"])
+					scoutPrimary:AddChoice(v["Name"], v)
 
 				end
 
@@ -1342,7 +1342,7 @@ function classMenu()
 
 				for k, v in pairs(scoutSecondaryList) do
 
-					scoutSecondary:AddChoice(v["Name"], v["Class"])
+					scoutSecondary:AddChoice(v["Name"], v)
 
 				end
 
@@ -1380,7 +1380,7 @@ function classMenu()
 
 				for k, v in pairs(scoutEquipmentList) do
 
-					scoutEquipment:AddChoice(v["Name"], v["Class"])
+					scoutEquipment:AddChoice(v["Name"], v)
 
 				end
 
@@ -1464,15 +1464,15 @@ function classMenu()
 					RunConsoleCommand("ctf_setclass", 9)
 
 					net.Start("receivePrimaryWeapon")
-						net.WriteString(selectedPrimary)
+						net.WriteTable(selectedPrimary)
 					net.SendToServer()
 
 					net.Start("receiveSecondaryWeapon")
-						net.WriteString(selectedSecondary)
+						net.WriteTable(selectedSecondary)
 					net.SendToServer()
 
 					net.Start("receiveEquipment")
-						net.WriteString(selectedEquipment)
+						net.WriteTable(selectedEquipment)
 					net.SendToServer()
 
 					LocalPlayer():EmitSound(ConfirmNoise)
@@ -1501,7 +1501,7 @@ function classMenu()
 
 				for k, v in pairs(medicPrimaryList) do
 
-					medicPrimary:AddChoice(v["Name"], v["Class"])
+					medicPrimary:AddChoice(v["Name"], v)
 
 				end
 
@@ -1539,7 +1539,7 @@ function classMenu()
 
 				for k, v in pairs(medicSecondaryList) do
 
-					medicSecondary:AddChoice(v["Name"], v["Class"])
+					medicSecondary:AddChoice(v["Name"], v)
 
 				end
 
@@ -1577,7 +1577,7 @@ function classMenu()
 
 				for k, v in pairs(medicEquipmentList) do
 
-					medicEquipment:AddChoice(v["Name"], v["Class"])
+					medicEquipment:AddChoice(v["Name"], v)
 
 				end
 
