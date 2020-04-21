@@ -10,11 +10,12 @@ ScoreNoise = Sound("ctf/captured.wav")
 ScoreNoise2 = Sound("ambient/levels/citadel/weapon_disintegrate2.wav")
 PickupNoise = Sound("ctf/taken.wav")
 PickupNoise2 = Sound("ambient/levels/canals/windchime2.wav")
+JumpReadyNoise = Sound("hl1/fvox/hiss.wav")
 DropNoise = Sound("ctf/dropped.wav")
 DropNoise2 = Sound("ambient/alarms/warningbell1.wav")
 ReturnNoise = Sound("ctf/recovered.wav")
-LoseNoise = Sound("vo/npc/vortigaunt/itishonor.wav")
-WinNoise = Sound("vo/npc/vortigaunt/vques01.wav")
+LoseNoise = Sound("vo/npc/vortigaunt/vques01.wav")
+WinNoise = Sound("vo/npc/vortigaunt/itishonor.wav")
 
 LocalPlayer().canbuild = 1
 
@@ -607,6 +608,7 @@ function AlertThink()
 	end
 
 	local function TeamDisplay()
+	
 		local Scale1 = 2 - (CurTime() - IconTimer[1]) * 2
 		local Scale2 = 2 - (CurTime() - IconTimer[2]) * 2
 		if Scale1 < 1 then Scale1 = 1 end
@@ -645,6 +647,9 @@ function AlertThink()
 		draw.DrawText(Scores[1], "RaptorFont", (ScrW() / 2.16 + colonWidth / 50), (ScrH()/ 90), Color(255,71,71,ScoreA), TEXT_ALIGN_LEFT) --ScoreA
 		draw.DrawText(Scores[2], "RaptorFont", (ScrW() / 2.08 + colonWidth / 50), (ScrH()/ 90), Color(100,100,255,ScoreA), TEXT_ALIGN_LEFT) --ScoreA
 		draw.DrawText("Scores: " .. "     -","RaptorFont", (ScrW() / 2.35), (ScrH()/ 90), Color(255, 255, 255, ScoreA), TEXT_ALIGN_LEFT) --ScoreA
+		
+		surface.SetDrawColor( 255, 0, 0, 255 )
+		draw.NoTexture()
 
 		if (showDeath) then
 			surface.SetDrawColor(65, 65, 65, 65)
@@ -699,3 +704,24 @@ function VictoryThink()
 	end
 end
 hook.Add("Think", "VictoryThink", VictoryThink)
+
+local cooldownDelay = 1
+local lastOccurance = -cooldownDelay
+
+hook.Add("StartCommand", "Jump Cooldown", function(ply, cmd)
+	local timeElapsed = CurTime() - lastOccurance
+
+	if cmd:KeyDown(IN_JUMP) then
+	
+		-- Do more testing and add a status indicator for the client
+		local timeElapsed = CurTime() - lastOccurance
+
+		if timeElapsed < cooldownDelay then 
+			cmd:RemoveKey(IN_JUMP)
+		else
+			lastOccurance = CurTime()
+		end
+		
+	end
+end)
+
