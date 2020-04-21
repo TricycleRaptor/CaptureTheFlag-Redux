@@ -2,8 +2,8 @@ PLAYER_CLASSES = {
 	{
 		name = "Default",
 		health = 100,
-		walkspeed = 500,
-		runspeed = 550,
+		walkspeed = 200,
+		runspeed = 300,
 		weapons = "weapon_physcannon"
 	},
 	{
@@ -45,8 +45,8 @@ PLAYER_CLASSES = {
 	{
 		name = "Scout",
 		health = 100,
-		walkspeed = 250,
-		runspeed = 380,
+		walkspeed = 210,
+		runspeed = 310,
 	},
 	{
 		name = "Medic",
