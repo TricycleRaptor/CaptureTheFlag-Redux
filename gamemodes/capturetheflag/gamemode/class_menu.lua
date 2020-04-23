@@ -56,13 +56,35 @@ function classMenu()
 			LocalPlayer():EmitSound(ButtonNoise)
 			local broadPanel = Frame:Add("SelectionPanel")
 
+			local classTitle = vgui.Create("DLabel",broadPanel)
+
 			local classDescPanel = vgui.Create("DPanel", broadPanel)
-				classDescPanel:SetPos(25,50)
-				classDescPanel:SetSize(600,50)
+				classDescPanel:SetPos(25,45)
+				classDescPanel:SetSize(600,60)
 				classDescPanel:SetBackgroundColor(Color(84,84,84))
 				classDescPanel.Paint = function( self, w, h )
 					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
 			end
+
+			classTitle:SetSize(600,250)
+			classTitle:SetPos(200,-100)
+			classTitle:SetFont("DermaLarge")
+			classTitle:SetText("[ Rifleman's Arsenal ]")
+
+			local primaryDescription = vgui.Create("DLabel",classDescPanel)
+			primaryDescription:SetSize(600,15)
+			primaryDescription:SetText("PRIMARY: ...")
+			primaryDescription:SetPos(10,10)
+
+			local secondaryDescription = vgui.Create("DLabel",classDescPanel)
+			secondaryDescription:SetSize(600,15)
+			secondaryDescription:SetText("SECONDARY: ...")
+			secondaryDescription:SetPos(10,25)
+
+			local equipmentDescription = vgui.Create("DLabel",classDescPanel)
+			equipmentDescription:SetSize(600,15)
+			equipmentDescription:SetText("EQUIPMENT: ...")
+			equipmentDescription:SetPos(10,40)
 
 			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
 				weaponIconPanel:SetPos(25,125)
@@ -133,6 +155,7 @@ function classMenu()
 				riflemanPrimary.OnSelect = function( self, index, value )
 
 					selectedPrimary = riflemanPrimary:GetOptionData(index)
+					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
 					if(value == "ARC-C") then
 						selectedModel = "models/weapons/w_acrc.mdl"
@@ -171,6 +194,7 @@ function classMenu()
 				riflemanSecondary.OnSelect = function( self, index, value )
 
 					selectedSecondary = riflemanSecondary:GetOptionData(index)
+					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
 					if(value == "QSZ-92") then
 						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
@@ -209,6 +233,7 @@ function classMenu()
 				riflemanEquipment.OnSelect = function( self, index, value )
 
 					selectedEquipment = riflemanEquipment:GetOptionData(index)
+					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
 					if(value == "M67 Offensive Grenade") then
 						selectedModel = "models/weapons/tfa_ins2/w_m67.mdl"
@@ -247,13 +272,35 @@ function classMenu()
 			LocalPlayer():EmitSound(ButtonNoise)
 			local broadPanel = Frame:Add("SelectionPanel")
 
+			local classTitle = vgui.Create("DLabel",broadPanel)
+
 			local classDescPanel = vgui.Create("DPanel", broadPanel)
-				classDescPanel:SetPos(25,50)
-				classDescPanel:SetSize(600,50)
+				classDescPanel:SetPos(25,45)
+				classDescPanel:SetSize(600,60)
 				classDescPanel:SetBackgroundColor(Color(84,84,84))
 				classDescPanel.Paint = function( self, w, h )
 					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
 			end
+
+			classTitle:SetSize(600,250)
+			classTitle:SetPos(200,-100)
+			classTitle:SetFont("DermaLarge")
+			classTitle:SetText("[ Marksman's Arsenal ]")
+
+			local primaryDescription = vgui.Create("DLabel",classDescPanel)
+			primaryDescription:SetSize(600,15)
+			primaryDescription:SetText("PRIMARY: ...")
+			primaryDescription:SetPos(10,10)
+
+			local secondaryDescription = vgui.Create("DLabel",classDescPanel)
+			secondaryDescription:SetSize(600,15)
+			secondaryDescription:SetText("SECONDARY: ...")
+			secondaryDescription:SetPos(10,25)
+
+			local equipmentDescription = vgui.Create("DLabel",classDescPanel)
+			equipmentDescription:SetSize(600,15)
+			equipmentDescription:SetText("EQUIPMENT: ...")
+			equipmentDescription:SetPos(10,40)
 
 			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
 				weaponIconPanel:SetPos(25,125)
@@ -322,6 +369,7 @@ function classMenu()
 				marksmanPrimary.OnSelect = function( self, index, value )
 
 					selectedPrimary = marksmanPrimary:GetOptionData(index)
+					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
 					if(value == "MK. 14 EBR") then
 						selectedModel = "models/weapons/tfa_ins2/w_m14ebr.mdl"
@@ -360,6 +408,7 @@ function classMenu()
 				marksmanSecondary.OnSelect = function( self, index, value )
 
 					selectedSecondary = marksmanSecondary:GetOptionData(index)
+					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
 					if(value == "QSZ-92") then
 						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
@@ -398,6 +447,7 @@ function classMenu()
 				marksmanEquipment.OnSelect = function( self, index, value )
 
 					selectedEquipment = marksmanEquipment:GetOptionData(index)
+					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
 					if(value == "Standard Binoculars") then
 						selectedModel = "models/weapons/w_binocularsbp.mdl"
@@ -444,13 +494,35 @@ function classMenu()
 			LocalPlayer():EmitSound(ButtonNoise)
 			local broadPanel = Frame:Add("SelectionPanel")
 
+			local classTitle = vgui.Create("DLabel",broadPanel)
+
 			local classDescPanel = vgui.Create("DPanel", broadPanel)
-				classDescPanel:SetPos(25,50)
-				classDescPanel:SetSize(600,50)
+				classDescPanel:SetPos(25,45)
+				classDescPanel:SetSize(600,60)
 				classDescPanel:SetBackgroundColor(Color(84,84,84))
 				classDescPanel.Paint = function( self, w, h )
 					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
 			end
+
+			classTitle:SetSize(600,250)
+			classTitle:SetPos(200,-100)
+			classTitle:SetFont("DermaLarge")
+			classTitle:SetText("[ Gunner's Arsenal ]")
+
+			local primaryDescription = vgui.Create("DLabel",classDescPanel)
+			primaryDescription:SetSize(600,15)
+			primaryDescription:SetText("PRIMARY: ...")
+			primaryDescription:SetPos(10,10)
+
+			local secondaryDescription = vgui.Create("DLabel",classDescPanel)
+			secondaryDescription:SetSize(600,15)
+			secondaryDescription:SetText("SECONDARY: ...")
+			secondaryDescription:SetPos(10,25)
+
+			local equipmentDescription = vgui.Create("DLabel",classDescPanel)
+			equipmentDescription:SetSize(600,15)
+			equipmentDescription:SetText("EQUIPMENT: ...")
+			equipmentDescription:SetPos(10,40)
 
 			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
 				weaponIconPanel:SetPos(25,125)
@@ -521,6 +593,7 @@ function classMenu()
 				gunnerPrimary.OnSelect = function( self, index, value )
 
 					selectedPrimary = gunnerPrimary:GetOptionData(index)
+					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
 					if(value == "RPK-74m") then
 						selectedModel = "models/weapons/w_rpk_74m.mdl"
@@ -559,6 +632,7 @@ function classMenu()
 				gunnerSecondary.OnSelect = function( self, index, value )
 
 					selectedSecondary = gunnerSecondary:GetOptionData(index)
+					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
 					if(value == "QSZ-92") then
 						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
@@ -597,6 +671,7 @@ function classMenu()
 				gunnerEquipment.OnSelect = function( self, index, value )
 
 					selectedEquipment = gunnerEquipment:GetOptionData(index)
+					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
 					if(value == "M67 Offensive Grenade") then
 						selectedModel = "models/weapons/tfa_ins2/w_m67.mdl"
@@ -637,13 +712,35 @@ function classMenu()
 			LocalPlayer():EmitSound(ButtonNoise)
 			local broadPanel = Frame:Add("SelectionPanel")
 
+			local classTitle = vgui.Create("DLabel",broadPanel)
+
 			local classDescPanel = vgui.Create("DPanel", broadPanel)
-				classDescPanel:SetPos(25,50)
-				classDescPanel:SetSize(600,50)
+				classDescPanel:SetPos(25,45)
+				classDescPanel:SetSize(600,60)
 				classDescPanel:SetBackgroundColor(Color(84,84,84))
 				classDescPanel.Paint = function( self, w, h )
 					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
 			end
+
+			classTitle:SetSize(600,250)
+			classTitle:SetPos(200,-100)
+			classTitle:SetFont("DermaLarge")
+			classTitle:SetText("[ Demolitionist's Arsenal ]")
+
+			local primaryDescription = vgui.Create("DLabel",classDescPanel)
+			primaryDescription:SetSize(600,15)
+			primaryDescription:SetText("PRIMARY: ...")
+			primaryDescription:SetPos(10,10)
+
+			local secondaryDescription = vgui.Create("DLabel",classDescPanel)
+			secondaryDescription:SetSize(600,15)
+			secondaryDescription:SetText("SECONDARY: ...")
+			secondaryDescription:SetPos(10,25)
+
+			local equipmentDescription = vgui.Create("DLabel",classDescPanel)
+			equipmentDescription:SetSize(600,15)
+			equipmentDescription:SetText("EQUIPMENT: ...")
+			equipmentDescription:SetPos(10,40)
 
 			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
 				weaponIconPanel:SetPos(25,125)
@@ -714,6 +811,7 @@ function classMenu()
 				demolitionistPrimary.OnSelect = function( self, index, value )
 
 					selectedPrimary = demolitionistPrimary:GetOptionData(index)
+					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
 					if(value == "QBZ-97") then
 						selectedModel = "models/weapons/smc/qbz97/w_warface_t97.mdl"
@@ -756,6 +854,7 @@ function classMenu()
 				demolitionistSecondary.OnSelect = function( self, index, value )
 
 					selectedSecondary = demolitionistSecondary:GetOptionData(index)
+					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
 					if(value == "QSZ-92") then
 						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
@@ -794,6 +893,7 @@ function classMenu()
 				demolitionistEquipment.OnSelect = function( self, index, value )
 
 					selectedEquipment = demolitionistEquipment:GetOptionData(index)
+					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
 					if(value == "Laser-Guided RPG") then
 						selectedModel = "models/weapons/w_rocket_launcher.mdl"
@@ -836,13 +936,35 @@ function classMenu()
 			LocalPlayer():EmitSound(ButtonNoise)
 			local broadPanel = Frame:Add("SelectionPanel")
 
+			local classTitle = vgui.Create("DLabel",broadPanel)
+
 			local classDescPanel = vgui.Create("DPanel", broadPanel)
-				classDescPanel:SetPos(25,50)
-				classDescPanel:SetSize(600,50)
+				classDescPanel:SetPos(25,45)
+				classDescPanel:SetSize(600,60)
 				classDescPanel:SetBackgroundColor(Color(84,84,84))
 				classDescPanel.Paint = function( self, w, h )
 					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
 			end
+
+			classTitle:SetSize(600,250)
+			classTitle:SetPos(200,-100)
+			classTitle:SetFont("DermaLarge")
+			classTitle:SetText("[ Suupport's Arsenal ]")
+
+			local primaryDescription = vgui.Create("DLabel",classDescPanel)
+			primaryDescription:SetSize(600,15)
+			primaryDescription:SetText("PRIMARY: ...")
+			primaryDescription:SetPos(10,10)
+
+			local secondaryDescription = vgui.Create("DLabel",classDescPanel)
+			secondaryDescription:SetSize(600,15)
+			secondaryDescription:SetText("SECONDARY: ...")
+			secondaryDescription:SetPos(10,25)
+
+			local equipmentDescription = vgui.Create("DLabel",classDescPanel)
+			equipmentDescription:SetSize(600,15)
+			equipmentDescription:SetText("EQUIPMENT: ...")
+			equipmentDescription:SetPos(10,40)
 
 			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
 				weaponIconPanel:SetPos(25,125)
@@ -913,6 +1035,7 @@ function classMenu()
 				supportPrimary.OnSelect = function( self, index, value )
 
 					selectedPrimary = supportPrimary:GetOptionData(index)
+					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
 					if(value == "SPAS-12") then
 						selectedModel = "models/weapons/tfa_ins2/w_spas12_bri.mdl"
@@ -951,6 +1074,7 @@ function classMenu()
 				supportSecondary.OnSelect = function( self, index, value )
 
 					selectedSecondary = supportSecondary:GetOptionData(index)
+					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
 					if(value == "QSZ-92") then
 						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
@@ -989,6 +1113,7 @@ function classMenu()
 				supportEquipment.OnSelect = function( self, index, value )
 
 					selectedEquipment = supportEquipment:GetOptionData(index)
+					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
 					if(value == "Rifle Ammo Supply" || value == "SMG Ammo Supply") then
 						selectedModel = "models/Items/BoxMRounds.mdl"
@@ -1037,13 +1162,35 @@ function classMenu()
 			LocalPlayer():EmitSound(ButtonNoise)
 			local broadPanel = Frame:Add("SelectionPanel")
 
+			local classTitle = vgui.Create("DLabel",broadPanel)
+
 			local classDescPanel = vgui.Create("DPanel", broadPanel)
-				classDescPanel:SetPos(25,50)
-				classDescPanel:SetSize(600,50)
+				classDescPanel:SetPos(25,45)
+				classDescPanel:SetSize(600,60)
 				classDescPanel:SetBackgroundColor(Color(84,84,84))
 				classDescPanel.Paint = function( self, w, h )
 					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
 			end
+
+			classTitle:SetSize(600,250)
+			classTitle:SetPos(200,-100)
+			classTitle:SetFont("DermaLarge")
+			classTitle:SetText("[ Engineer's Arsenal ]")
+
+			local primaryDescription = vgui.Create("DLabel",classDescPanel)
+			primaryDescription:SetSize(600,15)
+			primaryDescription:SetText("PRIMARY: ...")
+			primaryDescription:SetPos(10,10)
+
+			local secondaryDescription = vgui.Create("DLabel",classDescPanel)
+			secondaryDescription:SetSize(600,15)
+			secondaryDescription:SetText("SECONDARY: ...")
+			secondaryDescription:SetPos(10,25)
+
+			local equipmentDescription = vgui.Create("DLabel",classDescPanel)
+			equipmentDescription:SetSize(600,15)
+			equipmentDescription:SetText("EQUIPMENT: ...")
+			equipmentDescription:SetPos(10,40)
 
 			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
 				weaponIconPanel:SetPos(25,125)
@@ -1114,6 +1261,7 @@ function classMenu()
 				engineerPrimary.OnSelect = function( self, index, value )
 
 					selectedPrimary = engineerPrimary:GetOptionData(index)
+					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
 					if(value == "Nova") then
 						selectedModel = "models/weapons/tfa_ins2/w_nova.mdl"
@@ -1152,6 +1300,7 @@ function classMenu()
 				engineerSecondary.OnSelect = function( self, index, value )
 
 					selectedSecondary = engineerSecondary:GetOptionData(index)
+					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
 					if(value == "QSZ-92") then
 						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
@@ -1190,6 +1339,7 @@ function classMenu()
 				engineerEquipment.OnSelect = function( self, index, value )
 
 					selectedEquipment = engineerEquipment:GetOptionData(index)
+					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
 					if(value == "Simfphys Repair Tool") then
 						selectedModel = "models/weapons/w_physics.mdl"
@@ -1230,13 +1380,35 @@ function classMenu()
 			LocalPlayer():EmitSound(ButtonNoise)
 			local broadPanel = Frame:Add("SelectionPanel")
 
+			local classTitle = vgui.Create("DLabel",broadPanel)
+
 			local classDescPanel = vgui.Create("DPanel", broadPanel)
-				classDescPanel:SetPos(25,50)
-				classDescPanel:SetSize(600,50)
+				classDescPanel:SetPos(25,45)
+				classDescPanel:SetSize(600,60)
 				classDescPanel:SetBackgroundColor(Color(84,84,84))
 				classDescPanel.Paint = function( self, w, h )
 					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
 			end
+
+			classTitle:SetSize(600,250)
+			classTitle:SetPos(200,-100)
+			classTitle:SetFont("DermaLarge")
+			classTitle:SetText("[ Scout's Arsenal ]")
+
+			local primaryDescription = vgui.Create("DLabel",classDescPanel)
+			primaryDescription:SetSize(600,15)
+			primaryDescription:SetText("PRIMARY: ...")
+			primaryDescription:SetPos(10,10)
+
+			local secondaryDescription = vgui.Create("DLabel",classDescPanel)
+			secondaryDescription:SetSize(600,15)
+			secondaryDescription:SetText("SECONDARY: ...")
+			secondaryDescription:SetPos(10,25)
+
+			local equipmentDescription = vgui.Create("DLabel",classDescPanel)
+			equipmentDescription:SetSize(600,15)
+			equipmentDescription:SetText("EQUIPMENT: ...")
+			equipmentDescription:SetPos(10,40)
 
 			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
 				weaponIconPanel:SetPos(25,125)
@@ -1307,6 +1479,7 @@ function classMenu()
 				scoutPrimary.OnSelect = function( self, index, value )
 
 					selectedPrimary = scoutPrimary:GetOptionData(index)
+					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
 					if(value == "H&K MP5K") then
 						selectedModel = "models/weapons/tfa_ins2/w_mp5k.mdl"
@@ -1349,6 +1522,7 @@ function classMenu()
 				scoutSecondary.OnSelect = function( self, index, value )
 
 					selectedSecondary = scoutSecondary:GetOptionData(index)
+					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
 					if(value == "QSZ-92") then
 						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
@@ -1387,6 +1561,7 @@ function classMenu()
 				scoutEquipment.OnSelect = function( self, index, value )
 
 					selectedEquipment = scoutEquipment:GetOptionData(index)
+					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
 					if(value == "Standard Binoculars") then
 						selectedModel = "models/weapons/w_binocularsbp.mdl"
@@ -1431,13 +1606,35 @@ function classMenu()
 			LocalPlayer():EmitSound(ButtonNoise)
 			local broadPanel = Frame:Add("SelectionPanel")
 
+			local classTitle = vgui.Create("DLabel",broadPanel)
+
 			local classDescPanel = vgui.Create("DPanel", broadPanel)
-				classDescPanel:SetPos(25,50)
-				classDescPanel:SetSize(600,50)
+				classDescPanel:SetPos(25,45)
+				classDescPanel:SetSize(600,60)
 				classDescPanel:SetBackgroundColor(Color(84,84,84))
 				classDescPanel.Paint = function( self, w, h )
 					draw.RoundedBox( 6, 0, 0, w, h, Color(84,84,84) )
 			end
+
+			classTitle:SetSize(600,250)
+			classTitle:SetPos(200,-100)
+			classTitle:SetFont("DermaLarge")
+			classTitle:SetText("[ Medic's Arsenal ]")
+
+			local primaryDescription = vgui.Create("DLabel",classDescPanel)
+			primaryDescription:SetSize(600,15)
+			primaryDescription:SetText("PRIMARY: ...")
+			primaryDescription:SetPos(10,10)
+
+			local secondaryDescription = vgui.Create("DLabel",classDescPanel)
+			secondaryDescription:SetSize(600,15)
+			secondaryDescription:SetText("SECONDARY: ...")
+			secondaryDescription:SetPos(10,25)
+
+			local equipmentDescription = vgui.Create("DLabel",classDescPanel)
+			equipmentDescription:SetSize(600,15)
+			equipmentDescription:SetText("EQUIPMENT: ...")
+			equipmentDescription:SetPos(10,40)
 
 			local weaponIconPanel = vgui.Create("DPanel", broadPanel)
 				weaponIconPanel:SetPos(25,125)
@@ -1508,6 +1705,7 @@ function classMenu()
 				medicPrimary.OnSelect = function( self, index, value )
 
 					selectedPrimary = medicPrimary:GetOptionData(index)
+					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
 					if(value == "H&K MP5K") then
 						selectedModel = "models/weapons/tfa_ins2/w_mp5k.mdl"
@@ -1546,6 +1744,7 @@ function classMenu()
 				medicSecondary.OnSelect = function( self, index, value )
 
 					selectedSecondary = medicSecondary:GetOptionData(index)
+					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
 					if(value == "QSZ-92") then
 						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
@@ -1584,6 +1783,7 @@ function classMenu()
 				medicEquipment.OnSelect = function( self, index, value )
 
 					selectedEquipment = medicEquipment:GetOptionData(index)
+					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
 					if(value == "M67 Offensive Grenade") then
 						selectedModel = "models/weapons/tfa_ins2/w_m67.mdl"
