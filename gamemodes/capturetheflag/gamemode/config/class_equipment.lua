@@ -6,7 +6,7 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_m67.mdl",
 	Class = "tfa_ins2_m67",
 	Category = "Grenades",
-	Description = "An offensive grenade with a five second fuse time. Does more damage.",
+	Description = "The M67 offensive grenade offers a five second fuse time. Does more damage.",
 
 }
 list.Set( "grenades_list", "tfa_ins2_m67", V )
@@ -17,7 +17,7 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_f1.mdl",
 	Class = "tfa_ins2_f1",
 	Category = "Grenades",
-	Description = "A defensive grenade with a three-and-a-half second fuse time. Does less damage.",
+	Description = "The F1 defensive grenade has a three-and-a-half second fuse time. Does less damage.",
 
 }
 list.Set( "grenades_list", "tfa_ins2_f1", V )
@@ -28,7 +28,7 @@ local V = {
 	Model = "models/items/tfa_st5/st5_ammo.mdl",
 	Class = "tfa_misc_st5stunner",
 	Category = "Grenades",
-	Description = "A timed stun grenade that can incapacitate enemies for up to six seconds.",
+	Description = "The ST5 Stun Grenade can incapacitate and disorient enemies for up to six seconds. Must be timed well.",
 
 }
 list.Set( "grenades_list", "tfa_misc_st5stunner", V )
@@ -131,7 +131,7 @@ local V = {
 	Model = "models/Items/BoxMRounds.mdl",
 	Class = "tfa_fml_hl2_ammo_drop_smg1",
 	Category = "Throwable Ammo",
-	Description = "Deployable pistol ammo for all non-revolver pistols.",
+	Description = "Deployable SMG ammo for all non-revolver pistols.",
 
 }
 list.Set( "supplies_list", "tfa_fml_hl2_ammo_drop_smg1", V )
@@ -153,7 +153,7 @@ local V = {
 	Model = "models/weapons/w_missile_closed.mdl",
 	Class = "tfa_fml_hl2_ammo_drop_missile",
 	Category = "Throwable Ammo",
-	Description = "Extra rockets for all RPG weapons.",
+	Description = "Extra rockets for the Demolitionist's RPG.",
 
 }
 list.Set( "supplies_list", "tfa_fml_hl2_ammo_drop_missile", V )
@@ -164,7 +164,7 @@ local V = {
 	Model = "models/weapons/w_slam.mdl",
 	Class = "tfa_fml_hl2_ammo_drop_slam",
 	Category = "Throwable Ammo",
-	Description = "Extra charges for SLAM and vehicle mines.",
+	Description = "Extra charges for the Demolitionist's SLAM and vehicle mines.",
 
 }
 list.Set( "supplies_list", "tfa_fml_hl2_ammo_drop_slam", V )
@@ -177,7 +177,7 @@ local V = {
 	Model = "models/weapons/w_physics.mdl",
 	Class = "weapon_simrepair",
 	Category = "Toolkit",
-	Description = "Repairs all Simfphys vehicles when in range and pointing at a target.",
+	Description = "Repairs all Simfphys vehicles when in range and pointing at a target. Does not repair helicopters.",
 
 }
 list.Set( "engineers_list", "weapon_simrepair", V )
@@ -188,7 +188,7 @@ local V = {
 	Model = "models/nirrti/tablet/tablet_sfm.mdl",
 	Class = "alydus_fortificationbuildertablet",
 	Category = "Toolkit",
-	Description = "A tablet that provides access to fortification setups.",
+	Description = "A tablet that provides access to fortification setups. Can be used to make field barricades and checkpoints.",
 
 }
 list.Set( "engineers_list", "alydus_fortificationbuildertablet", V )
@@ -201,7 +201,7 @@ local V = {
 	Model = "models/weapons/w_rocket_launcher.mdl",
 	Class = "weapon_rpg",
 	Category = "Demolitions",
-	Description = "A laser-guided rocket propulsion system.",
+	Description = "A laser-guided rocket propulsion system. Best at taking down aircraft. Least effective versus tanks.",
 
 }
 list.Set( "demolitionists_list", "weapon_rpg", V )
@@ -212,7 +212,7 @@ local V = {
 	Model = "models/weapons/w_slam.mdl",
 	Class = "weapon_slam",
 	Category = "Demolitions",
-	Description = "Provides anti-personnel and anti-vehicle mines.",
+	Description = "Provides anti-personnel and anti-vehicle mines. Best for traps and taking down armored vehicles.",
 
 }
 list.Set( "demolitionists_list", "weapon_simmines", V )
