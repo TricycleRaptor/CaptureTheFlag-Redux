@@ -372,6 +372,8 @@ function GM:PlayerSpawn( ply )
 	if (ply:Team() == 4) then
 		ply:StripWeapons()
 		ply:Spectate( OBS_MODE_ROAMING )
+		net.Start("RestrictMenu")
+		net.Send(ply)
 	end
 
 	if Time / 60 < CTF_Time:GetFloat() then
@@ -491,6 +493,11 @@ function GM:PlayerInitialSpawn( ply )
 
 	joining( ply )
 	ply:ConCommand( "ctf_team" )
+	
+	-- PAC3 automatic reflection enable, if mounted to the sever
+	if(file.Exists("pac3","lsv") == true) then
+		RunConsoleCommand("pac_suppress_frames", "0")
+	else return end
 	
 end
 
@@ -967,7 +974,27 @@ function GM:Think()
 	end
 end
 
---------------------------------Economy--------------------------
+hook.Add( "EntityTakeDamage", "EntityDamageExample2", function( target, dmginfo )
+
+	-- Reduce RPG damage given to players in vehicles by 98%
+    if ( target:IsPlayer() and target:InVehicle() == true) then
+        if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() >= 50 ) then
+            dmginfo:ScaleDamage(0.02) -- Scale damage down to 2% of its original
+            target:TakeDamageInfo(dmginfo)
+        end
+    end
+	
+	-- Reduce RPG damage given to players on the ground by 85%
+	if ( target:IsPlayer() and target:InVehicle() == false) then
+        if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() >= 100 ) then
+            dmginfo:ScaleDamage(0.15) -- Scale damage down to 15% of its original
+            target:TakeDamageInfo(dmginfo)
+        end
+    end
+
+end )
+
+--------------------------Economy--------------------------
 
 function GM:PlayerDeath(victim, inflictor, attacker)
 	if(attacker:IsPlayer() and victim:IsPlayer() and attacker:Team() ~= victim:Team()) then
@@ -977,11 +1004,15 @@ end
 
 function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
 	if ( attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) ) then
-		attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (math.floor(damageTaken / 2.5))) -- Award player for damage done
+		if(attacker:InVehicle() == true) then
+			attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (math.floor(damageTaken / 5))) -- Reduce player income by half while in a vehicle
+		else
+			attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (math.floor(damageTaken / 2.5))) -- Award player for damage done divided by 2.5 and rounded down
+		end
 	end
 end
 
---------------------------------Network Calls--------------------------
+--------------------------Network Calls--------------------------
 
 
 function GM:ShowSpare1(ply)
