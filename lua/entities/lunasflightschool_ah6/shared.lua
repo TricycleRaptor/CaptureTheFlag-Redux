@@ -35,10 +35,20 @@ ENT.RotorPos = Vector(0,0,0)
 ENT.RotorAngle = Angle(0,0,0)
 ENT.RotorRadius = 180	
 
-ENT.MaxHealth = 950
+ENT.MaxHealth = 800
 
 ENT.MaxPrimaryAmmo = 5000
-ENT.MaxSecondaryAmmo = 0
+
+if (GAMEMODE_NAME == "capturetheflag") then
+
+	ENT.MaxSecondaryAmmo = 24
+
+else
+
+	ENT.MaxSecondaryAmmo = 12
+
+end
+
 
 sound.Add( {
 	name = "MINIGUN_LOOP",
