@@ -8,6 +8,8 @@ local V = {
 	Members = {
 		Mass = 1700,
 		
+		IsArmored = true,
+		
 		LightsTable = "elitejeep",
 		
 		FrontWheelRadius = 18,
@@ -103,6 +105,8 @@ local V = {
 
 	Members = {
 		Mass = 1700,
+		
+		IsArmored = true,
 		
 		LightsTable = "elitejeep",
 		
@@ -524,7 +528,7 @@ local V = {
 	Category = "[CTF Certified] Tanks:",
 	SpawnOffset = Vector(0,0,60),
 	SpawnAngleOffset = 90,
-	Cost = 850,
+	Cost = 1000,
 
 	Members = {
 		Mass = 8000,
@@ -679,7 +683,7 @@ local V = {
 	Category = "[CTF Certified] Tanks:",
 	SpawnOffset = Vector(0,0,60),
 	SpawnAngleOffset = 90,
-	Cost = 1000,
+	Cost = 1250,
 
 	Members = {
 		Mass = 10000,
@@ -698,7 +702,7 @@ local V = {
 				end
 			end,
 		
-		MaxHealth = 8000,
+		MaxHealth = 6500,
 		
 		IsArmored = true,
 		
@@ -908,7 +912,7 @@ local V = {
 	Category = "[CTF Certified] Tanks:",
 	SpawnOffset = Vector(0,0,60),
 	SpawnAngleOffset = 90,
-	Cost = 1500,
+	Cost = 1750,
 
 	Members = {
 		Mass = 20000,
@@ -930,7 +934,7 @@ local V = {
 				end
 			end,
 		
-		MaxHealth = 8200,
+		MaxHealth = 6000,
 		
 		IsArmored = true,
 		
@@ -1074,7 +1078,7 @@ local V = {
 	Category = "[CTF Certified] Tanks:",
 	SpawnOffset = Vector(0,0,60),
 	SpawnAngleOffset = 90,
-	Cost = 2000,
+	Cost = 2250,
 
 	Members = {
 		Mass = 20000,
@@ -1096,7 +1100,7 @@ local V = {
 				end
 			end,
 		
-		MaxHealth = 8200,
+		MaxHealth = 8000,
 		
 		IsArmored = true,
 		
