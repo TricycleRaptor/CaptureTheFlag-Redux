@@ -197,11 +197,11 @@ list.Set( "engineers_list", "alydus_fortificationbuildertablet", V )
 
 local V = {
 
-	Name = "Laser-Guided RPG",
+	Name = "RPG Platform",
 	Model = "models/weapons/w_rocket_launcher.mdl",
-	Class = "weapon_rpg",
+	Class = "weapon_lfsmissilelauncher",
 	Category = "Demolitions",
-	Description = "A laser-guided rocket propulsion system. Best at taking down aircraft. Least effective versus tanks.",
+	Description = "A radar-assisted rocket propulsion system. Can home onto aircraft from a certain distance.",
 
 }
 list.Set( "demolitionists_list", "weapon_rpg", V )
