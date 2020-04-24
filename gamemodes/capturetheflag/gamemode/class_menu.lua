@@ -895,7 +895,7 @@ function classMenu()
 					selectedEquipment = demolitionistEquipment:GetOptionData(index)
 					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
-					if(value == "Laser-Guided RPG") then
+					if(value == "RPG Platform") then
 						selectedModel = "models/weapons/w_rocket_launcher.mdl"
 						equipmentIcon:SetSize( 200, 200)
 						equipmentIcon:SetPos(420,-80)
@@ -949,7 +949,7 @@ function classMenu()
 			classTitle:SetSize(600,250)
 			classTitle:SetPos(200,-100)
 			classTitle:SetFont("DermaLarge")
-			classTitle:SetText("[ Suupport's Arsenal ]")
+			classTitle:SetText("[ Support's Arsenal ]")
 
 			local primaryDescription = vgui.Create("DLabel",classDescPanel)
 			primaryDescription:SetSize(600,15)
