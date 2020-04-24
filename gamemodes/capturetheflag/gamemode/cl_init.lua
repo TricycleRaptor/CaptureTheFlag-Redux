@@ -275,7 +275,7 @@ hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
 	-- LFS Halos
 	if (LocalPlayer():GetEyeTrace()) then
 		if (IsValid(LocalPlayer():GetEyeTrace().Entity)) then
-			if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() == "lunasflightschool_combineheli" or LocalPlayer():GetEyeTrace().Entity:GetClass() == "lunasflightschool_ah6") then
+			if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and LocalPlayer():GetEyeTrace().Entity:GetClass() == "lunasflightschool_combineheli" or LocalPlayer():GetEyeTrace().Entity:GetClass() == "lunasflightschool_rebelheli" or LocalPlayer():GetEyeTrace().Entity:GetClass() == "lunasflightschool_ah6") then
 				if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then
 					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
 				elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then
@@ -724,4 +724,3 @@ hook.Add("StartCommand", "Jump Cooldown", function(ply, cmd)
 		
 	end
 end)
-
