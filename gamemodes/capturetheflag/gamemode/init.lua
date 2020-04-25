@@ -303,7 +303,7 @@ hook.Add("CanProperty", "PropProtection.CanProperty", PropProtection.CanProperty
 -- end
 --------------------------------Button Force End--------------------------
 
--- Fix the DUMMYTHICC ^^^
+-- TODO: Allow simfphys binds to bypass the numpad suppression system
 
 function UpdateAllValues(ply)
 
@@ -634,60 +634,6 @@ function GM:PlayerNoClip(ply, state)
 	return false
 end
 
-function ctf_setteam( ply, cmd, args, argStr)
-	local teamNum = tonumber(args[1])
-	if (teamNum == nil) then
-		ply:ConCommand("ctf_team")
-		return
-	end
-
-	teamNum = math.Round(teamNum)
-	if (teamNum < 1) then
-		teamNum = 1
-	elseif teamNum > 2 then
-		teamNum = 2
-	end
-	local teamName = "Red"
-	if (teamNum == 2) then
-		teamName = "Blue"
-	end
-
-	ply:SetTeam(0)
-	
-	for k,v in pairs(ply:GetChildren()) do
-		if v.IsFlag then
-			v:ReturnFlag()
-			BroadcastFlagReturned(v:GetNWInt("Team"))
-		end
-	end
-
-	ply:PrintMessage( HUD_PRINTTALK, "[CTF]: Welcome to the " .. teamName .. " Team, " .. ply:Nick() .. ".")
-	if team.NumPlayers(teamNum) < 1 and !TeamSetUp[teamNum] then
-		ply:ChatPrint( "[CTF]: Please select a location for your base." )
-		ply.IsCaptain = true
-	elseif team.NumPlayers(teamNum) >= 1 and !TeamSetUp[teamNum] then
-		ply:ChatPrint( "[CTF]: Please wait for your team captain to pick a base location." )
-		ply.IsCaptain = false
-	end
-	ply:UnSpectate()
-	ply:SetTeam( teamNum )
-	ply:Spawn()
- 
-end
-concommand.Add( "ctf_setteam", ctf_setteam )
-
-function ctf_spectate( ply )
-
-	ply:SetTeam( 3 )
-	ply:Spawn()
-	ply:StripWeapons()
-	ply:Spectate( OBS_MODE_ROAMING )
-	ply:ConCommand("noclip")
-	ply:ChatPrint( "[CTF]: Welcome, spectator." )
-
-end
-concommand.Add( "ctf_spectate", ctf_spectate )
-
 function joining( ply )
  
 	ply:SetTeam( 4 )
@@ -976,18 +922,18 @@ end
 
 hook.Add( "EntityTakeDamage", "EntityDamageExample2", function( target, dmginfo )
 
-	-- Reduce RPG damage given to players in vehicles by 98%
+	-- Reduce RPG damage given to players in vehicles by 99%
     if ( target:IsPlayer() and target:InVehicle() == true) then
         if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() >= 50 ) then
-            dmginfo:ScaleDamage(0.02) -- Scale damage down to 2% of its original
+            dmginfo:ScaleDamage(0.01) -- Scale damage down to 1% of its original
             target:TakeDamageInfo(dmginfo)
         end
     end
 	
 	-- Reduce RPG damage given to players on the ground by 85%
 	if ( target:IsPlayer() and target:InVehicle() == false) then
-        if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() >= 100 ) then
-            dmginfo:ScaleDamage(0.15) -- Scale damage down to 15% of its original
+        if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() > 100 ) then
+            dmginfo:ScaleDamage(0.125) -- Scale damage down to 12.5% of its original
             target:TakeDamageInfo(dmginfo)
         end
     end
