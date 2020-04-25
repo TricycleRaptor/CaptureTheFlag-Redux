@@ -266,7 +266,7 @@ function giveCredits(ply, cmd, args)
 					local curMoney = v:GetNWInt("playerMoney")
 					local newMoney = curMoney + tonumber(args[2])
 					v:SetNWInt("playerMoney", newMoney)
-					v:ChatPrint("[CTF]: You were awarded " .. tonumber(args[2]) .. "cR from an admin.")
+					v:ChatPrint("[CTF]: You were awarded " .. tonumber(args[2]) .. "cR from " .. ply:Nick() .. ".")
 				end
 				
 			end
