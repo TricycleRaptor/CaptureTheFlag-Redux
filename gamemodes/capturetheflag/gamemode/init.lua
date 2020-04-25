@@ -391,6 +391,7 @@ function GM:PlayerSpawn( ply )
 		ply:GodDisable()
 	
 		net.Start("RestrictMenu")
+		net.Send(ply)
 		
 		if(!ply:IsAdmin() or !ply:IsSuperAdmin()) then
 			net.Send(ply)
@@ -490,14 +491,14 @@ function GM:PlayerInitialSpawn( ply )
 	ply:SetNWBool("canBuy", false)
 
 	UpdateAllValues(ply)
-
-	joining( ply )
-	ply:ConCommand( "ctf_team" )
 	
 	-- PAC3 automatic reflection enable, if mounted to the sever
 	if(file.Exists("pac3","lsv") == true) then
-		RunConsoleCommand("pac_suppress_frames", "0")
+		ply:ConCommand("pac_suppress_frames 0")
 	else return end
+
+	joining( ply )
+	ply:ConCommand( "ctf_team" )
 	
 end
 
@@ -932,7 +933,7 @@ hook.Add( "EntityTakeDamage", "EntityDamageExample2", function( target, dmginfo 
 	
 	-- Reduce RPG damage given to players on the ground by 85%
 	if ( target:IsPlayer() and target:InVehicle() == false) then
-        if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() > 100 ) then
+        if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() > 150 ) then
             dmginfo:ScaleDamage(0.125) -- Scale damage down to 12.5% of its original
             target:TakeDamageInfo(dmginfo)
         end
@@ -974,85 +975,93 @@ net.Receive("receivePrimaryWeapon", function( len, ply )
 
 	local receivedPrimaryWeapon = net.ReadTable()
 	local plyClass = ply:GetNWInt("playerClass")
-
-	if ( IsValid( ply ) and ply:IsPlayer() ) then
-
-		if(plyClass == receivedPrimaryWeapon.Category) then
-			ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
-		else
-			ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-		end
 	
-	else return end
+	ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
+
+	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
+
+		-- if(plyClass == receivedPrimaryWeapon.Category) then
+			-- ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
+		-- else
+			-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+		-- end
+	
+	-- else return end
 
 end )
 
 net.Receive("receiveSecondaryWeapon", function( len, ply )
-	if ( IsValid( ply ) and ply:IsPlayer() ) then
 
-		local receivedSecondaryWeapon = net.ReadTable()
+	local receivedSecondaryWeapon = net.ReadTable()
+	
+	ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
+	
+	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
 
-		if (receivedSecondaryWeapon.Category == "Sidearms") then
-			ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
-		else
-			ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-		end
+		-- if (receivedSecondaryWeapon.Category == "Sidearms") then
+			-- ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
+		-- else
+			-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+		-- end
 		
-	else return end
+	-- else return end
+	
 end )
 
 net.Receive("receiveEquipment", function( len, ply )
 
 	local receivedEquipment = net.ReadTable()
 	local plyClass = ply:GetNWInt("playerClass")
+	
+	ply:SetNWString("selectedEquipment", receivedEquipment.Class)
 
-	if ( IsValid( ply ) and ply:IsPlayer() ) then
+	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
 
-		-- Validate Rifleman, Gunner, and Medic equipment
-		if (plyClass == 2 or plyClass == 4 or plyClass == 9) then
-			if(receivedEquipment.Category == "Grenades") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			else
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- -- Validate Rifleman, Gunner, and Medic equipment
+		-- if (plyClass == 2 or plyClass == 4 or plyClass == 9) then
+			-- if(receivedEquipment.Category == "Grenades") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- else
+				-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			-- end
+		-- end
 
-		-- Validate Marksman and Scout equipment
-		if (plyClass == 3 or plyClass == 8) then
-			if(receivedEquipment.Category == "Binoculars") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			else
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- -- Validate Marksman and Scout equipment
+		-- if (plyClass == 3 or plyClass == 8) then
+			-- if(receivedEquipment.Category == "Binoculars") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- else
+				-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			-- end
+		-- end
 
-		-- Validate Support equipment
-		if (plyClass == 6) then
-			if(receivedEquipment.Category == "Throwable Ammo") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			else
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- -- Validate Support equipment
+		-- if (plyClass == 6) then
+			-- if(receivedEquipment.Category == "Throwable Ammo") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- else
+				-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			-- end
+		-- end
 
-		-- Validate Engineer equipment
-		if (plyClass == 7) then
-			if(receivedEquipment.Category == "Toolkit") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			else
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- -- Validate Engineer equipment
+		-- if (plyClass == 7) then
+			-- if(receivedEquipment.Category == "Toolkit") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- else
+				-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			-- end
+		-- end
 
-		-- Validate Demolitionist equipment
-		if (plyClass == 5) then
-			if(receivedEquipment.Category == "Demolitions") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			else
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- -- Validate Demolitionist equipment
+		-- if (plyClass == 5) then
+			-- if(receivedEquipment.Category == "Demolitions") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- else
+				-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			-- end
+		-- end
 
-	else return end
+	-- else return end
 
 end )
