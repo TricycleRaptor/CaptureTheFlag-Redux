@@ -205,7 +205,7 @@ local V = {
 	Members = {
 		Mass = 4800,
 		
-		MaxHealth = 4500,
+		MaxHealth = 6000,
 		
 		IsArmored = true,
 		
@@ -447,7 +447,7 @@ local V = {
 
 	Members = {
 		Mass = 3500,
-		MaxHealth = 6000,
+		MaxHealth = 6500,
 		
 		LightsTable = "capc_siren",
 		
@@ -934,7 +934,7 @@ local V = {
 				end
 			end,
 		
-		MaxHealth = 6000,
+		MaxHealth = 9000,
 		
 		IsArmored = true,
 		
@@ -1100,7 +1100,7 @@ local V = {
 				end
 			end,
 		
-		MaxHealth = 8000,
+		MaxHealth = 10000,
 		
 		IsArmored = true,
 		
