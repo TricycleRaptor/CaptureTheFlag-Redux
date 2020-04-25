@@ -2,7 +2,14 @@ function buyEntity(ply, cmd, args)
 
 	if(args[1] != nil) then
 		local ent = ents.Create(args[1])
-		local tr = ply:GetEyeTrace()
+		local tr = ply:GetEyeTraceNoCursor()
+		local pos = tr.HitPos + Vector(0,0,30)
+		
+		local Angles = ply:GetAngles()
+		Angles.pitch = 0
+		Angles.roll = 0
+		Angles.yaw = Angles.yaw + 180
+		
 		local balance = ply:GetNWInt("playerMoney")
 		
 		if(ent:IsValid()) then
@@ -12,11 +19,6 @@ function buyEntity(ply, cmd, args)
 		
 			local entCount = ply:GetNWInt(ClassName .. "count")
 			
-			-- TO DO: 
-			-- Add team entity count check
-			-- Write separate function for buying vehicles to give the SetPos vector additional room on the X and Y coordinates so spawning a vehicle doesn't kill
-			-- Troubleshoot Y coordinate in SetPos vector so vehicles do not get stuck in the ground on spawn
-			
 			if(balance >= ent.Cost) then
 			
 				ply:EmitSound("ambient/levels/labs/coinslot1.wav") --Serverside
@@ -25,7 +27,9 @@ function buyEntity(ply, cmd, args)
 				local plyAngles = ply:GetShootPos() + ply:GetForward() * 200
 			
 				ent.Owner = ply
-				ent:SetPos(Vector(plyAngles,100,100))
+				PropProtection.TeamMakePropOwner(ply:Team(), ent)
+				ent:SetPos(pos)
+				ent:SetAngles(Angle(Angles))
 				ent:Spawn()
 				ent:Activate()
 			
@@ -65,16 +69,11 @@ function buyLFSVehicle(ply, cmd, args)
 			
 			-- TO DO: 
 			-- Add team entity count check
-			-- Write separate function for buying vehicles to give the SetPos vector additional room on the X and Y coordinates so spawning a vehicle doesn't kill
-			-- Troubleshoot Y coordinate in SetPos vector so vehicles do not get stuck in the ground on spawn
 			
 			if(balance >= ent.Cost) then
 			
 				ply:EmitSound("ambient/levels/labs/coinslot1.wav") --Serverside
 				ply:SetNWInt("playerMoney", balance - ent.Cost)
-				
-				local plyTr = ply:GetShootPos() + ply:GetForward() * 450
-				local posVector = Vector(plyTr,100,ply:GetShootPos() * 200)
 				
 				ent.Owner = ply
 				PropProtection.TeamMakePropOwner(ply:Team(), ent)
@@ -101,17 +100,6 @@ function buyPrewarVehicle( ply, vname, tr )
 	if not vname then return end
 
 	local Tickrate = 1 / engine.TickInterval()
-	
-	if ( Tickrate <= 25 ) and not ply.IsInformedAboutTheServersLowTickrate then
-		ply:PrintMessage( HUD_PRINTTALK, "(SIMFPHYS) WARNING! Server tickrate is "..Tickrate.." we recommend 33 or greater for this addon to work properly!")
-		ply:PrintMessage( HUD_PRINTTALK, "Known problems caused by a too low tickrate:")
-		ply:PrintMessage( HUD_PRINTTALK, "- Wobbly suspension")
-		ply:PrintMessage( HUD_PRINTTALK, "- Wheelspazz or shaking after an crash on bumps or while drifting")
-		ply:PrintMessage( HUD_PRINTTALK, "- Moondrive (wheels turning slower than they should)")
-		ply:PrintMessage( HUD_PRINTTALK, "- Worse vehicle performance (less grip, slower accelerating)")
-		
-		ply.IsInformedAboutTheServersLowTickrate = true
-	end
 	
 	local vehiclePrewarPrewarList = list.Get( "simfphys_ctf_prewar" )
 	local vehiclePrewar = vehiclePrewarPrewarList[ vname ]
@@ -157,17 +145,6 @@ function buyReconVehicle( ply, vname, tr )
 
 	local Tickrate = 1 / engine.TickInterval()
 	
-	if ( Tickrate <= 25 ) and not ply.IsInformedAboutTheServersLowTickrate then
-		ply:PrintMessage( HUD_PRINTTALK, "(SIMFPHYS) WARNING! Server tickrate is "..Tickrate.." we recommend 33 or greater for this addon to work properly!")
-		ply:PrintMessage( HUD_PRINTTALK, "Known problems caused by a too low tickrate:")
-		ply:PrintMessage( HUD_PRINTTALK, "- Wobbly suspension")
-		ply:PrintMessage( HUD_PRINTTALK, "- Wheelspazz or shaking after an crash on bumps or while drifting")
-		ply:PrintMessage( HUD_PRINTTALK, "- Moondrive (wheels turning slower than they should)")
-		ply:PrintMessage( HUD_PRINTTALK, "- Worse vehicle performance (less grip, slower accelerating)")
-		
-		ply.IsInformedAboutTheServersLowTickrate = true
-	end
-	
 	local vehicleReconList = list.Get( "simfphys_ctf_recon" )
 	local vehicleRecon = vehicleReconList[ vname ]
 
@@ -212,17 +189,6 @@ function buyTankVehicle( ply, vname, tr )
 
 	local Tickrate = 1 / engine.TickInterval()
 	
-	if ( Tickrate <= 25 ) and not ply.IsInformedAboutTheServersLowTickrate then
-		ply:PrintMessage( HUD_PRINTTALK, "(SIMFPHYS) WARNING! Server tickrate is "..Tickrate.." we recommend 33 or greater for this addon to work properly!")
-		ply:PrintMessage( HUD_PRINTTALK, "Known problems caused by a too low tickrate:")
-		ply:PrintMessage( HUD_PRINTTALK, "- Wobbly suspension")
-		ply:PrintMessage( HUD_PRINTTALK, "- Wheelspazz or shaking after an crash on bumps or while drifting")
-		ply:PrintMessage( HUD_PRINTTALK, "- Moondrive (wheels turning slower than they should)")
-		ply:PrintMessage( HUD_PRINTTALK, "- Worse vehicle performance (less grip, slower accelerating)")
-		
-		ply.IsInformedAboutTheServersLowTickrate = true
-	end
-	
 	local vehicleTankList = list.Get( "simfphys_ctf_tanks" )
 	local vehicleTank = vehicleTankList[ vname ]
 
@@ -259,16 +225,109 @@ function buyTankVehicle( ply, vname, tr )
 end
 concommand.Add( "ctf_simfphys_buytank", function( ply, cmd, args ) buyTankVehicle( ply, args[1] ) end )
 
-local function VehicleMemDupe( ply, Entity, Data )
-	table.Merge( Entity, Data )
-end
-duplicator.RegisterEntityModifier( "VehicleMemDupe", VehicleMemDupe )
-
 function setPlayerClass(ply, cmd, args)
 	
-	if(args[1] != nil) then
+	if(args[1] ~= nil) then
 		ply:SetNWInt("playerClass", tonumber(args[1]))
 	end
 	
 end
 concommand.Add("ctf_setclass",setPlayerClass)
+
+local function GiveCreditsAutoComplete( cmd, stringargs )
+	
+	stringargs = string.Trim(stringargs)
+	stringargs = string.lower(stringargs)
+	
+	local tbl = {}
+	
+	for k,v in pairs(player.GetAll()) do
+		local nick = v:Nick()
+		if string.find( string.lower( nick ), stringargs ) then
+			nick = "\"" .. nick .. "\""
+			nick = "ctf_givecredits " .. nick
+			
+			table.insert(tbl, nick)
+		end
+	end
+	
+	return tbl
+end
+
+function giveCredits(ply, cmd, args)
+	
+	if(ply:IsAdmin() or ply:IsSuperAdmin()) then
+	
+		if(args[1] ~= nil and args[2] ~= nil) then
+			
+			for k,v in pairs(player.GetAll()) do
+			
+				if(v:Nick() == tostring(args[1])) then
+					local curMoney = v:GetNWInt("playerMoney")
+					local newMoney = curMoney + tonumber(args[2])
+					v:SetNWInt("playerMoney", newMoney)
+					v:ChatPrint("[CTF]: You were awarded " .. tonumber(args[2]) .. "cR from an admin.")
+				end
+				
+			end
+			
+		end
+		
+	end
+
+end
+concommand.Add("ctf_givecredits", giveCredits, GiveCreditsAutoComplete, "Give the specified player credits.")
+
+function ctf_setteam( ply, cmd, args, argStr)
+	local teamNum = tonumber(args[1])
+	if (teamNum == nil) then
+		ply:ConCommand("ctf_team")
+		return
+	end
+
+	teamNum = math.Round(teamNum)
+	if (teamNum < 1) then
+		teamNum = 1
+	elseif teamNum > 2 then
+		teamNum = 2
+	end
+	local teamName = "Red"
+	if (teamNum == 2) then
+		teamName = "Blue"
+	end
+
+	ply:SetTeam(0)
+	
+	for k,v in pairs(ply:GetChildren()) do
+		if v.IsFlag then
+			v:ReturnFlag()
+			BroadcastFlagReturned(v:GetNWInt("Team"))
+		end
+	end
+
+	ply:PrintMessage( HUD_PRINTTALK, "[CTF]: Welcome to the " .. teamName .. " Team, " .. ply:Nick() .. ".")
+	if team.NumPlayers(teamNum) < 1 and !TeamSetUp[teamNum] then
+		ply:ChatPrint( "[CTF]: Please select a location for your base." )
+		ply.IsCaptain = true
+	elseif team.NumPlayers(teamNum) >= 1 and !TeamSetUp[teamNum] then
+		ply:ChatPrint( "[CTF]: Please wait for your team captain to pick a base location." )
+		ply.IsCaptain = false
+	end
+	ply:UnSpectate()
+	ply:SetTeam( teamNum )
+	ply:Spawn()
+ 
+end
+concommand.Add( "ctf_setteam", ctf_setteam )
+
+function ctf_spectate( ply )
+
+	ply:SetTeam( 3 )
+	ply:Spawn()
+	ply:StripWeapons()
+	ply:Spectate( OBS_MODE_ROAMING )
+	ply:ConCommand("noclip")
+	ply:ChatPrint( "[CTF]: Welcome, spectator." )
+
+end
+concommand.Add( "ctf_spectate", ctf_spectate )
