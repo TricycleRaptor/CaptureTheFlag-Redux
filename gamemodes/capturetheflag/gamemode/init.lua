@@ -495,6 +495,7 @@ function GM:PlayerInitialSpawn( ply )
 	-- PAC3 automatic reflection enable, if mounted to the sever
 	if(file.Exists("pac3","lsv") == true) then
 		ply:ConCommand("pac_suppress_frames 0")
+		ply:ConCommand("pac_draw_distance 5000")
 	else return end
 
 	joining( ply )
@@ -933,7 +934,7 @@ hook.Add( "EntityTakeDamage", "EntityDamageExample2", function( target, dmginfo 
 	
 	-- Reduce RPG damage given to players on the ground by 85%
 	if ( target:IsPlayer() and target:InVehicle() == false) then
-        if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() > 150 ) then
+        if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() > 100 ) then
             dmginfo:ScaleDamage(0.125) -- Scale damage down to 12.5% of its original
             target:TakeDamageInfo(dmginfo)
         end
@@ -952,7 +953,7 @@ end
 function GM:PlayerHurt( victim, attacker, healthRemaining, damageTaken )
 	if ( attacker:IsPlayer() and (attacker:Team() ~= victim:Team()) ) then
 		if(attacker:InVehicle() == true) then
-			attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (math.floor(damageTaken / 5))) -- Reduce player income by half while in a vehicle
+			attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (math.floor(damageTaken / 10))) -- Reduce player income by half while in a vehicle
 		else
 			attacker:SetNWInt("playerMoney", attacker:GetNWInt("playerMoney") + (math.floor(damageTaken / 2.5))) -- Award player for damage done divided by 2.5 and rounded down
 		end
