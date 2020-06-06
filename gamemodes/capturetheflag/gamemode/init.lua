@@ -88,6 +88,14 @@ MatchHasBegun = false
 TeamLocations = {nil, nil}
 respawnTime = 10
 
+marksmanLimit = nil
+gunnerLimit = nil
+demoLimit = nil
+supportLimit = nil
+engineerLimit = nil
+scoutLimit = nil
+medicLimit = nil
+
 -------------------------------Prop Protection----------------------------
 PropProtection.Props = {}
 
@@ -154,8 +162,6 @@ function PropProtection.PhysGravGunPickup(ply, ent)
 	
 	if not PropProtection.PlayerCanTouch(ply, ent) then return false end
 end
---hook.Add("GravGunPunt", "PropProtection.GravGunPunt", PropProtection.PhysGravGunPickup)
---hook.Add("GravGunPickupAllowed", "PropProtection.GravGunPickupAllowed", PropProtection.PhysGravGunPickup)
 hook.Add("PhysgunPickup", "PropProtection.PhysgunPickup", PropProtection.PhysGravGunPickup)
 
 function PropProtection.FlagPunt(ply, ent)
@@ -288,19 +294,19 @@ hook.Add("CanProperty", "PropProtection.CanProperty", PropProtection.CanProperty
 -----------------------------Prop Protection End--------------------------
 
 --------------------Force the use of buttons for key presses--------------
--- numpad.OldActivate = numpad.Activate
--- function numpad.Activate(ply, key, isButton)
-	-- if (isButton or DUMMYTHICC or not GetConVar("ctf_restrictkeys"):GetBool()) then
-		-- return numpad.OldActivate(ply, key, isButton)
-	-- end
--- end
+numpad.OldActivate = numpad.Activate
+function numpad.Activate(ply, key, isButton)
+	if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+		return numpad.OldActivate(ply, key, isButton)
+	end
+end
 
--- numpad.OldDeactivate = numpad.Deactivate
--- function numpad.Deactivate(ply, key, isButton)
-	-- if (isButton or DUMMYTHICC or not GetConVar("ctf_restrictkeys"):GetBool()) then
-		-- return numpad.OldDeactivate(ply, key, isButton)
-	-- end
--- end
+numpad.OldDeactivate = numpad.Deactivate
+function numpad.Deactivate(ply, key, isButton)
+	if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+		return numpad.OldDeactivate(ply, key, isButton)
+	end
+end
 --------------------------------Button Force End--------------------------
 
 -- TODO: Allow simfphys binds to bypass the numpad suppression system
@@ -335,6 +341,40 @@ function UpdateAllValues(ply)
 	net.WriteBool(GetConVar("ctf_usepropprotect"):GetBool())
 	net.WriteFloat(CTF_RespawnTime:GetFloat())
 	net.Send(ply)
+
+end
+
+function setClassLimits()
+
+	local maxPlayers = game.MaxPlayers()
+	
+	if (maxPlayers <= 8) then
+	
+		marksmanLimit = 1
+		gunnerLimit = 1
+		demoLimit = 1
+		supportLimit = 1
+		engineerLimit = 1
+		scoutLimit = 1
+		medicLimit = 1
+	
+	else
+	
+		marksmanLimit = math.floor(maxPlayers / 8)
+		gunnerLimit = math.floor(maxPlayers / 8)
+		demoLimit = math.floor(maxPlayers / 8)
+		supportLimit = math.floor(maxPlayers / 8)
+		engineerLimit = math.floor(maxPlayers / 8)
+		scoutLimit = math.floor(maxPlayers / 8)
+		medicLimit = math.floor(maxPlayers / 8)
+	
+	end
+
+end
+
+function updateClassLimits()
+
+
 
 end
 
@@ -491,6 +531,7 @@ function GM:PlayerInitialSpawn( ply )
 	ply:SetNWBool("canBuy", false)
 
 	UpdateAllValues(ply)
+	setClassLimits()
 	
 	-- PAC3 automatic reflection enable, if mounted to the sever
 	if(file.Exists("pac3","lsv") == true) then
@@ -573,13 +614,17 @@ function GM:PlayerLoadout( ply )
 		local primaryWeapon = ply:GetNWString("selectedPrimary")
 		local secondaryWeapon = ply:GetNWString("selectedSecondary")
 		local equipment = ply:GetNWString("selectedEquipment")
+		
 		ply:Give(primaryWeapon)
 		ply:Give(secondaryWeapon)
 		ply:Give(equipment)
 		ply:Give("weapon_crowbar")
 
-		if(equipment == "weapon_slam") then
-			ply:Give("weapon_simmines")
+		-- These are tools/equipment given to specific classes regardless of loadout choices
+		if(plyClass.name == "Demolitionist") then
+			if(equipment == "weapon_slam") then
+				ply:Give("weapon_simmines")
+			end
 		end
 
 		if((plyClass.name == "Engineer")) then
@@ -603,13 +648,17 @@ function GM:PlayerLoadout( ply )
 		local primaryWeapon = ply:GetNWString("selectedPrimary")
 		local secondaryWeapon = ply:GetNWString("selectedSecondary")
 		local equipment = ply:GetNWString("selectedEquipment")
+		
 		ply:Give(primaryWeapon)
 		ply:Give(secondaryWeapon)
 		ply:Give(equipment)
 		ply:Give("weapon_crowbar")
 
-		if(equipment == "weapon_slam") then
-			ply:Give("weapon_simmines")
+		-- These are tools/equipment given to specific classes regardless of loadout choices
+		if(plyClass.name == "Demolitionist") then
+			if(equipment == "weapon_slam") then
+				ply:Give("weapon_simmines")
+			end
 		end
 
 		if((plyClass.name == "Engineer")) then
@@ -625,16 +674,29 @@ function GM:PlayerLoadout( ply )
 		end
 		
 	end
+	
 end
 
 function GM:PlayerNoClip(ply, state)
+
 	if ply:Team() == 3 and !state then
 		return false
 	elseif !MatchHasBegun and TeamSetUp[ply:Team()] or ply:Team() == 3 then
 		return true
 	end
 	return false
+	
 end
+
+hook.Add( "PlayerNoClip", "NoclipState", function( ply, state )
+	if state then
+		--print( ply:Name() .. " entered noclip." )
+		ply:SetNWBool("inNoclip", true)
+	else
+		--print( ply:Name() .. " left noclip." )
+		ply:SetNWBool("inNoclip", false)
+	end
+end )
 
 function joining( ply )
  
@@ -821,6 +883,7 @@ function ResetWorld()
 	for k,ply in pairs(player.GetAll()) do
 
 		UpdateAllValues(ply)
+		setClassLimits()
 
 		joining( ply )
 		ply:UnLock()
@@ -828,6 +891,8 @@ function ResetWorld()
 		ply:Spawn()
 		ply:SetNWInt("playerMoney", 0)
 		ply:SetNWInt("playerMoney", ply:GetNWInt("playerMoney") + (GetConVar("ctf_startingbalance"):GetFloat()))
+		
+		
 	end
 end
 
@@ -868,6 +933,7 @@ function GM:Think()
 		net.Broadcast()
 	end
 
+	-- Starting the match
 	if Time / 60 > CTF_Time:GetFloat() and not MatchHasBegun then
 		MatchHasBegun = true
 		net.Start("MatchBegin")
@@ -880,6 +946,7 @@ function GM:Think()
 		concommand.Remove("gm_spawnvehicle")
 		
 		for k,v in pairs(ents.GetAll()) do
+			--Don't remove the perimeter sphere entity so we us it to check for the ordnance/class menus
 			if v.IsSphere and v:GetClass() ~= "ctf_perimetersphere" then
 				v:Remove()
 			elseif v.IsBase or v.IsSpawnArea then
@@ -897,6 +964,7 @@ function GM:Think()
 		end
 		table.Empty(undo:GetTable())
 		
+		-- Used to award passive money to players after the match has started
 		timer.Create("paySalary", CTF_PassiveTimer:GetFloat(), 0, function()
 		
 			for _,ply in ipairs(player.GetAll()) do
@@ -920,25 +988,62 @@ function GM:Think()
 			net.Broadcast()
 		end
 	end
+	
 end
 
-hook.Add( "EntityTakeDamage", "EntityDamageExample2", function( target, dmginfo )
+hook.Add( "EntityTakeDamage", "ExplosionModifiers", function( target, dmginfo )
 
-	-- Reduce RPG damage given to players in vehicles by 99%
-    if ( target:IsPlayer() and target:InVehicle() == true) then
-        if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() >= 50 ) then
-            dmginfo:ScaleDamage(0.01) -- Scale damage down to 1% of its original
-            target:TakeDamageInfo(dmginfo)
-        end
-    end
+	local attacker = dmginfo:GetAttacker()
+	local processing = false
 	
-	-- Reduce RPG damage given to players on the ground by 85%
-	if ( target:IsPlayer() and target:InVehicle() == false) then
-        if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() > 100 ) then
-            dmginfo:ScaleDamage(0.125) -- Scale damage down to 12.5% of its original
-            target:TakeDamageInfo(dmginfo)
-        end
-    end
+	-- Recursion guard code
+	if not processing then
+	
+		processing = true
+
+		--Reduce RPG damage given to players in vehicles by 99%
+		if ( target:IsPlayer() and target:InVehicle() == true) then
+			if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() >= 50 ) then
+				dmginfo:ScaleDamage(0.01) -- Scale damage down to 1% of its original
+				target:TakeDamageInfo(dmginfo)
+				processing = false
+			end
+		end
+	
+		--Reduce RPG damage given to players on the ground by 87.5%
+		if ( target:IsPlayer() and target:InVehicle() == false) then
+			if ( IsValid(target) and dmginfo:IsExplosionDamage() and dmginfo:GetDamage() > 100 ) then
+				dmginfo:ScaleDamage(0.125) -- Scale damage down to 12.5% of its original
+				target:TakeDamageInfo(dmginfo)
+				processing = false
+			end
+		end
+		
+		-- Award money for vehicle kill
+		if(target:IsVehicle() and IsValid(target) and IsValid(attacker)) then
+		
+			if(target:GetNWInt("OwningTeam") ~= attacker:Team()) then
+			
+				-- For some reason, if the specific team numbers aren't specified, this will fire multiple times
+				if (target:GetNWInt("OwningTeam") == 1 or target:GetNWInt("OwningTeam") == 2) and attacker:Team() ~= nil then
+				
+					local curMoney = attacker:GetNWInt("playerMoney")
+					local newMoney = curMoney + CTF_PassiveIncome:GetInt()
+					
+					target:CallOnRemove("VehicleReward", function() 
+						
+						attacker:SetNWInt("playerMoney", newMoney)
+						processing = false
+					
+					end)
+				
+				end
+			
+			end
+		
+		end
+		
+	end
 
 end )
 
@@ -977,17 +1082,17 @@ net.Receive("receivePrimaryWeapon", function( len, ply )
 	local receivedPrimaryWeapon = net.ReadTable()
 	local plyClass = ply:GetNWInt("playerClass")
 	
-	ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
+	--ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
 
-	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
+	if ( IsValid( ply ) and ply:IsPlayer() ) then
 
-		-- if(plyClass == receivedPrimaryWeapon.Category) then
-			-- ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
-		-- else
-			-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-		-- end
+		if(plyClass == receivedPrimaryWeapon.Category) then
+			ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
+		elseif (receivedPrimaryWeapon ~= nil) then
+			ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+		end
 	
-	-- else return end
+	else return end
 
 end )
 
@@ -995,17 +1100,17 @@ net.Receive("receiveSecondaryWeapon", function( len, ply )
 
 	local receivedSecondaryWeapon = net.ReadTable()
 	
-	ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
+	--ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
 	
-	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
+	if ( IsValid( ply ) and ply:IsPlayer() ) then
 
-		-- if (receivedSecondaryWeapon.Category == "Sidearms") then
-			-- ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
-		-- else
-			-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-		-- end
+		if (receivedSecondaryWeapon.Category == "Sidearms") then
+			ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
+		elseif (receivedSecondaryWeapon ~= nil) then
+			ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+		end
 		
-	-- else return end
+	else return end
 	
 end )
 
@@ -1014,55 +1119,55 @@ net.Receive("receiveEquipment", function( len, ply )
 	local receivedEquipment = net.ReadTable()
 	local plyClass = ply:GetNWInt("playerClass")
 	
-	ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+	--ply:SetNWString("selectedEquipment", receivedEquipment.Class)
 
-	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
+	if ( IsValid( ply ) and ply:IsPlayer() ) then
 
-		-- -- Validate Rifleman, Gunner, and Medic equipment
-		-- if (plyClass == 2 or plyClass == 4 or plyClass == 9) then
-			-- if(receivedEquipment.Category == "Grenades") then
-				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			-- else
-				-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			-- end
-		-- end
+		-- Validate Rifleman, Gunner, and Medic equipment
+		if (plyClass == 2 or plyClass == 4 or plyClass == 9) then
+			if(receivedEquipment.Category == "Grenades") then
+				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			elseif (receivedEquipment ~= nil) then
+				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			end
+		end
 
-		-- -- Validate Marksman and Scout equipment
-		-- if (plyClass == 3 or plyClass == 8) then
-			-- if(receivedEquipment.Category == "Binoculars") then
-				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			-- else
-				-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			-- end
-		-- end
+		-- Validate Marksman and Scout equipment
+		if (plyClass == 3 or plyClass == 8) then
+			if(receivedEquipment.Category == "Binoculars") then
+				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			elseif (receivedEquipment ~= nil) then
+				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			end
+		end
 
-		-- -- Validate Support equipment
-		-- if (plyClass == 6) then
-			-- if(receivedEquipment.Category == "Throwable Ammo") then
-				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			-- else
-				-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			-- end
-		-- end
+		-- Validate Support equipment
+		if (plyClass == 6) then
+			if(receivedEquipment.Category == "Throwable Ammo") then
+				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			elseif (receivedEquipment ~= nil) then
+				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			end
+		end
 
-		-- -- Validate Engineer equipment
-		-- if (plyClass == 7) then
-			-- if(receivedEquipment.Category == "Toolkit") then
-				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			-- else
-				-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			-- end
-		-- end
+		-- Validate Engineer equipment
+		if (plyClass == 7) then
+			if(receivedEquipment.Category == "Toolkit") then
+				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			elseif (receivedEquipment ~= nil) then
+				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			end
+		end
 
-		-- -- Validate Demolitionist equipment
-		-- if (plyClass == 5) then
-			-- if(receivedEquipment.Category == "Demolitions") then
-				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			-- else
-				-- ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			-- end
-		-- end
+		-- Validate Demolitionist equipment
+		if (plyClass == 5) then
+			if(receivedEquipment.Category == "Demolitions") then
+				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			elseif (receivedEquipment ~= nil) then
+				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
+			end
+		end
 
-	-- else return end
+	else return end
 
 end )
