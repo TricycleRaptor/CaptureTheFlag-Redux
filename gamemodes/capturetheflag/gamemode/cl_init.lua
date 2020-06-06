@@ -131,6 +131,7 @@ local function HandleMatchBegin()
 	LocalPlayer():EmitSound(BeginNoise)
 	LocalPlayer():EmitSound(DeployNoise)
 	
+	
 end
 net.Receive("MatchBegin", HandleMatchBegin)
 
@@ -661,7 +662,6 @@ function AlertThink()
 end
 hook.Add("Think", "AlertThink", AlertThink)
 
-
 playedThunk = true
 function VictoryThink()
 	if CurTime() - WinTime > 7 then
@@ -705,13 +705,14 @@ function VictoryThink()
 end
 hook.Add("Think", "VictoryThink", VictoryThink)
 
-local cooldownDelay = 1
-local lastOccurance = -cooldownDelay
+local cooldownDelay = 0.5
+local lastOccurance = 0
 
 hook.Add("StartCommand", "Jump Cooldown", function(ply, cmd)
-	local timeElapsed = CurTime() - lastOccurance
 
-	if cmd:KeyDown(IN_JUMP) then
+	local timeElapsed = CurTime() - lastOccurance
+	
+	if cmd:KeyDown(IN_JUMP) and ply:GetNWBool("inNoclip") == false then
 	
 		-- Do more testing and add a status indicator for the client
 		local timeElapsed = CurTime() - lastOccurance
@@ -723,4 +724,5 @@ hook.Add("StartCommand", "Jump Cooldown", function(ply, cmd)
 		end
 		
 	end
+	
 end)
