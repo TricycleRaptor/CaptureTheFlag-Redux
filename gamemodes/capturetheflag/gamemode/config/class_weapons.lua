@@ -2,14 +2,14 @@
 
 local V = {
 
-	Name = "ARC-C",
-	Model = "models/weapons/w_acrc.mdl",
-	Class = "tfa_ins2_acrc",
+	Name = "AR-15",
+	Model = "models/weapons/tfa_ins2/w_cw_ar15.mdl",
+	Class = "tfa_ins2_cw_ar15",
 	Category = 2,
-	Description = "The ARC-C offers high damage in bursts while suffering from high recoil and spread under sustained fire.",
+	Description = "The AR-15 classic is a assault rifle offering many tactical accessories at the cost of mobility and reload time.",
 
 }
-list.Set( "weapons_rifleman_primary", "tfa_ins2_acrc", V )
+list.Set( "weapons_rifleman_primary", "tfa_ins2_cw_ar15", V )
 
 local V = {
 
@@ -17,7 +17,7 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_scarl.mdl",
 	Class = "tfa_ins2_scarl",
 	Category = 2,
-	Description = "The SCAR-L offers great recoil control and low spread. Moderate damage at medium distance.",
+	Description = "The SCAR-L offers great recoil control and low spread. Sports excellent damage at longer distances.",
 
 }
 list.Set( "weapons_rifleman_primary", "tfa_ins2_scarl", V )
@@ -54,21 +54,21 @@ local V = {
 	Model = "models/weapons/w_rpk_74m.mdl",
 	Class = "tfa_ins2_rpk_74m",
 	Category = 4,
-	Description = "The RPK-74m offers moderate firerate and modest recoil control. Decent range, but poor suppression options.",
+	Description = "The RPK-74m machinegun is best used for ranged engagements, considerably lighter, but does less damage.",
 
 }
 list.Set( "weapons_gunner_primary", "tfa_ins2_rpk_74m", V )
 
 local V = {
 
-	Name = "M60",
-	Model = "models/weapons/w_nam_m60.mdl",
-	Class = "tfa_nam_m60",
+	Name = "Stoner A1 LMG",
+	Model = "models/weapons/tfa_ins2/w_wf_mg25.mdl",
+	Class = "tfa_ins2_kaclmg",
 	Category = 4,
-	Description = "The M-60 is a belt-fed machinegun offering high firerate with poor recoil control. Good for suppression.",
+	Description = "The Stoner A1 is a high capacity, high damage machine gun. Extremely heavy and best used for defense.",
 
 }
-list.Set( "weapons_gunner_primary", "tfa_nam_m60", V )
+list.Set( "weapons_gunner_primary", "tfa_ins2_kaclmg", V )
 
 -- Demolitionist Weapon Table
 
@@ -78,21 +78,21 @@ local V = {
 	Model = "models/weapons/smc/qbz97/w_warface_t97.mdl",
 	Class = "tfa_ins2_norinco_qbz97",
 	Category = 5,
-	Description = "The QBZ-97 bullpup rifle sports a high capacity magazine and low recoil. Considerably heavy.",
+	Description = "The QBZ-97 bullpup rifle offers strong recoil control and less vertical spread. Does less damage than the AUG.",
 
 }
 list.Set( "weapons_demolitionist_primary", "tfa_ins2_mwr_p90", V)
 
 local V = {
 
-	Name = "H&K MP7",
-	Model = "models/weapons/tfa_ins2/w_mp7.mdl",
-	Class = "tfa_ins2_mp7",
+	Name = "AUG-3",
+	Model = "models/weapons/tfa_ins2/w_aug.mdl",
+	Class = "tfa_ins2_aug",
 	Category = 5,
-	Description = "The MP7 is a lightweight SMG alternative to the QBZ-97. Moderate damage with high spread.",
+	Description = "The AUG-3 bullpup rifle offers lower horizontal spread and high damage at the cost of mobility and reload time.",
 
 }
-list.Set( "weapons_demolitionist_primary", "tfa_ins2_mp7", V )
+list.Set( "weapons_demolitionist_primary", "tfa_ins2_aug", V )
 
 -- Support Weapon Table
 
@@ -102,7 +102,7 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_spas12_bri.mdl",
 	Class = "tfa_ins2_spas12",
 	Category = 6,
-	Description = "The SPAS-12 holds nine shells with tight pellet spread. Effective at close and midrange.",
+	Description = "The SPAS-12 pump shotgun holds nine shells with tight pellet spread. Effective at close and midrange.",
 
 }
 list.Set( "weapons_support_primary", "tfa_ins2_spas12", V )
@@ -113,7 +113,7 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_m1014.mdl",
 	Class = "tfa_ins2_m1014",
 	Category = 6,
-	Description = "The M1014 is a gas-chambered semi-auto shotgun. Best at close range. Holds seven shells.",
+	Description = "The M1014 is a gas-chambered semi-automatic tactical shotgun. Best at close range. Holds seven shells.",
 
 }
 list.Set( "weapons_support_primary", "tfa_ins2_m1014", V )
@@ -126,7 +126,7 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_nova.mdl",
 	Class = "tfa_ins2_nova",
 	Category = 7,
-	Description = "The Nova shotgun offers eight shells with standard pellet count. Tighter spread, medium range.",
+	Description = "The Nova shotgun offers eight shells with standard pellet count. Tighter pellet spread, good for offense.",
 
 }
 list.Set( "weapons_engineer_primary", "tfa_ins2_nova", V )
@@ -137,7 +137,7 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_m590_olli.mdl",
 	Class = "tfa_ins2_m590o",
 	Category = 7,
-	Description = "The M590A1 combat shotgun offers nine shells with higher pellet count. Short range.",
+	Description = "The M590A1 combat shotgun offers nine shells with higher pellet count. Short range, best for defense.",
 
 }
 list.Set( "weapons_engineer_primary", "tfa_ins2_m590o", V )
@@ -146,11 +146,11 @@ list.Set( "weapons_engineer_primary", "tfa_ins2_m590o", V )
 
 local V = {
 
-	Name = "H&K MP5K",
-	Model = "models/weapons/tfa_ins2/w_mp5k.mdl",
-	Class = "tfa_ins2_mp5k",
+	Name = "H&K MP7",
+	Model = "models/weapons/tfa_ins2/w_mp7.mdl",
+	Class = "tfa_ins2_mp7",
 	Category = 8,
-	Description = "The MP5 is a lightweight SMG with medium damage and spread. Most effective as a run-and-gun option.",
+	Description = "The MP7 is a lightweight SMG with medium damage and spread. Most effective as a run-and-gun option.",
 
 }
 list.Set( "weapons_scout_primary", "tfa_ins2_mp5k", V )
@@ -161,7 +161,7 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_krissv.mdl",
 	Class = "tfa_ins2_krissv",
 	Category = 8,
-	Description = "The KRISS-VECTTOR offers a large magazine and high damage at the cost of spread. Best for sustained fire.",
+	Description = "The VECTOR offers a large magazine and high damage at the cost of spread. Best for sustained fire.",
 
 }
 list.Set( "weapons_scout_primary", "tfa_ins2_krissv", V )
@@ -170,23 +170,23 @@ list.Set( "weapons_scout_primary", "tfa_ins2_krissv", V )
 
 local V = {
 
-	Name = "H&K MP5K",
-	Model = "models/weapons/tfa_ins2/w_mp5k.mdl",
-	Class = "tfa_ins2_mp5k",
-	Category = 9,
-	Description = "The MP5 is a lightweight SMG with moderate damage and spread. Good for sentry medics.",
-
-}
-list.Set( "weapons_medic_primary", "tfa_ins2_mp5k", V)
-
-local V = {
-
 	Name = "H&K MP7",
 	Model = "models/weapons/tfa_ins2/w_mp7.mdl",
 	Class = "tfa_ins2_mp7",
 	Category = 9,
-	Description = "The MP7 is a heavier SMG alternative to the MP5. Higher damage and spread. Best combat medic option.",
+	Description = "The MP7 SMG offers medium damage with a higher capacity magazine. Effective for sentry medics.",
 
 }
-list.Set( "weapons_medic_primary", "tfa_ins2_mp7", V )
+list.Set( "weapons_medic_primary", "tfa_ins2_mp5k", V )
+
+local V = {
+
+	Name = "KRISS VECTOR",
+	Model = "models/weapons/tfa_ins2/w_krissv.mdl",
+	Class = "tfa_ins2_krissv",
+	Category = 9,
+	Description = "The VECTOR sports high damage and firerate at the cost of spread and recoil. Best combat medic option.",
+
+}
+list.Set( "weapons_medic_primary", "tfa_ins2_krissv", V )
 
