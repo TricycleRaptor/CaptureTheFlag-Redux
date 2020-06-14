@@ -296,14 +296,14 @@ hook.Add("CanProperty", "PropProtection.CanProperty", PropProtection.CanProperty
 --------------------Force the use of buttons for key presses--------------
 numpad.OldActivate = numpad.Activate
 function numpad.Activate(ply, key, isButton)
-	if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+	if (isButton or key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65 or not GetConVar("ctf_restrictkeys"):GetBool()) then
 		return numpad.OldActivate(ply, key, isButton)
 	end
 end
 
 numpad.OldDeactivate = numpad.Deactivate
 function numpad.Deactivate(ply, key, isButton)
-	if (isButton or not GetConVar("ctf_restrictkeys"):GetBool()) then
+	if (isButton or key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65 or not GetConVar("ctf_restrictkeys"):GetBool()) then
 		return numpad.OldDeactivate(ply, key, isButton)
 	end
 end
