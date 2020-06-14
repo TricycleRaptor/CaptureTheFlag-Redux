@@ -296,20 +296,33 @@ hook.Add("CanProperty", "PropProtection.CanProperty", PropProtection.CanProperty
 --------------------Force the use of buttons for key presses--------------
 numpad.OldActivate = numpad.Activate
 function numpad.Activate(ply, key, isButton)
-	if (isButton or key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65 or not GetConVar("ctf_restrictkeys"):GetBool()) then
+	if (GetConVar("ctf_restrictkeys"):GetBool() == false or isButton) then
 		return numpad.OldActivate(ply, key, isButton)
+	elseif (GetConVar("ctf_restrictkeys"):GetBool() == true) then
+		if(ply:InVehicle()) then
+			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65) then
+				-- Whitelist WASD, Shift, Alt, and Spacebar for simfphys vehicles
+				return numpad.OldActivate(ply, key, isButton)
+			end
+		end
 	end
 end
 
 numpad.OldDeactivate = numpad.Deactivate
 function numpad.Deactivate(ply, key, isButton)
-	if (isButton or key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65 or not GetConVar("ctf_restrictkeys"):GetBool()) then
+	if (GetConVar("ctf_restrictkeys"):GetBool() == false or isButton) then
 		return numpad.OldDeactivate(ply, key, isButton)
+	elseif (GetConVar("ctf_restrictkeys"):GetBool() == true) then
+		if(ply:InVehicle()) then
+			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65) then
+				-- Whitelist WASD, Shift, Alt, and Spacebar for simfphys vehicles
+				return numpad.OldDeactivate(ply, key, isButton)
+			end
+		end
 	end
 end
---------------------------------Button Force End--------------------------
 
--- TODO: Allow simfphys binds to bypass the numpad suppression system
+--------------------------------Button Force End--------------------------
 
 function UpdateAllValues(ply)
 
