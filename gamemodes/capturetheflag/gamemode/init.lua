@@ -633,7 +633,46 @@ function GM:PlayerDisconnected( ply )
 		end
 	end
 
-	updateDisconnectedClasses(ply)
+	local plyClass = ply:GetNWInt("playerClass")
+	local plyTeam = ply:Team()
+
+	if(plyTeam == 1) then -- Red team
+
+		if(plyClass == 3) then -- Marksman
+			red_marksmanCount = red_marksmanCount - 1
+		elseif(plyClass == 4) then -- Gunner
+			red_gunnerCount = red_gunnerCount - 1
+		elseif(plyClass == 5) then -- Demolitionist
+			red_demoCount = red_demoCount - 1
+		elseif(plyClass == 6) then -- Support
+			red_supportCount = red_supportCount - 1
+		elseif(plyClass == 7) then -- Engineer
+			red_engineerCount = red_engineerCount - 1
+		elseif(plyClass == 8) then -- Scout
+			red_scoutCount = red_scoutCount - 1
+		elseif(plyClass == 9) then -- Medic
+			red_medicCount = red_medicCount - 1
+		end
+
+	elseif (plyTeam == 2) then -- Blue team
+
+		if(plyClass == 3) then -- Marksman
+			blue_marksmanCount = blue_marksmanCount - 1
+		elseif(plyClass == 4) then -- Gunner
+			blue_gunnerCount = blue_gunnerCount - 1
+		elseif(plyClass == 5) then -- Demolitionist
+			blue_demoCount = blue_demoCount - 1
+		elseif(plyClass == 6) then -- Support
+			blue_supportCount = blue_supportCount - 1
+		elseif(plyClass == 7) then -- Engineer
+			blue_engineerCount = blue_engineerCount - 1
+		elseif(plyClass == 8) then -- Scout
+			blue_scoutCount = blue_scoutCount - 1
+		elseif(plyClass == 9) then -- Medic
+			blue_medicCount = blue_medicCount - 1
+		end
+
+	end
 
 end
 
@@ -1143,51 +1182,6 @@ hook.Add( "EntityTakeDamage", "ExplosionModifiers", function( target, dmginfo )
 
 end )
 
-function updateDisconnectedClasses(ply)
-
-	local plyClass = ply:GetNWInt("playerClass")
-	local plyTeam = ply:Team()
-
-	if(plyTeam == 1) then -- Red team
-
-		if(plyClass == 3) then -- Marksman
-			red_marksmanCount = red_marksmanCount - 1
-		elseif(plyClass == 4) then -- Gunner
-			red_gunnerCount = red_gunnerCount - 1
-		elseif(plyClass == 5) then -- Demolitionist
-			red_demoCount = red_demoCount - 1
-		elseif(plyClass == 6) then -- Support
-			red_supportCount = red_supportCount - 1
-		elseif(plyClass == 7) then -- Engineer
-			red_engineerCount = red_engineerCount - 1
-		elseif(plyClass == 8) then -- Scout
-			red_scoutCount = red_scoutCount - 1
-		elseif(plyClass == 9) then -- Medic
-			red_medicCount = red_medicCount - 1
-		end
-
-	elseif (plyTeam == 2) then -- Blue team
-
-		if(plyClass == 3) then -- Marksman
-			blue_marksmanCount = blue_marksmanCount - 1
-		elseif(plyClass == 4) then -- Gunner
-			blue_gunnerCount = blue_gunnerCount - 1
-		elseif(plyClass == 5) then -- Demolitionist
-			blue_demoCount = blue_demoCount - 1
-		elseif(plyClass == 6) then -- Support
-			blue_supportCount = blue_supportCount - 1
-		elseif(plyClass == 7) then -- Engineer
-			blue_engineerCount = blue_engineerCount - 1
-		elseif(plyClass == 8) then -- Scout
-			blue_scoutCount = blue_scoutCount - 1
-		elseif(plyClass == 9) then -- Medic
-			blue_medicCount = blue_medicCount - 1
-		end
-
-	end
-
-end
-
 --------------------------Economy--------------------------
 
 function GM:PlayerDeath(victim, inflictor, attacker)
@@ -1223,17 +1217,17 @@ net.Receive("receivePrimaryWeapon", function( len, ply )
 	local receivedPrimaryWeapon = net.ReadTable()
 	local plyClass = ply:GetNWInt("playerClass")
 	
-	--ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
+	ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
 
-	if ( IsValid( ply ) and ply:IsPlayer() ) then
+	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
 
-		if(plyClass == receivedPrimaryWeapon.Category) then
-			ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
-		elseif (receivedPrimaryWeapon ~= nil) then
-			ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-		end
+		-- if(plyClass == receivedPrimaryWeapon.Category) then
+			-- ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
+		-- elseif (receivedPrimaryWeapon ~= nil) then
+			-- ply:Kick("Invalid request for a primary weapon.")
+		-- end
 	
-	else return end
+	-- else return end
 
 end )
 
@@ -1241,17 +1235,17 @@ net.Receive("receiveSecondaryWeapon", function( len, ply )
 
 	local receivedSecondaryWeapon = net.ReadTable()
 	
-	--ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
+	ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
 	
-	if ( IsValid( ply ) and ply:IsPlayer() ) then
+	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
 
-		if (receivedSecondaryWeapon.Category == "Sidearms") then
-			ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
-		elseif (receivedSecondaryWeapon ~= nil) then
-			ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-		end
+		-- if (receivedSecondaryWeapon.Category == "Sidearms") then
+			-- ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
+		-- elseif (receivedSecondaryWeapon ~= nil) then
+			-- ply:Kick("Invalid request for a sidearm.")
+		-- end
 		
-	else return end
+	-- else return end
 	
 end )
 
@@ -1260,56 +1254,56 @@ net.Receive("receiveEquipment", function( len, ply )
 	local receivedEquipment = net.ReadTable()
 	local plyClass = ply:GetNWInt("playerClass")
 	
-	--ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+	ply:SetNWString("selectedEquipment", receivedEquipment.Class)
 
-	if ( IsValid( ply ) and ply:IsPlayer() ) then
+	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
 
 		-- Validate Rifleman, Gunner, and Medic equipment
-		if (plyClass == 2 or plyClass == 4 or plyClass == 9) then
-			if(receivedEquipment.Category == "Grenades") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			elseif (receivedEquipment ~= nil) then
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- if (plyClass == 2 or plyClass == 4 or plyClass == 9) then
+			-- if(receivedEquipment.Category == "Grenades") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- elseif (receivedEquipment ~= nil) then
+				-- ply:Kick("Invalid equipment data for Rifleman, Gunner, or Medic.")
+			-- end
+		-- end
 
 		-- Validate Marksman and Scout equipment
-		if (plyClass == 3 or plyClass == 8) then
-			if(receivedEquipment.Category == "Binoculars") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			elseif (receivedEquipment ~= nil) then
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- if (plyClass == 3 or plyClass == 8) then
+			-- if(receivedEquipment.Category == "Binoculars") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- elseif (receivedEquipment ~= nil) then
+				-- ply:Kick("Invalid equipment data for Marksman or Scout.")
+			-- end
+		-- end
 
 		-- Validate Support equipment
-		if (plyClass == 6) then
-			if(receivedEquipment.Category == "Throwable Ammo") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			elseif (receivedEquipment ~= nil) then
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- if (plyClass == 6) then
+			-- if(receivedEquipment.Category == "Throwable Ammo") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- elseif (receivedEquipment ~= nil) then
+				-- ply:Kick("Invalid equipment data for Support.")
+			-- end
+		-- end
 
 		-- Validate Engineer equipment
-		if (plyClass == 7) then
-			if(receivedEquipment.Category == "Toolkit") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			elseif (receivedEquipment ~= nil) then
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- if (plyClass == 7) then
+			-- if(receivedEquipment.Category == "Toolkit") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- elseif (receivedEquipment ~= nil) then
+				-- ply:Kick("Invalid equipment data for Engineer.")
+			-- end
+		-- end
 
 		-- Validate Demolitionist equipment
-		if (plyClass == 5) then
-			if(receivedEquipment.Category == "Demolitions") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			elseif (receivedEquipment ~= nil) then
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- if (plyClass == 5) then
+			-- if(receivedEquipment.Category == "Demolitions") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- elseif (receivedEquipment ~= nil) then
+				-- ply:Kick("Invalid equipment data for Demolitionist.")
+			-- end
+		-- end
 
-	else return end
+	-- else return end
 
 end )
 
