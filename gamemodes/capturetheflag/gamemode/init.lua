@@ -1307,6 +1307,7 @@ net.Receive("receiveEquipment", function( len, ply )
 
 end )
 
+-- These are terrible, a switch statement or a table would be loads better, needs to be done soon.
 net.Receive("receiveClassRequest", function( len, ply )
 
 	local potentialClass = net.ReadInt(5)
