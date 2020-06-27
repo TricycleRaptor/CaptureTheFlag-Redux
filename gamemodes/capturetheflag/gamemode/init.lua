@@ -325,7 +325,7 @@ function numpad.Activate(ply, key, isButton)
 		return numpad.OldActivate(ply, key, isButton)
 	elseif (GetConVar("ctf_restrictkeys"):GetBool() == true) then
 		if(ply:InVehicle()) then
-			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65) then
+			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65 or key == 16) then
 				-- Whitelist WASD, Shift, Alt, and Spacebar for simfphys vehicles
 				return numpad.OldActivate(ply, key, isButton)
 			end
@@ -339,7 +339,7 @@ function numpad.Deactivate(ply, key, isButton)
 		return numpad.OldDeactivate(ply, key, isButton)
 	elseif (GetConVar("ctf_restrictkeys"):GetBool() == true) then
 		if(ply:InVehicle()) then
-			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65) then
+			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65 or key == 16) then
 				-- Whitelist WASD, Shift, Alt, and Spacebar for simfphys vehicles
 				return numpad.OldDeactivate(ply, key, isButton)
 			end
@@ -398,13 +398,13 @@ function setClassLimits()
 	
 	else
 	
-		marksmanLimit = math.ceiling(maxPlayers / 8)
-		gunnerLimit = math.ceiling(maxPlayers / 8)
-		demoLimit = math.ceiling(maxPlayers / 8)
-		supportLimit = math.ceiling(maxPlayers / 8)
-		engineerLimit = math.ceiling(maxPlayers / 8)
-		scoutLimit = math.ceiling(maxPlayers / 8)
-		medicLimit = math.ceiling(maxPlayers / 8)
+		marksmanLimit = math.ceil(maxPlayers / 8)
+		gunnerLimit = math.ceil(maxPlayers / 8)
+		demoLimit = math.ceil(maxPlayers / 8)
+		supportLimit = math.ceil(maxPlayers / 8)
+		engineerLimit = math.ceil(maxPlayers / 8)
+		scoutLimit = math.ceil(maxPlayers / 8)
+		medicLimit = math.ceil(maxPlayers / 8)
 	
 	end
 
@@ -1035,7 +1035,49 @@ function EndGame(team)
 	timer.Simple(7, ResetWorld)
 
 	for k,ply in pairs(player.GetAll()) do
+		
 		ply:Lock()
+		local plyClass = ply:GetNWInt("playerClass")
+		local plyTeam = ply:Team()
+
+		if(plyTeam == 1) then -- Red team
+
+			if(plyClass == 3) then -- Marksman
+				red_marksmanCount = red_marksmanCount - 1
+			elseif(plyClass == 4) then -- Gunner
+				red_gunnerCount = red_gunnerCount - 1
+			elseif(plyClass == 5) then -- Demolitionist
+				red_demoCount = red_demoCount - 1
+			elseif(plyClass == 6) then -- Support
+				red_supportCount = red_supportCount - 1
+			elseif(plyClass == 7) then -- Engineer
+				red_engineerCount = red_engineerCount - 1
+			elseif(plyClass == 8) then -- Scout
+				red_scoutCount = red_scoutCount - 1
+			elseif(plyClass == 9) then -- Medic
+				red_medicCount = red_medicCount - 1
+			end
+
+		elseif (plyTeam == 2) then -- Blue team
+
+			if(plyClass == 3) then -- Marksman
+				blue_marksmanCount = blue_marksmanCount - 1
+			elseif(plyClass == 4) then -- Gunner
+				blue_gunnerCount = blue_gunnerCount - 1
+			elseif(plyClass == 5) then -- Demolitionist
+				blue_demoCount = blue_demoCount - 1
+			elseif(plyClass == 6) then -- Support
+				blue_supportCount = blue_supportCount - 1
+			elseif(plyClass == 7) then -- Engineer
+				blue_engineerCount = blue_engineerCount - 1
+			elseif(plyClass == 8) then -- Scout
+				blue_scoutCount = blue_scoutCount - 1
+			elseif(plyClass == 9) then -- Medic
+				blue_medicCount = blue_medicCount - 1
+			end
+
+		end
+		
 	end
 
 	net.Start("GameEnded")
@@ -1307,7 +1349,6 @@ net.Receive("receiveEquipment", function( len, ply )
 
 end )
 
--- These are terrible, a switch statement or a table would be loads better, needs to be done soon.
 net.Receive("receiveClassRequest", function( len, ply )
 
 	local potentialClass = net.ReadInt(5)
