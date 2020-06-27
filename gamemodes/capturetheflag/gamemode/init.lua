@@ -1035,50 +1035,25 @@ function EndGame(team)
 	timer.Simple(7, ResetWorld)
 
 	for k,ply in pairs(player.GetAll()) do
-		
 		ply:Lock()
-		local plyClass = ply:GetNWInt("playerClass")
-		local plyTeam = ply:Team()
-
-		if(plyTeam == 1) then -- Red team
-
-			if(plyClass == 3) then -- Marksman
-				red_marksmanCount = red_marksmanCount - 1
-			elseif(plyClass == 4) then -- Gunner
-				red_gunnerCount = red_gunnerCount - 1
-			elseif(plyClass == 5) then -- Demolitionist
-				red_demoCount = red_demoCount - 1
-			elseif(plyClass == 6) then -- Support
-				red_supportCount = red_supportCount - 1
-			elseif(plyClass == 7) then -- Engineer
-				red_engineerCount = red_engineerCount - 1
-			elseif(plyClass == 8) then -- Scout
-				red_scoutCount = red_scoutCount - 1
-			elseif(plyClass == 9) then -- Medic
-				red_medicCount = red_medicCount - 1
-			end
-
-		elseif (plyTeam == 2) then -- Blue team
-
-			if(plyClass == 3) then -- Marksman
-				blue_marksmanCount = blue_marksmanCount - 1
-			elseif(plyClass == 4) then -- Gunner
-				blue_gunnerCount = blue_gunnerCount - 1
-			elseif(plyClass == 5) then -- Demolitionist
-				blue_demoCount = blue_demoCount - 1
-			elseif(plyClass == 6) then -- Support
-				blue_supportCount = blue_supportCount - 1
-			elseif(plyClass == 7) then -- Engineer
-				blue_engineerCount = blue_engineerCount - 1
-			elseif(plyClass == 8) then -- Scout
-				blue_scoutCount = blue_scoutCount - 1
-			elseif(plyClass == 9) then -- Medic
-				blue_medicCount = blue_medicCount - 1
-			end
-
-		end
-		
+		ply:SetNWInt("playerClass", 1)
 	end
+	
+	red_marksmanCount = 0
+	red_gunnerCount = 0
+	red_demoCount = 0
+	red_supportCount = 0
+	red_engineerCount = 0
+	red_scoutCount = 0
+	red_medicCount = 0
+	
+	blue_marksmanCount = 0
+	blue_gunnerCount = 0
+	blue_demoCount = 0
+	blue_supportCount = 0
+	blue_engineerCount = 0
+	blue_scoutCount = 0
+	blue_medicCount = 0
 
 	net.Start("GameEnded")
 	net.WriteFloat(team)
