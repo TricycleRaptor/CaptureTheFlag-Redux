@@ -216,17 +216,17 @@ local function HandleGameEnded(len, ply)
 		victoryText:SetImage( "icons/blue_win_text.png" )
 	end
 	
-	timer.Simple(2, function()
+	-- timer.Simple(2, function()
 	
-		local winningTeam = net.ReadFloat()
+		-- local winningTeam = net.ReadFloat()
 		
-		if(winningTeam == LocalPlayer():Team()) then
-			LocalPlayer():EmitSound(WinNoise)
-		else
-			LocalPlayer():EmitSound(LoseNoise)
-		end
+		-- if(winningTeam == LocalPlayer():Team()) then
+			-- LocalPlayer():EmitSound(WinNoise)
+		-- else
+			-- LocalPlayer():EmitSound(LoseNoise)
+		-- end
 	
-	end)
+	-- end)
 
 	victoryLogo:Show()
 	victoryText:Show()
