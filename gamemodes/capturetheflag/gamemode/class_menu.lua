@@ -108,23 +108,44 @@ function classMenu()
 				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
 					LocalPlayer():EmitSound(DenyNoise)
 				else
-					RunConsoleCommand("ctf_setclass", 2)
 
-					net.Start("receivePrimaryWeapon")
-						net.WriteTable(selectedPrimary)
+					net.Start("receiveClassRequest")
+						net.WriteInt(2, 5)
 					net.SendToServer()
 
-					net.Start("receiveSecondaryWeapon")
-						net.WriteTable(selectedSecondary)
-					net.SendToServer()
+					net.Receive("receiveUpdatedClassData", function(len, ply)
 
-					net.Start("receiveEquipment")
-						net.WriteTable(selectedEquipment)
-					net.SendToServer()
+						local confirmed = net.ReadBool()
 
-					LocalPlayer():EmitSound(ConfirmNoise)
-					LocalPlayer():ChatPrint( "[CTF]: Rifleman class selected. Loadout will be applied on respawn." )
-					Frame:Close()
+						if(confirmed == true) then
+
+							RunConsoleCommand("ctf_setclass", 2)
+
+							net.Start("receivePrimaryWeapon")
+								net.WriteTable(selectedPrimary)
+							net.SendToServer()
+
+							net.Start("receiveSecondaryWeapon")
+								net.WriteTable(selectedSecondary)
+							net.SendToServer()
+
+							net.Start("receiveEquipment")
+								net.WriteTable(selectedEquipment)
+							net.SendToServer()
+
+							LocalPlayer():EmitSound(ConfirmNoise)
+							LocalPlayer():ChatPrint( "[CTF]: Rifleman class selected. Loadout will be applied on respawn." )
+							Frame:Close()
+
+						else
+
+							LocalPlayer():EmitSound(DenyNoise)
+							LocalPlayer():ChatPrint( "[CTF]: The class you are attempting to switch to is full." )
+
+						end
+
+					end)
+
 				end
 
 			end
@@ -157,11 +178,7 @@ function classMenu()
 					selectedPrimary = riflemanPrimary:GetOptionData(index)
 					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
-					if(value == "ARC-C") then
-						selectedModel = "models/weapons/w_acrc.mdl"
-					elseif (value == "SCAR-L") then
-						selectedModel = "models/weapons/tfa_ins2/w_scarl.mdl"
-					end
+					selectedModel = selectedPrimary.Model
 
 					primaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -196,13 +213,7 @@ function classMenu()
 					selectedSecondary = riflemanSecondary:GetOptionData(index)
 					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
-					if(value == "QSZ-92") then
-						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
-					elseif (value == "Beretta M9") then
-						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
-					elseif (value == "H&K USP Match") then
-						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
-					end
+					selectedModel = selectedSecondary.Model
 
 					secondaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -235,13 +246,7 @@ function classMenu()
 					selectedEquipment = riflemanEquipment:GetOptionData(index)
 					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
-					if(value == "M67 Offensive Grenade") then
-						selectedModel = "models/weapons/tfa_ins2/w_m67.mdl"
-					elseif (value == "F1 Defensive Grenade") then
-						selectedModel = "models/weapons/tfa_ins2/w_f1.mdl"
-					elseif (value == "ST5 Stun Grenade") then
-						selectedModel = "models/items/tfa_st5/st5_ammo.mdl"
-					end
+					selectedModel = selectedEquipment.Model
 
 					equipmentIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -324,23 +329,44 @@ function classMenu()
 				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
 					LocalPlayer():EmitSound(DenyNoise)
 				else
-					RunConsoleCommand("ctf_setclass", 3)
 
-					net.Start("receivePrimaryWeapon")
-						net.WriteTable(selectedPrimary)
+					net.Start("receiveClassRequest")
+						net.WriteInt(3, 5)
 					net.SendToServer()
 
-					net.Start("receiveSecondaryWeapon")
-						net.WriteTable(selectedSecondary)
-					net.SendToServer()
+					net.Receive("receiveUpdatedClassData", function(len, ply)
 
-					net.Start("receiveEquipment")
-						net.WriteTable(selectedEquipment)
-					net.SendToServer()
+						local confirmed = net.ReadBool()
 
-					LocalPlayer():EmitSound(ConfirmNoise)
-					LocalPlayer():ChatPrint( "[CTF]: Marksman class selected. Loadout will be applied on respawn." )
-					Frame:Close()
+						if(confirmed == true) then
+
+							RunConsoleCommand("ctf_setclass", 3)
+
+							net.Start("receivePrimaryWeapon")
+								net.WriteTable(selectedPrimary)
+							net.SendToServer()
+
+							net.Start("receiveSecondaryWeapon")
+								net.WriteTable(selectedSecondary)
+							net.SendToServer()
+
+							net.Start("receiveEquipment")
+								net.WriteTable(selectedEquipment)
+							net.SendToServer()
+
+							LocalPlayer():EmitSound(ConfirmNoise)
+							LocalPlayer():ChatPrint( "[CTF]: Marksman class selected. Loadout will be applied on respawn." )
+							Frame:Close()
+
+						else
+
+							LocalPlayer():EmitSound(DenyNoise)
+							LocalPlayer():ChatPrint( "[CTF]: The class you are attempting to switch to is full." )
+
+						end
+
+					end)
+
 				end
 
 			end
@@ -371,11 +397,7 @@ function classMenu()
 					selectedPrimary = marksmanPrimary:GetOptionData(index)
 					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
-					if(value == "MK. 14 EBR") then
-						selectedModel = "models/weapons/tfa_ins2/w_m14ebr.mdl"
-					elseif (value == "GOL Magnum") then
-						selectedModel = "models/weapons/tfa_ins2/w_gol.mdl"
-					end
+					selectedModel = selectedPrimary.Model
 
 					primaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -410,13 +432,7 @@ function classMenu()
 					selectedSecondary = marksmanSecondary:GetOptionData(index)
 					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
-					if(value == "QSZ-92") then
-						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
-					elseif (value == "Beretta M9") then
-						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
-					elseif (value == "H&K USP Match") then
-						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
-					end
+					selectedModel = selectedSecondary.Model
 
 					secondaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -449,17 +465,7 @@ function classMenu()
 					selectedEquipment = marksmanEquipment:GetOptionData(index)
 					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
-					if(value == "Standard Binoculars") then
-						selectedModel = "models/weapons/w_binocularsbp.mdl"
-					elseif (value == "Explorer Binoculars") then
-						selectedModel = "models/weapons/w_binoculars_uk.mdl"
-					elseif (value == "Nightvision Binoculars") then
-						selectedModel = "models/weapons/w_nvbinoculars.mdl"
-					elseif (value == "Scout Binoculars") then
-						selectedModel = "models/weapons/w_binoculars_usa.mdl"
-					elseif (value == "Vintage Binoculars") then
-						selectedModel = "models/weapons/w_binoculars_ger.mdl"
-					end
+					selectedModel = selectedEquipment.Model
 
 					equipmentIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -546,23 +552,44 @@ function classMenu()
 				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
 					LocalPlayer():EmitSound(DenyNoise)
 				else
-					RunConsoleCommand("ctf_setclass", 4)
 
-					net.Start("receivePrimaryWeapon")
-						net.WriteTable(selectedPrimary)
+					net.Start("receiveClassRequest")
+						net.WriteInt(4, 5)
 					net.SendToServer()
 
-					net.Start("receiveSecondaryWeapon")
-						net.WriteTable(selectedSecondary)
-					net.SendToServer()
+					net.Receive("receiveUpdatedClassData", function(len, ply)
 
-					net.Start("receiveEquipment")
-						net.WriteTable(selectedEquipment)
-					net.SendToServer()
+						local confirmed = net.ReadBool()
 
-					LocalPlayer():EmitSound(ConfirmNoise)
-					LocalPlayer():ChatPrint( "[CTF]: Gunner class selected. Loadout will be applied on respawn." )
-					Frame:Close()
+						if(confirmed == true) then
+
+							RunConsoleCommand("ctf_setclass", 4)
+
+							net.Start("receivePrimaryWeapon")
+								net.WriteTable(selectedPrimary)
+							net.SendToServer()
+
+							net.Start("receiveSecondaryWeapon")
+								net.WriteTable(selectedSecondary)
+							net.SendToServer()
+
+							net.Start("receiveEquipment")
+								net.WriteTable(selectedEquipment)
+							net.SendToServer()
+
+							LocalPlayer():EmitSound(ConfirmNoise)
+							LocalPlayer():ChatPrint( "[CTF]: Gunner class selected. Loadout will be applied on respawn." )
+							Frame:Close()
+
+						else
+
+							LocalPlayer():EmitSound(DenyNoise)
+							LocalPlayer():ChatPrint( "[CTF]: The class you are attempting to switch to is full." )
+
+						end
+
+					end)
+
 				end
 
 			end
@@ -595,11 +622,7 @@ function classMenu()
 					selectedPrimary = gunnerPrimary:GetOptionData(index)
 					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
-					if(value == "RPK-74m") then
-						selectedModel = "models/weapons/w_rpk_74m.mdl"
-					elseif (value == "M60") then
-						selectedModel = "models/weapons/w_nam_m60.mdl"
-					end
+					selectedModel = selectedPrimary.Model
 
 					primaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -634,13 +657,7 @@ function classMenu()
 					selectedSecondary = gunnerSecondary:GetOptionData(index)
 					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
-					if(value == "QSZ-92") then
-						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
-					elseif (value == "Beretta M9") then
-						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
-					elseif (value == "H&K USP Match") then
-						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
-					end
+					selectedModel = selectedSecondary.Model
 
 					secondaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -673,13 +690,7 @@ function classMenu()
 					selectedEquipment = gunnerEquipment:GetOptionData(index)
 					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
-					if(value == "M67 Offensive Grenade") then
-						selectedModel = "models/weapons/tfa_ins2/w_m67.mdl"
-					elseif (value == "F1 Defensive Grenade") then
-						selectedModel = "models/weapons/tfa_ins2/w_f1.mdl"
-					elseif (value == "ST5 Stun Grenade") then
-						selectedModel = "models/items/tfa_st5/st5_ammo.mdl"
-					end
+					selectedModel = selectedEquipment.Model
 
 					equipmentIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -764,23 +775,43 @@ function classMenu()
 				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
 					LocalPlayer():EmitSound(DenyNoise)
 				else
-					RunConsoleCommand("ctf_setclass", 5)
-
-					net.Start("receivePrimaryWeapon")
-						net.WriteTable(selectedPrimary)
+					net.Start("receiveClassRequest")
+						net.WriteInt(5, 5)
 					net.SendToServer()
 
-					net.Start("receiveSecondaryWeapon")
-						net.WriteTable(selectedSecondary)
-					net.SendToServer()
+					net.Receive("receiveUpdatedClassData", function(len, ply)
 
-					net.Start("receiveEquipment")
-						net.WriteTable(selectedEquipment)
-					net.SendToServer()
+						local confirmed = net.ReadBool()
 
-					LocalPlayer():EmitSound(ConfirmNoise)
-					LocalPlayer():ChatPrint( "[CTF]: Demolitionist class selected. Loadout will be applied on respawn." )
-					Frame:Close()
+						if(confirmed == true) then
+
+							RunConsoleCommand("ctf_setclass", 5)
+
+							net.Start("receivePrimaryWeapon")
+								net.WriteTable(selectedPrimary)
+							net.SendToServer()
+
+							net.Start("receiveSecondaryWeapon")
+								net.WriteTable(selectedSecondary)
+							net.SendToServer()
+
+							net.Start("receiveEquipment")
+								net.WriteTable(selectedEquipment)
+							net.SendToServer()
+
+							LocalPlayer():EmitSound(ConfirmNoise)
+							LocalPlayer():ChatPrint( "[CTF]: Demolitionist class selected. Loadout will be applied on respawn." )
+							Frame:Close()
+
+						else
+
+							LocalPlayer():EmitSound(DenyNoise)
+							LocalPlayer():ChatPrint( "[CTF]: The class you are attempting to switch to is full." )
+
+						end
+
+					end)
+
 				end
 
 			end
@@ -812,13 +843,12 @@ function classMenu()
 
 					selectedPrimary = demolitionistPrimary:GetOptionData(index)
 					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
+					selectedModel = selectedPrimary.Model
 					
 					if(value == "QBZ-97") then
-						selectedModel = "models/weapons/smc/qbz97/w_warface_t97.mdl"
 						primaryIcon:SetSize( 420, 420)
 						primaryIcon:SetPos(-70,-270)
 					elseif (value == "H&K MP7") then
-						selectedModel = "models/weapons/tfa_ins2/w_mp7.mdl"
 						primaryIcon:SetSize( 460, 460)
 						primaryIcon:SetPos(-110,-300)
 					end
@@ -856,13 +886,7 @@ function classMenu()
 					selectedSecondary = demolitionistSecondary:GetOptionData(index)
 					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
-					if(value == "QSZ-92") then
-						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
-					elseif (value == "Beretta M9") then
-						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
-					elseif (value == "H&K USP Match") then
-						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
-					end
+					selectedModel = selectedSecondary.Model
 
 					secondaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -894,13 +918,13 @@ function classMenu()
 
 					selectedEquipment = demolitionistEquipment:GetOptionData(index)
 					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
+					
+					selectedModel = selectedEquipment.Model
 
 					if(value == "RPG Platform") then
-						selectedModel = "models/weapons/w_rocket_launcher.mdl"
 						equipmentIcon:SetSize( 200, 200)
 						equipmentIcon:SetPos(420,-80)
 					elseif (value == "SLAMS/Mines") then
-						selectedModel = "models/weapons/w_slam.mdl"
 						equipmentIcon:SetSize( 600, 600)
 						equipmentIcon:SetPos(165,-425)
 					end
@@ -988,23 +1012,43 @@ function classMenu()
 				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
 					LocalPlayer():EmitSound(DenyNoise)
 				else
-					RunConsoleCommand("ctf_setclass", 6)
-
-					net.Start("receivePrimaryWeapon")
-						net.WriteTable(selectedPrimary)
+					net.Start("receiveClassRequest")
+						net.WriteInt(6, 5)
 					net.SendToServer()
 
-					net.Start("receiveSecondaryWeapon")
-						net.WriteTable(selectedSecondary)
-					net.SendToServer()
+					net.Receive("receiveUpdatedClassData", function(len, ply)
 
-					net.Start("receiveEquipment")
-						net.WriteTable(selectedEquipment)
-					net.SendToServer()
+						local confirmed = net.ReadBool()
 
-					LocalPlayer():EmitSound(ConfirmNoise)
-					LocalPlayer():ChatPrint( "[CTF]: Support class selected. Loadout will be applied on respawn." )
-					Frame:Close()
+						if(confirmed == true) then
+
+							RunConsoleCommand("ctf_setclass", 6)
+
+							net.Start("receivePrimaryWeapon")
+								net.WriteTable(selectedPrimary)
+							net.SendToServer()
+
+							net.Start("receiveSecondaryWeapon")
+								net.WriteTable(selectedSecondary)
+							net.SendToServer()
+
+							net.Start("receiveEquipment")
+								net.WriteTable(selectedEquipment)
+							net.SendToServer()
+
+							LocalPlayer():EmitSound(ConfirmNoise)
+							LocalPlayer():ChatPrint( "[CTF]: Support class selected. Loadout will be applied on respawn." )
+							Frame:Close()
+
+						else
+
+							LocalPlayer():EmitSound(DenyNoise)
+							LocalPlayer():ChatPrint( "[CTF]: The class you are attempting to switch to is full." )
+
+						end
+
+					end)
+
 				end
 
 			end
@@ -1037,11 +1081,7 @@ function classMenu()
 					selectedPrimary = supportPrimary:GetOptionData(index)
 					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
-					if(value == "SPAS-12") then
-						selectedModel = "models/weapons/tfa_ins2/w_spas12_bri.mdl"
-					elseif (value == "M1014") then
-						selectedModel = "models/weapons/tfa_ins2/w_m1014.mdl"
-					end
+					selectedModel = selectedPrimary.Model
 
 					primaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -1076,13 +1116,7 @@ function classMenu()
 					selectedSecondary = supportSecondary:GetOptionData(index)
 					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
-					if(value == "QSZ-92") then
-						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
-					elseif (value == "Beretta M9") then
-						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
-					elseif (value == "H&K USP Match") then
-						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
-					end
+					selectedModel = selectedSecondary.Model
 
 					secondaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -1115,21 +1149,7 @@ function classMenu()
 					selectedEquipment = supportEquipment:GetOptionData(index)
 					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
-					if(value == "Rifle Ammo Supply" || value == "SMG Ammo Supply") then
-						selectedModel = "models/Items/BoxMRounds.mdl"
-					elseif (value == "SLAMS/Mines") then
-						selectedModel = "models/Items/BoxBuckshot.mdl"
-					elseif(value == "Shotgun Ammo Supply") then
-						selectedModel = "models/Items/BoxSRounds.mdl"
-					elseif(value == "Sniper Ammo Supply") then
-						selectedModel = "models/Items/sniper_round_box.mdl"
-					elseif(value == "Rocket Ammo Supply") then
-						selectedModel = "models/weapons/w_missile_closed.mdl"
-					elseif(value == "SLAM/Mine Supply") then
-						selectedModel = "models/weapons/w_slam.mdl"
-					elseif(value == "Pistol Ammo Supply") then
-						selectedModel = "models/Items/BoxSRounds.mdl"
-					end
+					selectedModel = selectedEquipment.Model
 
 					equipmentIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -1214,23 +1234,43 @@ function classMenu()
 				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
 					LocalPlayer():EmitSound(DenyNoise)
 				else
-					RunConsoleCommand("ctf_setclass", 7)
-
-					net.Start("receivePrimaryWeapon")
-						net.WriteTable(selectedPrimary)
+					net.Start("receiveClassRequest")
+						net.WriteInt(7, 5)
 					net.SendToServer()
 
-					net.Start("receiveSecondaryWeapon")
-						net.WriteTable(selectedSecondary)
-					net.SendToServer()
+					net.Receive("receiveUpdatedClassData", function(len, ply)
 
-					net.Start("receiveEquipment")
-						net.WriteTable(selectedEquipment)
-					net.SendToServer()
+						local confirmed = net.ReadBool()
 
-					LocalPlayer():EmitSound(ConfirmNoise)
-					LocalPlayer():ChatPrint( "[CTF]: Engineer class selected. Loadout will be applied on respawn." )
-					Frame:Close()
+						if(confirmed == true) then
+
+							RunConsoleCommand("ctf_setclass", 7)
+
+							net.Start("receivePrimaryWeapon")
+								net.WriteTable(selectedPrimary)
+							net.SendToServer()
+
+							net.Start("receiveSecondaryWeapon")
+								net.WriteTable(selectedSecondary)
+							net.SendToServer()
+
+							net.Start("receiveEquipment")
+								net.WriteTable(selectedEquipment)
+							net.SendToServer()
+
+							LocalPlayer():EmitSound(ConfirmNoise)
+							LocalPlayer():ChatPrint( "[CTF]: Engineer class selected. Loadout will be applied on respawn." )
+							Frame:Close()
+
+						else
+
+							LocalPlayer():EmitSound(DenyNoise)
+							LocalPlayer():ChatPrint( "[CTF]: The class you are attempting to switch to is full." )
+
+						end
+
+					end)
+
 				end
 
 			end
@@ -1263,11 +1303,7 @@ function classMenu()
 					selectedPrimary = engineerPrimary:GetOptionData(index)
 					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
-					if(value == "Nova") then
-						selectedModel = "models/weapons/tfa_ins2/w_nova.mdl"
-					elseif (value == "M590A1") then
-						selectedModel = "models/weapons/tfa_ins2/w_m590_olli.mdl"
-					end
+					selectedModel = selectedPrimary.Model
 
 					primaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -1302,13 +1338,7 @@ function classMenu()
 					selectedSecondary = engineerSecondary:GetOptionData(index)
 					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
-					if(value == "QSZ-92") then
-						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
-					elseif (value == "Beretta M9") then
-						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
-					elseif (value == "H&K USP Match") then
-						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
-					end
+					selectedModel = selectedSecondary.Model
 
 					secondaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -1340,13 +1370,15 @@ function classMenu()
 
 					selectedEquipment = engineerEquipment:GetOptionData(index)
 					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
+					
+					selectedModel = selectedEquipment.Model
 
 					if(value == "Simfphys Repair Tool") then
-						selectedModel = "models/weapons/w_physics.mdl"
 						equipmentIcon:SetSize( 450, 450)
 						equipmentIcon:SetPos(285,-315)
 					elseif (value == "Fortification Tablet") then
-						selectedModel = "models/nirrti/tablet/tablet_sfm.mdl"
+						equipmentIcon:SetSize( 600, 600)
+						equipmentIcon:SetPos(165,-425)
 					end
 
 					equipmentIcon:SetModel(selectedModel)
@@ -1432,23 +1464,43 @@ function classMenu()
 				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
 					LocalPlayer():EmitSound(DenyNoise)
 				else
-					RunConsoleCommand("ctf_setclass", 8)
-
-					net.Start("receivePrimaryWeapon")
-						net.WriteTable(selectedPrimary)
+					net.Start("receiveClassRequest")
+						net.WriteInt(8, 5)
 					net.SendToServer()
 
-					net.Start("receiveSecondaryWeapon")
-						net.WriteTable(selectedSecondary)
-					net.SendToServer()
+					net.Receive("receiveUpdatedClassData", function(len, ply)
 
-					net.Start("receiveEquipment")
-						net.WriteTable(selectedEquipment)
-					net.SendToServer()
+						local confirmed = net.ReadBool()
 
-					LocalPlayer():EmitSound(ConfirmNoise)
-					LocalPlayer():ChatPrint( "[CTF]: Scout class selected. Loadout will be applied on respawn." )
-					Frame:Close()
+						if(confirmed == true) then
+
+							RunConsoleCommand("ctf_setclass", 8)
+
+							net.Start("receivePrimaryWeapon")
+								net.WriteTable(selectedPrimary)
+							net.SendToServer()
+
+							net.Start("receiveSecondaryWeapon")
+								net.WriteTable(selectedSecondary)
+							net.SendToServer()
+
+							net.Start("receiveEquipment")
+								net.WriteTable(selectedEquipment)
+							net.SendToServer()
+
+							LocalPlayer():EmitSound(ConfirmNoise)
+							LocalPlayer():ChatPrint( "[CTF]: Scout class selected. Loadout will be applied on respawn." )
+							Frame:Close()
+
+						else
+
+							LocalPlayer():EmitSound(DenyNoise)
+							LocalPlayer():ChatPrint( "[CTF]: The class you are attempting to switch to is full." )
+
+						end
+
+					end)
+
 				end
 
 			end
@@ -1481,12 +1533,12 @@ function classMenu()
 					selectedPrimary = scoutPrimary:GetOptionData(index)
 					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
+					selectedModel = selectedPrimary.Model
+					
 					if(value == "H&K MP5K") then
-						selectedModel = "models/weapons/tfa_ins2/w_mp5k.mdl"
 						primaryIcon:SetSize( 420, 420)
 						primaryIcon:SetPos(-95,-260)
 					elseif (value == "KRISS VECTOR") then
-						selectedModel = "models/weapons/tfa_ins2/w_krissv.mdl"
 						primaryIcon:SetSize( 400, 400)
 						primaryIcon:SetPos(-70,-255)
 					end
@@ -1524,13 +1576,7 @@ function classMenu()
 					selectedSecondary = scoutSecondary:GetOptionData(index)
 					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
-					if(value == "QSZ-92") then
-						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
-					elseif (value == "Beretta M9") then
-						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
-					elseif (value == "H&K USP Match") then
-						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
-					end
+					selectedModel = selectedSecondary.Model
 
 					secondaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -1563,17 +1609,7 @@ function classMenu()
 					selectedEquipment = scoutEquipment:GetOptionData(index)
 					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
 
-					if(value == "Standard Binoculars") then
-						selectedModel = "models/weapons/w_binocularsbp.mdl"
-					elseif (value == "Explorer Binoculars") then
-						selectedModel = "models/weapons/w_binoculars_uk.mdl"
-					elseif (value == "Nightvision Binoculars") then
-						selectedModel = "models/weapons/w_nvbinoculars.mdl"
-					elseif (value == "Scout Binoculars") then
-						selectedModel = "models/weapons/w_binoculars_usa.mdl"
-					elseif (value == "Vintage Binoculars") then
-						selectedModel = "models/weapons/w_binoculars_ger.mdl"
-					end
+					selectedModel = selectedEquipment.Model
 
 					equipmentIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -1658,23 +1694,43 @@ function classMenu()
 				if(selectedPrimary == nil or selectedSecondary == nil or selectedEquipment == nil) then
 					LocalPlayer():EmitSound(DenyNoise)
 				else
-					RunConsoleCommand("ctf_setclass", 9)
-
-					net.Start("receivePrimaryWeapon")
-						net.WriteTable(selectedPrimary)
+					net.Start("receiveClassRequest")
+						net.WriteInt(9, 5)
 					net.SendToServer()
 
-					net.Start("receiveSecondaryWeapon")
-						net.WriteTable(selectedSecondary)
-					net.SendToServer()
+					net.Receive("receiveUpdatedClassData", function(len, ply)
 
-					net.Start("receiveEquipment")
-						net.WriteTable(selectedEquipment)
-					net.SendToServer()
+						local confirmed = net.ReadBool()
 
-					LocalPlayer():EmitSound(ConfirmNoise)
-					LocalPlayer():ChatPrint( "[CTF]: Medic class selected. Loadout will be applied on respawn." )
-					Frame:Close()
+						if(confirmed == true) then
+
+							RunConsoleCommand("ctf_setclass", 9)
+
+							net.Start("receivePrimaryWeapon")
+								net.WriteTable(selectedPrimary)
+							net.SendToServer()
+
+							net.Start("receiveSecondaryWeapon")
+								net.WriteTable(selectedSecondary)
+							net.SendToServer()
+
+							net.Start("receiveEquipment")
+								net.WriteTable(selectedEquipment)
+							net.SendToServer()
+
+							LocalPlayer():EmitSound(ConfirmNoise)
+							LocalPlayer():ChatPrint( "[CTF]: Medic class selected. Loadout will be applied on respawn." )
+							Frame:Close()
+
+						else
+
+							LocalPlayer():EmitSound(DenyNoise)
+							LocalPlayer():ChatPrint( "[CTF]: The class you are attempting to switch to is full." )
+
+						end
+
+					end)
+
 				end
 
 			end
@@ -1707,11 +1763,7 @@ function classMenu()
 					selectedPrimary = medicPrimary:GetOptionData(index)
 					primaryDescription:SetText("PRIMARY: " .. selectedPrimary.Description)
 					
-					if(value == "H&K MP5K") then
-						selectedModel = "models/weapons/tfa_ins2/w_mp5k.mdl"
-					elseif (value == "H&K MP7") then
-						selectedModel = "models/weapons/tfa_ins2/w_mp7.mdl"
-					end
+					selectedModel = selectedPrimary.Model
 
 					primaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -1746,13 +1798,7 @@ function classMenu()
 					selectedSecondary = medicSecondary:GetOptionData(index)
 					secondaryDescription:SetText("SECONDARY: " .. selectedSecondary.Description)
 
-					if(value == "QSZ-92") then
-						selectedModel = "models/weapons/tfa_ins2/w_qsz92.mdl"
-					elseif (value == "Beretta M9") then
-						selectedModel = "models/weapons/tfa_ins2/w_m9.mdl"
-					elseif (value == "H&K USP Match") then
-						selectedModel = "models/weapons/tfa_ins2/w_usp_match.mdl"
-					end
+					selectedModel = selectedSecondary.Model
 
 					secondaryIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
@@ -1784,15 +1830,9 @@ function classMenu()
 
 					selectedEquipment = medicEquipment:GetOptionData(index)
 					equipmentDescription:SetText("EQUIPMENT: " .. selectedEquipment.Description)
-
-					if(value == "M67 Offensive Grenade") then
-						selectedModel = "models/weapons/tfa_ins2/w_m67.mdl"
-					elseif (value == "F1 Defensive Grenade") then
-						selectedModel = "models/weapons/tfa_ins2/w_f1.mdl"
-					elseif (value == "ST5 Stun Grenade") then
-						selectedModel = "models/items/tfa_st5/st5_ammo.mdl"
-					end
-
+					
+					selectedModel = selectedEquipment.Model
+					
 					equipmentIcon:SetModel(selectedModel)
 					LocalPlayer():EmitSound(ChooseNoise)
 				

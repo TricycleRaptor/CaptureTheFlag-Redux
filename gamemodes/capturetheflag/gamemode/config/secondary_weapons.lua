@@ -4,7 +4,7 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_qsz92.mdl",
 	Class = "tfa_ins2_qsz92",
 	Category = "Sidearms",
-	Description = "The QSZ-92 is a high caliber Chinese pistol that offers strong damage at the cost of high recoil.",
+	Description = "The QSZ-92 is a high caliber pistol that offers strong damage at the cost of recoil and spread.",
 
 }
 list.Set( "ctf_sidearms", "tfa_ins2_qsz92", V )
@@ -15,18 +15,18 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_m9.mdl",
 	Class = "tfa_ins2_m9",
 	Category = "Sidearms",
-	Description = "The Beretta M9 is a popular self-defense and police sidearm offering moderate damage and low recoil.",
+	Description = "The Beretta M9 offers moderate damage and low recoil at the cost of higher spread. Quick deploy time.",
 
 }
 list.Set( "ctf_sidearms", "tfa_ins2_m9", V )
 
 local V = {
 
-	Name = "H&K USP Match",
-	Model = "models/weapons/tfa_ins2/w_usp_match.mdl",
-	Class = "tfa_ins2_usp_match",
+	Name = "H&K P30L",
+	Model = "models/weapons/tfa_ins2/w_p30l.mdl",
+	Class = "tfa_ins2_p30l",
 	Category = "Sidearms",
-	Description = "The H&K USP exchanges damage for high accuracy and tactical accessories. Best choice for middle ground.",
+	Description = "The P30L trades damage for precision accuracy and accessories. The best choice for middle ground.",
 
 }
-list.Set( "ctf_sidearms", "tfa_ins2_usp_match", V )
+list.Set( "ctf_sidearms", "tfa_ins2_p30l", V )

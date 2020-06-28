@@ -216,17 +216,17 @@ local function HandleGameEnded(len, ply)
 		victoryText:SetImage( "icons/blue_win_text.png" )
 	end
 	
-	timer.Simple(2, function()
+	-- timer.Simple(2, function()
 	
-		local winningTeam = net.ReadFloat()
+		-- local winningTeam = net.ReadFloat()
 		
-		if(winningTeam == LocalPlayer():Team()) then
-			LocalPlayer():EmitSound(WinNoise)
-		else
-			LocalPlayer():EmitSound(LoseNoise)
-		end
+		-- if(winningTeam == LocalPlayer():Team()) then
+			-- LocalPlayer():EmitSound(WinNoise)
+		-- else
+			-- LocalPlayer():EmitSound(LoseNoise)
+		-- end
 	
-	end)
+	-- end)
 
 	victoryLogo:Show()
 	victoryText:Show()
@@ -399,6 +399,10 @@ end
 net.Receive("UnrestrictMenu", UnrestrictMenu)
 
 function set_team()
+	
+	net.Start("receivedTeamClassReset")
+		net.WriteInt(1,3)
+	net.SendToServer()
 
 	local buttonSizeY = ScrH() / 8
 	local buttonSizeX = buttonSizeY * 510 / 260
@@ -434,7 +438,6 @@ function set_team()
 	PickTeamR:SetImage( "buttons/red_button.png" )
 	PickTeamR.DoClick = function()
 		RunConsoleCommand( "ctf_setteam", "1" )
-		RunConsoleCommand( "ctf_setclass", "1" )
 		RunConsoleCommand( "ctf_open_classmenu" ) 
 		--LocalPlayer():SetPlayerColor(Vector(255 / 255, 71 / 255, 71 / 255))
 		PickTeam:Remove()
@@ -447,7 +450,6 @@ function set_team()
 	PickTeamB:SetImage( "buttons/blue_button.png" )
 	PickTeamB.DoClick = function()
 		RunConsoleCommand( "ctf_setteam", "2" )
-		RunConsoleCommand( "ctf_setclass", "1" )
 		RunConsoleCommand( "ctf_open_classmenu" )
 		--LocalPlayer():SetPlayerColor(Vector(100 / 255, 100 / 255, 255 / 255))
 		PickTeam:Remove()
@@ -704,25 +706,3 @@ function VictoryThink()
 	end
 end
 hook.Add("Think", "VictoryThink", VictoryThink)
-
-local cooldownDelay = 0.5
-local lastOccurance = 0
-
-hook.Add("StartCommand", "Jump Cooldown", function(ply, cmd)
-
-	local timeElapsed = CurTime() - lastOccurance
-	
-	if cmd:KeyDown(IN_JUMP) and ply:GetNWBool("inNoclip") == false then
-	
-		-- Do more testing and add a status indicator for the client
-		local timeElapsed = CurTime() - lastOccurance
-
-		if timeElapsed < cooldownDelay then 
-			cmd:RemoveKey(IN_JUMP)
-		else
-			lastOccurance = CurTime()
-		end
-		
-	end
-	
-end)

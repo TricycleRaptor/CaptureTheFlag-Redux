@@ -3,7 +3,10 @@ AddCSLuaFile( "cl_scoreboard.lua" )
 AddCSLuaFile( "shared.lua" )
 AddCSLuaFile( "config/custom_classes.lua" )
 AddCSLuaFile( "config/class_weapons.lua" )
+AddCSLuaFile( "config/class_equipment.lua" )
 AddCSLuaFile( "config/secondary_weapons.lua" )
+AddCSLuaFile( "class_menu.lua" )
+AddCSLuaFile( "ordnance_menu.lua" )
 
 resource.AddFile( "models/CTF_Flag/ctf_flag.mdl" )
 resource.AddFile( "models/CTF_FlagBase/ctf_flagbase.mdl" )
@@ -66,6 +69,10 @@ util.AddNetworkString("receivePrimaryWeapon")
 util.AddNetworkString("receiveSecondaryWeapon")
 util.AddNetworkString("receiveEquipment")
 
+util.AddNetworkString("receiveClassRequest")
+util.AddNetworkString("receiveUpdatedClassData")
+util.AddNetworkString("receivedTeamClassReset")
+
 include( 'shared.lua' )
 include ( 'concommands.lua' )
 include ( 'config/custom_classes.lua' )
@@ -95,6 +102,24 @@ supportLimit = nil
 engineerLimit = nil
 scoutLimit = nil
 medicLimit = nil
+
+-- Red limits
+red_marksmanCount = 0
+red_gunnerCount = 0
+red_demoCount = 0
+red_supportCount = 0
+red_engineerCount = 0
+red_scoutCount = 0
+red_medicCount = 0
+
+-- Blue limits
+blue_marksmanCount = 0
+blue_gunnerCount = 0
+blue_demoCount = 0
+blue_supportCount = 0
+blue_engineerCount = 0
+blue_scoutCount = 0
+blue_medicCount = 0
 
 -------------------------------Prop Protection----------------------------
 PropProtection.Props = {}
@@ -300,7 +325,7 @@ function numpad.Activate(ply, key, isButton)
 		return numpad.OldActivate(ply, key, isButton)
 	elseif (GetConVar("ctf_restrictkeys"):GetBool() == true) then
 		if(ply:InVehicle()) then
-			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65) then
+			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65 or key == 16) then
 				-- Whitelist WASD, Shift, Alt, and Spacebar for simfphys vehicles
 				return numpad.OldActivate(ply, key, isButton)
 			end
@@ -314,7 +339,7 @@ function numpad.Deactivate(ply, key, isButton)
 		return numpad.OldDeactivate(ply, key, isButton)
 	elseif (GetConVar("ctf_restrictkeys"):GetBool() == true) then
 		if(ply:InVehicle()) then
-			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65) then
+			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65 or key == 16) then
 				-- Whitelist WASD, Shift, Alt, and Spacebar for simfphys vehicles
 				return numpad.OldDeactivate(ply, key, isButton)
 			end
@@ -373,23 +398,51 @@ function setClassLimits()
 	
 	else
 	
-		marksmanLimit = math.floor(maxPlayers / 8)
-		gunnerLimit = math.floor(maxPlayers / 8)
-		demoLimit = math.floor(maxPlayers / 8)
-		supportLimit = math.floor(maxPlayers / 8)
-		engineerLimit = math.floor(maxPlayers / 8)
-		scoutLimit = math.floor(maxPlayers / 8)
-		medicLimit = math.floor(maxPlayers / 8)
+		marksmanLimit = math.ceil(maxPlayers / 8)
+		gunnerLimit = math.ceil(maxPlayers / 8)
+		demoLimit = math.ceil(maxPlayers / 8)
+		supportLimit = math.ceil(maxPlayers / 8)
+		engineerLimit = math.ceil(maxPlayers / 8)
+		scoutLimit = math.ceil(maxPlayers / 8)
+		medicLimit = math.ceil(maxPlayers / 8)
 	
 	end
 
 end
 
-function updateClassLimits()
-
-
-
+function printClassLimits(ply, cmd, args)
+	print("------------")
+	print("Server-wide:")
+	print("------------")
+	print("Marksman: " .. marksmanLimit)
+	print("Gunner: " .. gunnerLimit)
+	print("Demolitionist: " .. demoLimit)
+	print("Support: " .. supportLimit)
+	print("Engineer: " .. engineerLimit)
+	print("Scout: " .. scoutLimit)
+	print("Medic: " .. medicLimit)
+	print("------------")
+	print("RED Team:")
+	print("------------")
+	print(red_marksmanCount .. " marksmen on red team.")
+	print(red_gunnerCount .. " gunners on red team.")
+	print(red_demoCount .. " demolitionists on red team.")
+	print(red_supportCount .. " supports on red team.")
+	print(red_engineerCount .. " engineers on red team.")
+	print(red_scoutCount .. " scouts on red team.")
+	print(red_medicCount .. " medics on red team.")
+	print("------------")
+	print("BLUE Team:")
+	print("------------")
+	print(blue_marksmanCount .. " marksmen on blue team.")
+	print(blue_gunnerCount .. " gunners on blue team.")
+	print(blue_demoCount .. " demolitionists on blue team.")
+	print(blue_supportCount .. " supports on blue team.")
+	print(blue_engineerCount .. " engineers on blue team.")
+	print(blue_scoutCount .. " scouts on blue team.")
+	print(blue_medicCount .. " medics on blue team.")
 end
+concommand.Add("ctf_limits",printClassLimits)
 
 function BroadcastFlagPickedUp(ply)
 	net.Start("FlagPickedUp")
@@ -448,6 +501,10 @@ function GM:PlayerSpawn( ply )
 		
 		if(!ply:IsAdmin() or !ply:IsSuperAdmin()) then
 			net.Send(ply)
+		end
+		
+		for _, props in ipairs(ents.FindByClass("prop_physics")) do
+			props:SetMoveType(MOVETYPE_NONE)
 		end
 		
 	else
@@ -579,6 +636,48 @@ function GM:PlayerDisconnected( ply )
 			end
 		end
 	end
+
+	local plyClass = ply:GetNWInt("playerClass")
+	local plyTeam = ply:Team()
+
+	if(plyTeam == 1) then -- Red team
+
+		if(plyClass == 3) then -- Marksman
+			red_marksmanCount = red_marksmanCount - 1
+		elseif(plyClass == 4) then -- Gunner
+			red_gunnerCount = red_gunnerCount - 1
+		elseif(plyClass == 5) then -- Demolitionist
+			red_demoCount = red_demoCount - 1
+		elseif(plyClass == 6) then -- Support
+			red_supportCount = red_supportCount - 1
+		elseif(plyClass == 7) then -- Engineer
+			red_engineerCount = red_engineerCount - 1
+		elseif(plyClass == 8) then -- Scout
+			red_scoutCount = red_scoutCount - 1
+		elseif(plyClass == 9) then -- Medic
+			red_medicCount = red_medicCount - 1
+		end
+
+	elseif (plyTeam == 2) then -- Blue team
+
+		if(plyClass == 3) then -- Marksman
+			blue_marksmanCount = blue_marksmanCount - 1
+		elseif(plyClass == 4) then -- Gunner
+			blue_gunnerCount = blue_gunnerCount - 1
+		elseif(plyClass == 5) then -- Demolitionist
+			blue_demoCount = blue_demoCount - 1
+		elseif(plyClass == 6) then -- Support
+			blue_supportCount = blue_supportCount - 1
+		elseif(plyClass == 7) then -- Engineer
+			blue_engineerCount = blue_engineerCount - 1
+		elseif(plyClass == 8) then -- Scout
+			blue_scoutCount = blue_scoutCount - 1
+		elseif(plyClass == 9) then -- Medic
+			blue_medicCount = blue_medicCount - 1
+		end
+
+	end
+
 end
 
 function GM:PlayerLoadout( ply )
@@ -595,6 +694,7 @@ function GM:PlayerLoadout( ply )
 		local primaryWeapon = ply:GetNWString("selectedPrimary")
 		local secondaryWeapon = ply:GetNWString("selectedSecondary")
 		local equipment = ply:GetNWString("selectedEquipment")
+
 		ply:Give(primaryWeapon)
 		ply:Give(secondaryWeapon)
 		ply:Give(equipment)
@@ -614,6 +714,14 @@ function GM:PlayerLoadout( ply )
 
 		if((plyClass.name == "Medic")) then
 			ply:Give("weapon_medkit")
+		end
+
+		if(ply:GetNWInt("playerClass") == 1) then
+
+			ply:StripWeapons()
+			RestoreTools(ply)
+			ply:StripWeapon("gmod_camera")
+
 		end
 		
 	elseif ply.IsCaptain and !TeamSetUp[ply:Team()] then
@@ -651,6 +759,15 @@ function GM:PlayerLoadout( ply )
 		if((plyClass.name == "Medic")) then
 			ply:Give("weapon_medkit")
 		end
+
+		if(ply:GetNWInt("playerClass") == 1) then
+
+			ply:StripWeapons()
+			RestoreTools(ply)
+			ply:StripWeapon("gmod_camera")
+			ply:Give( "weapon_ctf_setup" )
+
+		end
 		
 	else
 	
@@ -685,8 +802,18 @@ function GM:PlayerLoadout( ply )
 		if((plyClass.name == "Medic")) then
 			ply:Give("weapon_medkit")
 		end
+
+		if(ply:GetNWInt("playerClass") == 1) then
+
+			ply:StripWeapons()
+			RestoreTools(ply)
+			ply:StripWeapon("gmod_camera")
+
+		end
 		
 	end
+
+
 	
 end
 
@@ -699,6 +826,70 @@ function GM:PlayerNoClip(ply, state)
 	end
 	return false
 	
+end
+
+function GM:PlayerSpawnEffect( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnNPC( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnObject ( ply, model, skin)
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnProp( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnRagdoll( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnSent( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnSWEP( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnVehicle( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
 end
 
 hook.Add( "PlayerNoClip", "NoclipState", function( ply, state )
@@ -748,7 +939,6 @@ function doBuild(team, pos, ply)
 		ply:ChatPrint( "[CTF]: This location is invalid! Not enough space." )
 		return
 	end
-	
 
 	TeamLocations[team] = pos
 	
@@ -914,7 +1104,24 @@ function EndGame(team)
 
 	for k,ply in pairs(player.GetAll()) do
 		ply:Lock()
+		ply:SetNWInt("playerClass", 1)
 	end
+	
+	red_marksmanCount = 0
+	red_gunnerCount = 0
+	red_demoCount = 0
+	red_supportCount = 0
+	red_engineerCount = 0
+	red_scoutCount = 0
+	red_medicCount = 0
+	
+	blue_marksmanCount = 0
+	blue_gunnerCount = 0
+	blue_demoCount = 0
+	blue_supportCount = 0
+	blue_engineerCount = 0
+	blue_scoutCount = 0
+	blue_medicCount = 0
 
 	net.Start("GameEnded")
 	net.WriteFloat(team)
@@ -951,12 +1158,6 @@ function GM:Think()
 		MatchHasBegun = true
 		net.Start("MatchBegin")
 		net.Broadcast()
-		
-		-- Prevent players from using sandbox spawning commands after the match has started
-		concommand.Remove("gm_spawn")
-		concommand.Remove("gm_spawnsent")
-		concommand.Remove("gm_spawnswep")
-		concommand.Remove("gm_spawnvehicle")
 		
 		for k,v in pairs(ents.GetAll()) do
 			--Don't remove the perimeter sphere entity so we us it to check for the ordnance/class menus
@@ -1095,17 +1296,17 @@ net.Receive("receivePrimaryWeapon", function( len, ply )
 	local receivedPrimaryWeapon = net.ReadTable()
 	local plyClass = ply:GetNWInt("playerClass")
 	
-	--ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
+	ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
 
-	if ( IsValid( ply ) and ply:IsPlayer() ) then
+	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
 
-		if(plyClass == receivedPrimaryWeapon.Category) then
-			ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
-		elseif (receivedPrimaryWeapon ~= nil) then
-			ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-		end
+		-- if(plyClass == receivedPrimaryWeapon.Category) then
+			-- ply:SetNWString("selectedPrimary", receivedPrimaryWeapon.Class)
+		-- elseif (receivedPrimaryWeapon ~= nil) then
+			-- ply:Kick("Invalid request for a primary weapon.")
+		-- end
 	
-	else return end
+	-- else return end
 
 end )
 
@@ -1113,17 +1314,17 @@ net.Receive("receiveSecondaryWeapon", function( len, ply )
 
 	local receivedSecondaryWeapon = net.ReadTable()
 	
-	--ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
+	ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
 	
-	if ( IsValid( ply ) and ply:IsPlayer() ) then
+	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
 
-		if (receivedSecondaryWeapon.Category == "Sidearms") then
-			ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
-		elseif (receivedSecondaryWeapon ~= nil) then
-			ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-		end
+		-- if (receivedSecondaryWeapon.Category == "Sidearms") then
+			-- ply:SetNWString("selectedSecondary", receivedSecondaryWeapon.Class)
+		-- elseif (receivedSecondaryWeapon ~= nil) then
+			-- ply:Kick("Invalid request for a sidearm.")
+		-- end
 		
-	else return end
+	-- else return end
 	
 end )
 
@@ -1132,55 +1333,934 @@ net.Receive("receiveEquipment", function( len, ply )
 	local receivedEquipment = net.ReadTable()
 	local plyClass = ply:GetNWInt("playerClass")
 	
-	--ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+	ply:SetNWString("selectedEquipment", receivedEquipment.Class)
 
-	if ( IsValid( ply ) and ply:IsPlayer() ) then
+	-- if ( IsValid( ply ) and ply:IsPlayer() ) then
 
 		-- Validate Rifleman, Gunner, and Medic equipment
-		if (plyClass == 2 or plyClass == 4 or plyClass == 9) then
-			if(receivedEquipment.Category == "Grenades") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			elseif (receivedEquipment ~= nil) then
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- if (plyClass == 2 or plyClass == 4 or plyClass == 9) then
+			-- if(receivedEquipment.Category == "Grenades") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- elseif (receivedEquipment ~= nil) then
+				-- ply:Kick("Invalid equipment data for Rifleman, Gunner, or Medic.")
+			-- end
+		-- end
 
 		-- Validate Marksman and Scout equipment
-		if (plyClass == 3 or plyClass == 8) then
-			if(receivedEquipment.Category == "Binoculars") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			elseif (receivedEquipment ~= nil) then
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- if (plyClass == 3 or plyClass == 8) then
+			-- if(receivedEquipment.Category == "Binoculars") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- elseif (receivedEquipment ~= nil) then
+				-- ply:Kick("Invalid equipment data for Marksman or Scout.")
+			-- end
+		-- end
 
 		-- Validate Support equipment
-		if (plyClass == 6) then
-			if(receivedEquipment.Category == "Throwable Ammo") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			elseif (receivedEquipment ~= nil) then
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- if (plyClass == 6) then
+			-- if(receivedEquipment.Category == "Throwable Ammo") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- elseif (receivedEquipment ~= nil) then
+				-- ply:Kick("Invalid equipment data for Support.")
+			-- end
+		-- end
 
 		-- Validate Engineer equipment
-		if (plyClass == 7) then
-			if(receivedEquipment.Category == "Toolkit") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			elseif (receivedEquipment ~= nil) then
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- if (plyClass == 7) then
+			-- if(receivedEquipment.Category == "Toolkit") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- elseif (receivedEquipment ~= nil) then
+				-- ply:Kick("Invalid equipment data for Engineer.")
+			-- end
+		-- end
 
 		-- Validate Demolitionist equipment
-		if (plyClass == 5) then
-			if(receivedEquipment.Category == "Demolitions") then
-				ply:SetNWString("selectedEquipment", receivedEquipment.Class)
-			elseif (receivedEquipment ~= nil) then
-				ply:Kick("You attempted to breach networked variables and have been kicked from the server.")
-			end
-		end
+		-- if (plyClass == 5) then
+			-- if(receivedEquipment.Category == "Demolitions") then
+				-- ply:SetNWString("selectedEquipment", receivedEquipment.Class)
+			-- elseif (receivedEquipment ~= nil) then
+				-- ply:Kick("Invalid equipment data for Demolitionist.")
+			-- end
+		-- end
 
-	else return end
+	-- else return end
 
 end )
+
+net.Receive("receiveClassRequest", function( len, ply )
+
+	local potentialClass = net.ReadInt(5)
+	local currentClass = ply:GetNWInt("playerClass")
+	local plyTeam = ply:Team()
+
+	if(currentClass == potentialClass) then -- Make sure you're not needlessly changing server variables
+
+		net.Start("receiveUpdatedClassData")
+			net.WriteBool(true)
+		net.Send(ply)
+
+	else
+
+		if(currentClass == 1 or currentClass == 2) then -- Switching from Default or Rifleman
+
+			if(plyTeam == 1) then -- Red team check
+
+				if(potentialClass == 2) then
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and red_marksmanCount < marksmanLimit) then -- to Marksman
+					red_marksmanCount = red_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and red_gunnerCount < gunnerLimit ) then -- to Gunner
+					red_gunnerCount = red_gunnerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and red_demoCount < demoLimit) then -- to Demolitionist
+					red_demoCount = red_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and red_supportCount < supportLimit) then -- to Support
+					red_supportCount = red_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and red_engineerCount < engineerLimit) then -- to Engineer
+					red_engineerCount = red_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and red_scoutCount < scoutLimit) then -- to Scout
+					red_scoutCount = red_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and red_medicCount < medicLimit) then -- to Medic
+					red_medicCount = red_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			elseif(plyTeam == 2) then -- Blue team
+
+				if(potentialClass == 2) then
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and blue_marksmanCount < marksmanLimit) then -- to Marksman
+					blue_marksmanCount = blue_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and red_gunnerCount < gunnerLimit ) then -- to Gunner
+					blue_gunnerCount = blue_gunnerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and red_demoCount < demoLimit) then -- to Demolitionist
+					blue_demoCount = blue_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and red_supportCount < supportLimit) then -- to Support
+					blue_supportCount = blue_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and blue_engineerCount < engineerLimit) then -- to Engineer
+					blue_engineerCount = blue_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and red_scoutCount < scoutLimit) then -- to Scout
+					blue_scoutCount = blue_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and red_medicCount < medicLimit) then -- to Medic
+					blue_medicCount = blue_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			end
+
+		elseif(currentClass == 3) then -- Switching from Marksman
+
+			if(plyTeam == 1) then -- Red team check
+
+				if(potentialClass == 2) then -- to Rifleman
+					red_marksmanCount = red_marksmanCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and red_gunnerCount < gunnerLimit ) then -- to Gunner
+					red_marksmanCount = red_marksmanCount - 1
+					red_gunnerCount = red_gunnerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and red_demoCount < demoLimit) then -- to Demolitionist
+					red_marksmanCount = red_marksmanCount - 1
+					red_demoCount = red_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and red_supportCount < supportLimit) then -- to Support
+					red_marksmanCount = red_marksmanCount - 1
+					red_supportCount = red_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and red_engineerCount < engineerLimit) then -- to Engineer
+					red_marksmanCount = red_marksmanCount - 1
+					red_engineerCount = red_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and red_scoutCount < scoutLimit) then -- to Scout
+					red_marksmanCount = red_marksmanCount - 1
+					red_scoutCount = red_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and red_medicCount < medicLimit) then -- to Medic
+					red_marksmanCount = red_marksmanCount - 1
+					red_medicCount = red_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			elseif(plyTeam == 2) then -- Blue team
+
+				if(potentialClass == 2) then -- to Rifleman
+					blue_marksmanCount = blue_marksmanCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and red_gunnerCount < gunnerLimit ) then -- to Gunner
+					blue_marksmanCount = blue_marksmanCount - 1
+					blue_gunnerCount = blue_gunnerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and red_demoCount < demoLimit) then -- to Demolitionist
+					blue_marksmanCount = blue_marksmanCount - 1
+					blue_demoCount = blue_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and red_supportCount < supportLimit) then -- to Support
+					blue_marksmanCount = blue_marksmanCount - 1
+					blue_supportCount = blue_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and blue_engineerCount < engineerLimit) then -- to Engineer
+					blue_marksmanCount = blue_marksmanCount - 1
+					blue_engineerCount = blue_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and red_scoutCount < scoutLimit) then -- to Scout
+					blue_marksmanCount = blue_marksmanCount - 1
+					blue_scoutCount = blue_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and red_medicCount < medicLimit) then -- to Medic
+					blue_marksmanCount = blue_marksmanCount - 1
+					blue_medicCount = blue_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			end
+
+		elseif(currentClass == 4) then -- Switching from Gunner
+						
+			if(plyTeam == 1) then -- Red team check
+
+				if(potentialClass == 2) then -- to Rifleman
+					red_gunnerCount = red_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and blue_marksmanCount < marksmanLimit) then -- to Marksman
+					red_gunnerCount = red_gunnerCount - 1
+					red_marksmanCount = red_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and red_demoCount < demoLimit) then -- to Demolitionist
+					red_gunnerCount = red_gunnerCount - 1
+					red_demoCount = red_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and red_supportCount < supportLimit) then -- to Support
+					red_gunnerCount = red_gunnerCount - 1
+					red_supportCount = red_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and red_engineerCount < engineerLimit) then -- to Engineer
+					red_gunnerCount = red_gunnerCount - 1
+					red_engineerCount = red_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and red_scoutCount < scoutLimit) then -- to Scout
+					red_gunnerCount = red_gunnerCount - 1
+					red_scoutCount = red_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and red_medicCount < medicLimit) then -- to Medic
+					red_gunnerCount = red_gunnerCount - 1
+					red_medicCount = red_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+			 
+			elseif(plyTeam == 2) then -- Blue team
+
+				if(potentialClass == 2) then -- to Rifleman
+					blue_gunnerCount = blue_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and blue_marksmanCount < marksmanLimit) then -- to Marksman
+					blue_gunnerCount = blue_gunnerCount - 1
+					blue_marksmanCount = blue_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and blue_demoCount < demoLimit) then -- to Demolitionist
+					blue_gunnerCount = blue_gunnerCount - 1
+					blue_demoCount = blue_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and blue_supportCount < supportLimit) then -- to Support
+					blue_gunnerCount = blue_gunnerCount - 1
+					blue_supportCount = blue_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and blue_engineerCount < engineerLimit) then -- to Engineer
+					blue_gunnerCount = blue_gunnerCount - 1
+					blue_engineerCount = blue_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and blue_scoutCount < scoutLimit) then -- to Scout
+					blue_gunnerCount = blue_gunnerCount - 1
+					blue_scoutCount = blue_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and blue_medicCount < medicLimit) then -- to Medic
+					blue_gunnerCount = blue_gunnerCount - 1
+					blue_medicCount = blue_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			end
+
+		elseif(currentClass == 5) then -- Switching from Demolitionist
+						
+			if(plyTeam == 1) then -- Red team check
+
+				if(potentialClass == 2) then -- to Rifleman
+					red_demoCount = red_demoCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and red_marksmanCount < marksmanLimit) then -- to Marksman
+					red_demoCount = red_demoCount - 1
+					red_marksmanCount = red_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and red_gunnerCount < gunnerLimit) then -- to Gunner
+					red_demoCount = red_demoCount - 1
+					red_gunnerCount = red_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and red_supportCount < supportLimit) then -- to Support
+					red_demoCount = red_demoCount - 1
+					red_supportCount = red_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and red_engineerCount < engineerLimit) then -- to Engineer
+					red_demoCount = red_demoCount - 1
+					red_engineerCount = red_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and red_scoutCount < scoutLimit) then -- to Scout
+					red_demoCount = red_demoCount - 1
+					red_scoutCount = red_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and red_medicCount < medicLimit) then -- to Medic
+					red_demoCount = red_demoCount - 1
+					red_medicCount = red_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			elseif(plyTeam == 2) then -- Blue team
+
+				if(potentialClass == 2) then -- to Rifleman
+					blue_demoCount = blue_demoCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and blue_marksmanCount < marksmanLimit) then -- to Marksman
+					blue_demoCount = blue_demoCount - 1
+					blue_marksmanCount = blue_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and blue_gunnerCount < gunnerLimit) then -- to Gunner
+					blue_demoCount = blue_demoCount - 1
+					blue_gunnerCount = blue_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and red_supportCount < supportLimit) then -- to Support
+					blue_demoCount = blue_demoCount - 1
+					blue_supportCount = blue_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and blue_engineerCount < engineerLimit) then -- to Engineer
+					blue_demoCount = blue_demoCount - 1
+					blue_engineerCount = blue_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and blue_scoutCount < scoutLimit) then -- to Scout
+					blue_demoCount = blue_demoCount - 1
+					blue_scoutCount = blue_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and blue_medicCount < medicLimit) then -- to Medic
+					blue_demoCount = blue_demoCount - 1
+					blue_medicCount = blue_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			end
+
+		elseif(currentClass == 6) then -- Switching from Support
+						
+			if(plyTeam == 1) then -- Red team check
+
+				if(potentialClass == 2) then -- to Rifleman
+					red_supportCount = red_supportCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and red_marksmanCount < marksmanLimit) then -- to Marksman
+					red_supportCount = red_supportCount - 1
+					red_marksmanCount = red_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and red_gunnerCount < gunnerLimit) then -- to Gunner
+					red_supportCount = red_supportCount - 1
+					red_gunnerCount = red_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and red_demoCount < demoLimit) then -- to Demolitionist
+					red_supportCount = red_supportCount - 1
+					red_demoCount = red_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and red_engineerCount < engineerLimit) then -- to Engineer
+					red_supportCount = red_supportCount - 1
+					red_engineerCount = red_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and red_scoutCount < scoutLimit) then -- to Scout
+					red_supportCount = red_supportCount - 1
+					red_scoutCount = red_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and red_medicCount < medicLimit) then -- to Medic
+					red_supportCount = red_supportCount - 1
+					red_medicCount = red_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			elseif(plyTeam == 2) then -- Blue team
+
+				if(potentialClass == 2) then -- to Rifleman
+					blue_supportCount = blue_supportCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and blue_marksmanCount < marksmanLimit) then -- to Marksman
+					blue_supportCount = blue_supportCount - 1
+					blue_marksmanCount = blue_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and blue_gunnerCount < gunnerLimit) then -- to Gunner
+					blue_supportCount = blue_supportCount - 1
+					blue_gunnerCount = blue_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and blue_demoCount < demoLimit) then -- to Demolitionist
+					blue_supportCount = blue_supportCount - 1
+					blue_demoCount = blue_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and blue_engineerCount < engineerLimit) then -- to Engineer
+					blue_supportCount = blue_supportCount - 1
+					blue_engineerCount = blue_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and blue_scoutCount < scoutLimit) then -- to Scout
+					blue_supportCount = blue_supportCount - 1
+					blue_scoutCount = blue_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and blue_medicCount < medicLimit) then -- to Medic
+					blue_supportCount = blue_supportCount - 1
+					blue_medicCount = blue_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			end
+
+		elseif(currentClass == 7) then -- Switching from Engineer
+						
+			if(plyTeam == 1) then -- Red team check
+
+				if(potentialClass == 2) then -- to Rifleman
+					red_engineerCount = red_engineerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and red_marksmanCount < marksmanLimit) then -- to Marksman
+					red_engineerCount = red_engineerCount - 1
+					red_marksmanCount = red_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and red_gunnerCount < gunnerLimit) then -- to Gunner
+					red_engineerCount = red_engineerCount - 1
+					red_gunnerCount = red_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and red_demoCount < demoLimit) then -- to Demolitionist
+					red_engineerCount = red_engineerCount - 1
+					red_demoCount = red_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and red_supportCount < supportLimit) then -- to Support
+					red_engineerCount = red_engineerCount - 1
+					red_supportCount = red_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and blue_scoutCount < scoutLimit) then -- to Scout
+					red_engineerCount = red_engineerCount - 1
+					blue_scoutCount = blue_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and red_medicCount < medicLimit) then -- to Medic
+					red_engineerCount = red_engineerCount - 1
+					red_medicCount = red_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			elseif(plyTeam == 2) then -- Blue team
+
+				if(potentialClass == 2) then -- to Rifleman
+					blue_engineerCount = blue_engineerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and blue_marksmanCount < marksmanLimit) then -- to Marksman
+					blue_engineerCount = blue_engineerCount - 1
+					blue_marksmanCount = blue_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and blue_gunnerCount < gunnerLimit) then -- to Gunner
+					blue_engineerCount = blue_engineerCount - 1
+					blue_gunnerCount = blue_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and blue_demoCount < demoLimit) then -- to Demolitionist
+					blue_engineerCount = blue_engineerCount - 1
+					blue_demoCount = blue_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and blue_supportCount < supportLimit) then -- to Support
+					blue_engineerCount = blue_engineerCount - 1
+					blue_supportCount = blue_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and blue_scoutCount < scoutLimit) then -- to Scout
+					blue_engineerCount = blue_engineerCount - 1
+					blue_scoutCount = blue_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and blue_medicCount < medicLimit) then -- to Medic
+					blue_engineerCount = blue_engineerCount - 1
+					blue_medicCount = blue_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			end
+
+		elseif(currentClass == 8) then -- Switching from Scout
+						
+			if(plyTeam == 1) then -- Red team check
+
+				if(potentialClass == 2) then -- to Rifleman
+					red_scoutCount = red_scoutCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and red_marksmanCount < marksmanLimit) then -- to Marksman
+					red_scoutCount = red_scoutCount - 1
+					red_marksmanCount = red_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and red_gunnerCount < gunnerLimit) then -- to Gunner
+					red_scoutCount = red_scoutCount - 1
+					red_gunnerCount = red_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and red_demoCount < demoLimit) then -- to Demolitionist
+					red_scoutCount = red_scoutCount - 1
+					red_demoCount = red_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and red_supportCount < supportLimit) then -- to Support
+					red_scoutCount = red_scoutCount - 1
+					red_supportCount = red_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and red_engineerCount < engineerLimit) then -- to Engineer
+					red_scoutCount = red_scoutCount - 1
+					red_scoutCount = red_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and red_medicCount < medicLimit) then -- to Medic
+					red_scoutCount = red_scoutCount - 1
+					red_medicCount = red_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			elseif(plyTeam == 2) then -- Blue team
+
+				if(potentialClass == 2) then -- to Rifleman
+					blue_scoutCount = blue_scoutCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and blue_marksmanCount < marksmanLimit) then -- to Marksman
+					blue_scoutCount = blue_scoutCount - 1
+					blue_marksmanCount = blue_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and blue_gunnerCount < gunnerLimit) then -- to Gunner
+					blue_scoutCount = blue_scoutCount - 1
+					blue_gunnerCount = blue_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and blue_demoCount < demoLimit) then -- to Demolitionist
+					blue_scoutCount = blue_scoutCount - 1
+					blue_demoCount = blue_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and blue_supportCount < supportLimit) then -- to Support
+					blue_scoutCount = blue_scoutCount - 1
+					blue_supportCount = blue_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and blue_engineerCount < engineerLimit) then -- to Engineer
+					blue_scoutCount = blue_scoutCount - 1
+					blue_scoutCount = blue_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 9 and blue_medicCount < medicLimit) then -- to Medic
+					blue_scoutCount = blue_scoutCount - 1
+					blue_medicCount = blue_medicCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			end
+
+		elseif(currentClass == 9) then -- Switching from Medic
+						
+			if(plyTeam == 1) then -- Red team check
+
+				if(potentialClass == 2) then -- to Rifleman
+					red_medicCount = red_medicCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and red_marksmanCount < marksmanLimit) then -- to Marksman
+					red_medicCount = red_medicCount - 1
+					red_marksmanCount = red_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and red_gunnerCount < gunnerLimit) then -- to Gunner
+					red_medicCount = red_medicCount - 1
+					red_gunnerCount = red_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and red_demoCount < demoLimit) then -- to Demolitionist
+					red_medicCount = red_medicCount - 1
+					red_demoCount = red_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and red_supportCount < supportLimit) then -- to Support
+					red_medicCount = red_medicCount - 1
+					red_supportCount = red_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and red_engineerCount < engineerLimit) then -- to Engineer
+					red_medicCount = red_medicCount - 1
+					red_engineerCount = red_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and red_scoutCount < ScoutLimit) then -- to Scout
+					red_medicCount = red_medicCount - 1
+					red_scoutCount = red_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			elseif(plyTeam == 2) then -- Blue team
+
+				if(potentialClass == 2) then -- to Rifleman
+					blue_medicCount = blue_medicCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 3 and blue_marksmanCount < marksmanLimit) then -- to Marksman
+					blue_medicCount = blue_medicCount - 1
+					blue_marksmanCount = blue_marksmanCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 4 and blue_gunnerCount < gunnerLimit) then -- to Gunner
+					blue_medicCount = blue_medicCount - 1
+					blue_gunnerCount = blue_gunnerCount - 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 5 and blue_demoCount < demoLimit) then -- to Demolitionist
+					blue_medicCount = blue_medicCount - 1
+					blue_demoCount = blue_demoCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 6 and blue_supportCount < supportLimit) then -- to Support
+					blue_medicCount = blue_medicCount - 1
+					blue_supportCount = blue_supportCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 7 and blue_engineerCount < engineerLimit) then -- to Engineer
+					blue_medicCount = blue_medicCount - 1
+					blue_engineerCount = blue_engineerCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				elseif(potentialClass == 8 and blue_scoutCount < ScoutLimit) then -- to Scout
+					blue_medicCount = blue_medicCount - 1
+					blue_scoutCount = blue_scoutCount + 1
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(true)
+					net.Send(ply)
+				else
+					net.Start("receiveUpdatedClassData")
+						net.WriteBool(false)
+					net.Send(ply)
+				end
+
+			end
+
+		end
+		
+	end
+
+end )
+
+net.Receive("receivedTeamClassReset", function( len, ply )
+	local plyIndexModifier = net.ReadInt(3)
+	local plyClass = ply:GetNWInt("playerClass")
+	local plyTeam = ply:Team()
+
+	if(plyTeam == 1) then -- Red team
+
+		if(plyClass == 3) then -- Marksman
+			red_marksmanCount = red_marksmanCount - 1
+		elseif(plyClass == 4) then -- Gunner
+			red_gunnerCount = red_gunnerCount - 1
+		elseif(plyClass == 5) then -- Demolitionist
+			red_demoCount = red_demoCount - 1
+		elseif(plyClass == 6) then -- Support
+			red_supportCount = red_supportCount - 1
+		elseif(plyClass == 7) then -- Engineer
+			red_engineerCount = red_engineerCount - 1
+		elseif(plyClass == 8) then -- Scout
+			red_scoutCount = red_scoutCount - 1
+		elseif(plyClass == 9) then -- Medic
+			red_medicCount = red_medicCount - 1
+		end
+
+	elseif (plyTeam == 2) then -- Blue team
+
+		if(plyClass == 3) then -- Marksman
+			blue_marksmanCount = blue_marksmanCount - 1
+		elseif(plyClass == 4) then -- Gunner
+			blue_gunnerCount = blue_gunnerCount - 1
+		elseif(plyClass == 5) then -- Demolitionist
+			blue_demoCount = blue_demoCount - 1
+		elseif(plyClass == 6) then -- Support
+			blue_supportCount = blue_supportCount - 1
+		elseif(plyClass == 7) then -- Engineer
+			blue_engineerCount = blue_engineerCount - 1
+		elseif(plyClass == 8) then -- Scout
+			blue_scoutCount = blue_scoutCount - 1
+		elseif(plyClass == 9) then -- Medic
+			blue_medicCount = blue_medicCount - 1
+		end
+
+	end
+
+	ply:SetNWInt("playerClass", plyIndexModifier)
+
+end)
