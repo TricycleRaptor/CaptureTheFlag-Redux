@@ -706,23 +706,3 @@ function VictoryThink()
 	end
 end
 hook.Add("Think", "VictoryThink", VictoryThink)
-
-local cooldownDelay = 0.5
-local lastOccurance = 0
-
-hook.Add("StartCommand", "Jump Cooldown", function(ply, cmd)
-	
-	if cmd:KeyDown(IN_JUMP) and ply:GetNWBool("inNoclip") == false then
-	
-		-- Do more testing and add a status indicator for the client
-		local timeElapsed = CurTime() - lastOccurance
-
-		if timeElapsed < cooldownDelay then 
-			cmd:RemoveKey(IN_JUMP)
-		else
-			lastOccurance = CurTime()
-		end
-		
-	end
-	
-end)
