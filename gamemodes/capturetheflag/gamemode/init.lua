@@ -503,6 +503,10 @@ function GM:PlayerSpawn( ply )
 			net.Send(ply)
 		end
 		
+		for _, props in ipairs(ents.FindByClass("prop_physics")) do
+			props:SetMoveType(MOVETYPE_NONE)
+		end
+		
 	else
 		
 		net.Start("UnrestrictMenu")
@@ -1604,7 +1608,7 @@ net.Receive("receiveClassRequest", function( len, ply )
 					net.Send(ply)
 				elseif(potentialClass == 5 and blue_demoCount < demoLimit) then -- to Demolitionist
 					blue_gunnerCount = blue_gunnerCount - 1
-					blue_demoCount = red_demoCount + 1
+					blue_demoCount = blue_demoCount + 1
 					net.Start("receiveUpdatedClassData")
 						net.WriteBool(true)
 					net.Send(ply)
