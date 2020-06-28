@@ -711,8 +711,6 @@ local cooldownDelay = 0.5
 local lastOccurance = 0
 
 hook.Add("StartCommand", "Jump Cooldown", function(ply, cmd)
-
-	local timeElapsed = CurTime() - lastOccurance
 	
 	if cmd:KeyDown(IN_JUMP) and ply:GetNWBool("inNoclip") == false then
 	
