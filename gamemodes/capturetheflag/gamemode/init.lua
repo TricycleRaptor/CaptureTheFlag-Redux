@@ -325,7 +325,7 @@ function numpad.Activate(ply, key, isButton)
 		return numpad.OldActivate(ply, key, isButton)
 	elseif (GetConVar("ctf_restrictkeys"):GetBool() == true) then
 		if(ply:InVehicle()) then
-			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65) then
+			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65 or key == 16) then
 				-- Whitelist WASD, Shift, Alt, and Spacebar for simfphys vehicles
 				return numpad.OldActivate(ply, key, isButton)
 			end
@@ -339,7 +339,7 @@ function numpad.Deactivate(ply, key, isButton)
 		return numpad.OldDeactivate(ply, key, isButton)
 	elseif (GetConVar("ctf_restrictkeys"):GetBool() == true) then
 		if(ply:InVehicle()) then
-			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65) then
+			if(key == 33 or key == 11 or key == 29 or key == 14 or key == 79 or key == 81 or key == 65 or key == 16) then
 				-- Whitelist WASD, Shift, Alt, and Spacebar for simfphys vehicles
 				return numpad.OldDeactivate(ply, key, isButton)
 			end
@@ -398,13 +398,13 @@ function setClassLimits()
 	
 	else
 	
-		marksmanLimit = math.ceiling(maxPlayers / 8)
-		gunnerLimit = math.ceiling(maxPlayers / 8)
-		demoLimit = math.ceiling(maxPlayers / 8)
-		supportLimit = math.ceiling(maxPlayers / 8)
-		engineerLimit = math.ceiling(maxPlayers / 8)
-		scoutLimit = math.ceiling(maxPlayers / 8)
-		medicLimit = math.ceiling(maxPlayers / 8)
+		marksmanLimit = math.ceil(maxPlayers / 8)
+		gunnerLimit = math.ceil(maxPlayers / 8)
+		demoLimit = math.ceil(maxPlayers / 8)
+		supportLimit = math.ceil(maxPlayers / 8)
+		engineerLimit = math.ceil(maxPlayers / 8)
+		scoutLimit = math.ceil(maxPlayers / 8)
+		medicLimit = math.ceil(maxPlayers / 8)
 	
 	end
 
@@ -501,6 +501,10 @@ function GM:PlayerSpawn( ply )
 		
 		if(!ply:IsAdmin() or !ply:IsSuperAdmin()) then
 			net.Send(ply)
+		end
+		
+		for _, props in ipairs(ents.FindByClass("prop_physics")) do
+			props:SetMoveType(MOVETYPE_NONE)
 		end
 		
 	else
@@ -824,6 +828,70 @@ function GM:PlayerNoClip(ply, state)
 	
 end
 
+function GM:PlayerSpawnEffect( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnNPC( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnObject ( ply, model, skin)
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnProp( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnRagdoll( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnSent( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnSWEP( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnVehicle( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
 hook.Add( "PlayerNoClip", "NoclipState", function( ply, state )
 	if state then
 		--print( ply:Name() .. " entered noclip." )
@@ -1036,7 +1104,24 @@ function EndGame(team)
 
 	for k,ply in pairs(player.GetAll()) do
 		ply:Lock()
+		ply:SetNWInt("playerClass", 1)
 	end
+	
+	red_marksmanCount = 0
+	red_gunnerCount = 0
+	red_demoCount = 0
+	red_supportCount = 0
+	red_engineerCount = 0
+	red_scoutCount = 0
+	red_medicCount = 0
+	
+	blue_marksmanCount = 0
+	blue_gunnerCount = 0
+	blue_demoCount = 0
+	blue_supportCount = 0
+	blue_engineerCount = 0
+	blue_scoutCount = 0
+	blue_medicCount = 0
 
 	net.Start("GameEnded")
 	net.WriteFloat(team)
@@ -1073,12 +1158,6 @@ function GM:Think()
 		MatchHasBegun = true
 		net.Start("MatchBegin")
 		net.Broadcast()
-		
-		-- Prevent players from using sandbox spawning commands after the match has started
-		--concommand.Remove("gm_spawn")
-		--concommand.Remove("gm_spawnsent")
-		--concommand.Remove("gm_spawnswep")
-		--concommand.Remove("gm_spawnvehicle")
 		
 		for k,v in pairs(ents.GetAll()) do
 			--Don't remove the perimeter sphere entity so we us it to check for the ordnance/class menus
@@ -1307,7 +1386,6 @@ net.Receive("receiveEquipment", function( len, ply )
 
 end )
 
--- These are terrible, a switch statement or a table would be loads better, needs to be done soon.
 net.Receive("receiveClassRequest", function( len, ply )
 
 	local potentialClass = net.ReadInt(5)
@@ -1588,7 +1666,7 @@ net.Receive("receiveClassRequest", function( len, ply )
 					net.Send(ply)
 				elseif(potentialClass == 5 and blue_demoCount < demoLimit) then -- to Demolitionist
 					blue_gunnerCount = blue_gunnerCount - 1
-					blue_demoCount = red_demoCount + 1
+					blue_demoCount = blue_demoCount + 1
 					net.Start("receiveUpdatedClassData")
 						net.WriteBool(true)
 					net.Send(ply)

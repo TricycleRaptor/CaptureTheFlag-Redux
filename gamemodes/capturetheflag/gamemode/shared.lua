@@ -4,7 +4,6 @@ GM.Email	= "arrinbevers@yahoo.com"
 GM.Website  	= ""
 
 DeriveGamemode( "sandbox" )
-include( 'class_menu.lua' )
 
 function GM:Initialize()
 	team.SetUp( 1, "RedTeam", Color( 255, 100, 100, 255 ) ) //RedTeam
@@ -18,7 +17,6 @@ end
 PropProtection = {}
 
 -----------------------------Prop Protection End--------------------------
-
 
 ----------------------------------MoveMent--------------------------------
 hook.Add("OnPlayerHitGround", "CTF.Land", function(ply, inWater, onFloater, speed)
