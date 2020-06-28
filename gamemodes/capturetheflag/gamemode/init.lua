@@ -828,6 +828,70 @@ function GM:PlayerNoClip(ply, state)
 	
 end
 
+function GM:PlayerSpawnEffect( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnNPC( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnObject ( ply, model, skin)
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnProp( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnRagdoll( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnSent( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnSWEP( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
+function GM:PlayerSpawnVehicle( ply, model )
+	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		return false
+	else
+		return true
+	end
+end
+
 hook.Add( "PlayerNoClip", "NoclipState", function( ply, state )
 	if state then
 		--print( ply:Name() .. " entered noclip." )
@@ -1094,12 +1158,6 @@ function GM:Think()
 		MatchHasBegun = true
 		net.Start("MatchBegin")
 		net.Broadcast()
-		
-		-- Prevent players from using sandbox spawning commands after the match has started
-		--concommand.Remove("gm_spawn")
-		--concommand.Remove("gm_spawnsent")
-		--concommand.Remove("gm_spawnswep")
-		--concommand.Remove("gm_spawnvehicle")
 		
 		for k,v in pairs(ents.GetAll()) do
 			--Don't remove the perimeter sphere entity so we us it to check for the ordnance/class menus
