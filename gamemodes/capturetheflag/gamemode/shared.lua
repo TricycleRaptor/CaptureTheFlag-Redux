@@ -18,15 +18,21 @@ PropProtection = {}
 
 -----------------------------Prop Protection End--------------------------
 
+----------------------------------MoveMent--------------------------------
 hook.Add("OnPlayerHitGround", "CTF.Land", function(ply, inWater, onFloater, speed)
-    ply._landTime = SysTime()
+	local pingTime = ply:Ping() * 0.001
+	local lockTime = math.max(0.1 - pingTime, 0.01) -- account for player ping weirdness
+	ply._landingTime = CurTime() + lockTime
 end)
 
 hook.Add("StartCommand", "CTF.LandMovement", function(ply, cmd)
-    if ply._landTime then
-        if SysTime() <= ply._landTime + 0.1 then
-            cmd:ClearMovement()
-            cmd:RemoveKey(IN_JUMP)
-        end
-    end
+	if ply._landingTime then
+		if CurTime() <= ply._landingTime then
+			cmd:ClearMovement()
+			cmd:RemoveKey(IN_JUMP)
+		else
+			ply._landingTime = nil
+		end
+	end
 end)
+--------------------------------MoveMent End------------------------------
