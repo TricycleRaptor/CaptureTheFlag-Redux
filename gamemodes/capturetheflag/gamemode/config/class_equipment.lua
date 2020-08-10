@@ -2,25 +2,14 @@
 
 local V = {
 
-	Name = "M67 Offensive Grenade",
-	Model = "models/weapons/tfa_ins2/w_m67.mdl",
-	Class = "tfa_ins2_m67",
+	Name = "Frag Grenade",
+	Model = "models/Items/grenadeAmmo.mdl",
+	Class = "weapon_frag",
 	Category = "Grenades",
-	Description = "The M67 offensive grenade offers a five second fuse time. Does more damage.",
+	Description = "Standard fare HL2 frag grenade, simple to throw with high damage. Easy for everyone to see and hear.",
 
 }
-list.Set( "grenades_list", "tfa_ins2_m67", V )
-
-local V = {
-
-	Name = "F1 Defensive Grenade",
-	Model = "models/weapons/tfa_ins2/w_f1.mdl",
-	Class = "tfa_ins2_f1",
-	Category = "Grenades",
-	Description = "The F1 defensive grenade has a three-and-a-half second fuse time. Does less damage.",
-
-}
-list.Set( "grenades_list", "tfa_ins2_f1", V )
+list.Set( "grenades_list", "weapon_frag", V )
 
 local V = {
 
@@ -173,14 +162,14 @@ list.Set( "supplies_list", "tfa_fml_hl2_ammo_drop_slam", V )
 
 local V = {
 
-	Name = "Simfphys Repair Tool",
+	Name = "Vehicle Repair Tool",
 	Model = "models/weapons/w_physics.mdl",
-	Class = "weapon_simrepair",
+	Class = "weapon_ctf_repair",
 	Category = "Toolkit",
-	Description = "Repairs all Simfphys vehicles when in range and pointing at a target. Does not repair helicopters.",
+	Description = "A handheld tool that repairs and restocks ammunition for both land and ground vehicles.",
 
 }
-list.Set( "engineers_list", "weapon_simrepair", V )
+list.Set( "engineers_list", "weapon_ctf_repair", V )
 
 local V = {
 
