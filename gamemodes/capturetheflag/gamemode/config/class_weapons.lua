@@ -17,10 +17,21 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_scarl.mdl",
 	Class = "tfa_ins2_scarl",
 	Category = 2,
-	Description = "The SCAR-L offers great recoil control and low spread. Sports excellent damage at longer distances.",
+	Description = "The SCAR-L offers great recoil control and accuracy. Sports excellent damage at longer distances.",
 
 }
 list.Set( "weapons_rifleman_primary", "tfa_ins2_scarl", V )
+
+local V = {
+
+	Name = "AK-103",
+	Model = "models/weapons/w_rif_ak103.mdl",
+	Class = "tfa_ins2_ak103",
+	Category = 2,
+	Description = "The AK-103 offers the strongest damage of all three rifleman options. High recoil and poor accuracy.",
+
+}
+list.Set( "weapons_rifleman_primary", "tfa_ins2_ak103", V )
 
 -- Marksman Weapon Table --
 
