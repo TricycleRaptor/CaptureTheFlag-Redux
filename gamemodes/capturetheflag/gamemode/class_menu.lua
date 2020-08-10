@@ -1373,7 +1373,7 @@ function classMenu()
 					
 					selectedModel = selectedEquipment.Model
 
-					if(value == "Simfphys Repair Tool") then
+					if(value == "Vehicle Repair Tool") then
 						equipmentIcon:SetSize( 450, 450)
 						equipmentIcon:SetPos(285,-315)
 					elseif (value == "Fortification Tablet") then
