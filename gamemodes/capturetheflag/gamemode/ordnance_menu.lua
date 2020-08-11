@@ -295,7 +295,8 @@ function addButtons(Menu)
 		airArray[1] = scripted_ents.Get("lunasflightschool_rebelheli")
 		airArray[2] = scripted_ents.Get("lunasflightschool_combineheli")
 		airArray[3] = scripted_ents.Get("lunasflightschool_ah6")
-		
+		airArray[4] = scripted_ents.Get("lfs_ah64")
+
 		for k, v in pairs(airArray) do
 			local icon = vgui.Create("SpawnIcon", airList)
 			icon:SetModel(v["MDL"])
