@@ -61,13 +61,14 @@
 			"type"		"CheckBox"
 			"default"	"0"
 		}
+		
 		7
 		{
 			"name"		"ctf_deathspectate"
 			"text"		"Enable Death Spectate"
 			"help"		"Allows players to spectate while they're waiting to respawn"
 			"type"		"CheckBox"
-			"default"	"0"
+			"default"	"1"
 		}
 		
 		8
@@ -76,43 +77,52 @@
 			"text"		"Restricted Death Spectate"
 			"help"		"Locks death spectating to allies only chase cam, instead of free roam"
 			"type"		"CheckBox"
-			"default"	"0"
+			"default"	"1"
+		}
+
+		9
+		{
+			"name"		"ctf_restrictkeys"
+			"text"		"Restrict Numpad Inputs"
+			"help"		"Requires all numpad triggers to be used through buttons"
+			"type"		"CheckBox"
+			"default"	"1"
 		}
 		
-		9
+		10
 		{
 			"name"		"ctf_passivetimer"
 			"text"		"Income: Timer Interval (Secs)"
 			"help"		"Sets the interval for passive income timer (In seconds)"
 			"type"		"Numeric"
-			"default"	"300"	
+			"default"	"600"	
 		}
 		
-		10
+		11
 		{
 			"name"		"ctf_passiveincome"
 			"text"		"Income: Passive Reward"
 			"help"		"Amount awarded to players passively"
 			"type"		"Numeric"
-			"default"	"500"
+			"default"	"250"
 		}
 		
-		11
+		12
 		{
 			"name"		"ctf_killincome"
 			"text"		"Income: Kill Reward"
 			"help"		"Amount awarded to players for a kill"
 			"type"		"Numeric"
-			"default"	"25"
+			"default"	"50"
 		}
 		
-		12
+		13
 		{
 			"name"		"ctf_startingbalance"
 			"text"		"Income: Starting Balance"
 			"help"		"Amount given to the player at the start of the match"
 			"type"		"Numeric"
-			"default"	"250"
+			"default"	"200"
 		}
 			
 	}
