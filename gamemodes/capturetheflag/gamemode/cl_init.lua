@@ -17,8 +17,6 @@ ReturnNoise = Sound("ctf/recovered.wav")
 LoseNoise = Sound("vo/npc/vortigaunt/vques01.wav")
 WinNoise = Sound("vo/npc/vortigaunt/itishonor.wav")
 
-LocalPlayer().canbuild = 1
-
 MatchHasBegun = false
 BaseSet = {false, false}
 FlagsDropped = {false, false}
@@ -215,18 +213,6 @@ local function HandleGameEnded(len, ply)
 		victoryLogo:SetImage( "icons/blue_win_logo.png" )
 		victoryText:SetImage( "icons/blue_win_text.png" )
 	end
-	
-	-- timer.Simple(2, function()
-	
-		-- local winningTeam = net.ReadFloat()
-		
-		-- if(winningTeam == LocalPlayer():Team()) then
-			-- LocalPlayer():EmitSound(WinNoise)
-		-- else
-			-- LocalPlayer():EmitSound(LoseNoise)
-		-- end
-	
-	-- end)
 
 	victoryLogo:Show()
 	victoryText:Show()
@@ -377,13 +363,26 @@ surface.CreateFont( "RaptorFont", {
 } )
 
 function SpawnMenuOpen()
-	if LocalPlayer().canbuild == 1 and LocalPlayer():Alive() then
+	if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
 		return true
+	elseif LocalPlayer().canbuild == 1 and LocalPlayer():Alive() and LocalPlayer():Team() ~= 3 then
+		return true
+	else 
+		return false
 	end
-
-	return false
 end
 hook.Add("SpawnMenuOpen", "CTFSpawnMenu", SpawnMenuOpen)
+
+function ContextMenuOpen()
+	if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+		return true
+	elseif LocalPlayer().canbuild == 1 and LocalPlayer():Alive() and LocalPlayer():Team() ~= 3 then
+		return true
+	else 
+		return false
+	end
+end
+hook.Add("ContextMenuOpen", "CTFContexttMenu", ContextMenuOpen)
 
 local function RestrictMenu()
 
