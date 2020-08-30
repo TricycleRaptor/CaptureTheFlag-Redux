@@ -71,19 +71,22 @@ function buyLFSVehicle(ply, cmd, args)
 			local entCount = ply:GetNWInt(ClassName .. "count")
 			
 			-- TO DO: 
-			-- Add team entity count check
+			-- Make a new variable that encompasses all vehicles, since lfs uses sbox_maxsents and lfs uses sbox_maxvehicles
 			
 			if(balance >= ent.Cost and (totalPlayerVehicles < totalServerVehicles)) then
 			
 				ply:EmitSound("ambient/levels/labs/coinslot1.wav") --Serverside
 				ply:SetNWInt("playerMoney", balance - ent.Cost)
 				
-				ent.Owner = ply
+				ent:CPPISetOwner(ply,ent)
 				PropProtection.TeamMakePropOwner(ply:Team(), ent)
+				
 				ent:SetPos(pos)
 				ent:SetAngles(Angle(Angles))
 				ent:Spawn()
 				ent:Activate()
+
+				ply:AddCleanup( "vehicles", Ent )
 			
 			elseif (totalPlayerVehicles >= totalServerVehicles) then
 
