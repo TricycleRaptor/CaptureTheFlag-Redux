@@ -1,7 +1,7 @@
-include( 'cl_scoreboard.lua' )
-include( 'shared.lua' )
-include( 'ordnance_menu.lua' )
-include( 'class_menu.lua' )
+include( "cl_scoreboard.lua" )
+include( "shared.lua" )
+include( "ordnance_menu.lua" )
+include( "class_menu.lua" )
 
 BeginNoise = Sound("ctf/intro.wav")
 DeployNoise = Sound("ambient/levels/streetwar/city_battle13.wav")
@@ -10,12 +10,13 @@ ScoreNoise = Sound("ctf/captured.wav")
 ScoreNoise2 = Sound("ambient/levels/citadel/weapon_disintegrate2.wav")
 PickupNoise = Sound("ctf/taken.wav")
 PickupNoise2 = Sound("ambient/levels/canals/windchime2.wav")
-JumpReadyNoise = Sound("hl1/fvox/hiss.wav")
 DropNoise = Sound("ctf/dropped.wav")
 DropNoise2 = Sound("ambient/alarms/warningbell1.wav")
 ReturnNoise = Sound("ctf/recovered.wav")
 LoseNoise = Sound("vo/npc/vortigaunt/vques01.wav")
 WinNoise = Sound("vo/npc/vortigaunt/itishonor.wav")
+
+LocalPlayer().canbuild = 1
 
 MatchHasBegun = false
 BaseSet = {false, false}
@@ -213,6 +214,18 @@ local function HandleGameEnded(len, ply)
 		victoryLogo:SetImage( "icons/blue_win_logo.png" )
 		victoryText:SetImage( "icons/blue_win_text.png" )
 	end
+	
+	-- timer.Simple(2, function()
+	
+		-- local winningTeam = net.ReadFloat()
+		
+		-- if(winningTeam == LocalPlayer():Team()) then
+			-- LocalPlayer():EmitSound(WinNoise)
+		-- else
+			-- LocalPlayer():EmitSound(LoseNoise)
+		-- end
+	
+	-- end)
 
 	victoryLogo:Show()
 	victoryText:Show()
@@ -362,27 +375,25 @@ surface.CreateFont( "RaptorFont", {
 	font = "Arial"
 } )
 
+-- To do: Admin bypass
+
 function SpawnMenuOpen()
-	if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+	if LocalPlayer().canbuild == 1 and LocalPlayer():Alive() then
 		return true
-	elseif LocalPlayer().canbuild == 1 and LocalPlayer():Alive() and LocalPlayer():Team() ~= 3 then
-		return true
-	else 
+	else
 		return false
 	end
 end
 hook.Add("SpawnMenuOpen", "CTFSpawnMenu", SpawnMenuOpen)
 
 function ContextMenuOpen()
-	if LocalPlayer():IsAdmin() or LocalPlayer():IsSuperAdmin() then
+	if LocalPlayer().canbuild == 1 and LocalPlayer():Alive() then
 		return true
-	elseif LocalPlayer().canbuild == 1 and LocalPlayer():Alive() and LocalPlayer():Team() ~= 3 then
-		return true
-	else 
+	else
 		return false
 	end
 end
-hook.Add("ContextMenuOpen", "CTFContexttMenu", ContextMenuOpen)
+hook.Add("ContextMenuOpen", "CTFContextMenu", ContextMenuOpen)
 
 local function RestrictMenu()
 
