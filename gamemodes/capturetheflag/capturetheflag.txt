@@ -88,8 +88,17 @@
 			"type"		"CheckBox"
 			"default"	"1"
 		}
-		
+
 		10
+		{
+			"name"		"ctf_friendlyfire"
+			"text"		"Friendly Fire"
+			"help"		"Enable or disable friendly fire"
+			"type"		"CheckBox"
+			"default"	"1"
+		}
+		
+		11
 		{
 			"name"		"ctf_passivetimer"
 			"text"		"Income: Timer Interval (Secs)"
@@ -98,7 +107,7 @@
 			"default"	"600"	
 		}
 		
-		11
+		12
 		{
 			"name"		"ctf_passiveincome"
 			"text"		"Income: Passive Reward"
@@ -107,7 +116,7 @@
 			"default"	"250"
 		}
 		
-		12
+		13
 		{
 			"name"		"ctf_killincome"
 			"text"		"Income: Kill Reward"
@@ -116,7 +125,7 @@
 			"default"	"50"
 		}
 		
-		13
+		14
 		{
 			"name"		"ctf_startingbalance"
 			"text"		"Income: Starting Balance"
