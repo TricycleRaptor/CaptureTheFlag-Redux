@@ -1,12 +1,13 @@
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "cl_scoreboard.lua" )
+AddCSLuaFile( "class_menu.lua" )
+AddCSLuaFile( "ordnance_menu.lua" )
 AddCSLuaFile( "shared.lua" )
+
 AddCSLuaFile( "config/custom_classes.lua" )
 AddCSLuaFile( "config/class_weapons.lua" )
 AddCSLuaFile( "config/class_equipment.lua" )
 AddCSLuaFile( "config/secondary_weapons.lua" )
-AddCSLuaFile( "class_menu.lua" )
-AddCSLuaFile( "ordnance_menu.lua" )
 
 resource.AddFile( "models/CTF_Flag/ctf_flag.mdl" )
 resource.AddFile( "models/CTF_FlagBase/ctf_flagbase.mdl" )
@@ -410,40 +411,6 @@ function setClassLimits()
 
 end
 
-function printClassLimits(ply, cmd, args)
-	print("------------")
-	print("Server-wide:")
-	print("------------")
-	print("Marksman: " .. marksmanLimit)
-	print("Gunner: " .. gunnerLimit)
-	print("Demolitionist: " .. demoLimit)
-	print("Support: " .. supportLimit)
-	print("Engineer: " .. engineerLimit)
-	print("Scout: " .. scoutLimit)
-	print("Medic: " .. medicLimit)
-	print("------------")
-	print("RED Team:")
-	print("------------")
-	print(red_marksmanCount .. " marksmen on red team.")
-	print(red_gunnerCount .. " gunners on red team.")
-	print(red_demoCount .. " demolitionists on red team.")
-	print(red_supportCount .. " supports on red team.")
-	print(red_engineerCount .. " engineers on red team.")
-	print(red_scoutCount .. " scouts on red team.")
-	print(red_medicCount .. " medics on red team.")
-	print("------------")
-	print("BLUE Team:")
-	print("------------")
-	print(blue_marksmanCount .. " marksmen on blue team.")
-	print(blue_gunnerCount .. " gunners on blue team.")
-	print(blue_demoCount .. " demolitionists on blue team.")
-	print(blue_supportCount .. " supports on blue team.")
-	print(blue_engineerCount .. " engineers on blue team.")
-	print(blue_scoutCount .. " scouts on blue team.")
-	print(blue_medicCount .. " medics on blue team.")
-end
-concommand.Add("ctf_limits",printClassLimits)
-
 function BroadcastFlagPickedUp(ply)
 	net.Start("FlagPickedUp")
 	net.WriteEntity(ply)
@@ -501,10 +468,6 @@ function GM:PlayerSpawn( ply )
 		
 		if(!ply:IsAdmin() or !ply:IsSuperAdmin()) then
 			net.Send(ply)
-		end
-		
-		for _, props in ipairs(ents.FindByClass("prop_physics")) do
-			props:SetMoveType(MOVETYPE_NONE)
 		end
 		
 	else
@@ -687,6 +650,7 @@ function GM:PlayerLoadout( ply )
 		ply:StripWeapons()
 		RestoreTools(ply)
 		ply:StripWeapon("gmod_camera")
+		ply:Give("weapon_crowbar")
 		
 		-- Check player class
 		local plyClass = PLAYER_CLASSES[ply:GetNWInt("playerClass")]
@@ -695,10 +659,11 @@ function GM:PlayerLoadout( ply )
 		local secondaryWeapon = ply:GetNWString("selectedSecondary")
 		local equipment = ply:GetNWString("selectedEquipment")
 
-		ply:Give(primaryWeapon)
-		ply:Give(secondaryWeapon)
-		ply:Give(equipment)
-		ply:Give("weapon_crowbar")
+		if(primaryWeapon ~= nil and secondaryWeapon ~= nil and equipment ~= nil) then
+			ply:Give(primaryWeapon)
+			ply:Give(secondaryWeapon)
+			ply:Give(equipment)
+		end
 
 		if(equipment == "weapon_slam") then
 			ply:Give("weapon_simmines")
@@ -728,6 +693,7 @@ function GM:PlayerLoadout( ply )
 	
 		ply:StripWeapons()
 		ply:Give( "weapon_ctf_setup" )
+		ply:Give("weapon_crowbar")
 		
 		-- Check player class
 		local plyClass = PLAYER_CLASSES[ply:GetNWInt("playerClass")]
@@ -736,10 +702,11 @@ function GM:PlayerLoadout( ply )
 		local secondaryWeapon = ply:GetNWString("selectedSecondary")
 		local equipment = ply:GetNWString("selectedEquipment")
 		
-		ply:Give(primaryWeapon)
-		ply:Give(secondaryWeapon)
-		ply:Give(equipment)
-		ply:Give("weapon_crowbar")
+		if (primaryWeapon ~= nil and secondaryWeapon ~= nil and equipment ~= nil) then
+			ply:Give(primaryWeapon)
+			ply:Give(secondaryWeapon)
+			ply:Give(equipment)
+		end
 
 		-- These are tools/equipment given to specific classes regardless of loadout choices
 		if(plyClass.name == "Demolitionist") then
@@ -772,6 +739,8 @@ function GM:PlayerLoadout( ply )
 	else
 	
 		ply:StripWeapons()
+		ply:Give("weapon_crowbar")
+
 		-- Check player class
 		local plyClass = PLAYER_CLASSES[ply:GetNWInt("playerClass")]
 
@@ -779,10 +748,11 @@ function GM:PlayerLoadout( ply )
 		local secondaryWeapon = ply:GetNWString("selectedSecondary")
 		local equipment = ply:GetNWString("selectedEquipment")
 		
-		ply:Give(primaryWeapon)
-		ply:Give(secondaryWeapon)
-		ply:Give(equipment)
-		ply:Give("weapon_crowbar")
+		if(primaryWeapon ~= nil and secondaryWeapon ~= nil and equipment ~= nil) then
+			ply:Give(primaryWeapon)
+			ply:Give(secondaryWeapon)
+			ply:Give(equipment)
+		end
 
 		-- These are tools/equipment given to specific classes regardless of loadout choices
 		if(plyClass.name == "Demolitionist") then
@@ -812,8 +782,6 @@ function GM:PlayerLoadout( ply )
 		end
 		
 	end
-
-
 	
 end
 
@@ -827,6 +795,16 @@ function GM:PlayerNoClip(ply, state)
 	return false
 	
 end
+
+hook.Add( "PlayerNoClip", "NoclipState", function( ply, state )
+	if state then
+		--print( ply:Name() .. " entered noclip." )
+		ply:SetNWBool("inNoclip", true)
+	else
+		--print( ply:Name() .. " left noclip." )
+		ply:SetNWBool("inNoclip", false)
+	end
+end )
 
 function GM:PlayerSpawnEffect( ply, model )
 	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
@@ -892,29 +870,23 @@ function GM:PlayerSpawnVehicle( ply, model )
 	end
 end
 
-hook.Add( "PlayerNoClip", "NoclipState", function( ply, state )
-	if state then
-		--print( ply:Name() .. " entered noclip." )
-		ply:SetNWBool("inNoclip", true)
-	else
-		--print( ply:Name() .. " left noclip." )
-		ply:SetNWBool("inNoclip", false)
-	end
-end )
-
 function joining( ply )
  
 	ply:SetTeam( 4 )
  
 end
 
--- function GM:PlayerShouldTakeDamage(victim,attacker) -- Disable friendly fire
-	-- if Time / 60 < CTF_Time:GetFloat() or (attacker:IsPlayer() and attacker:Team() == victim:Team() or CurTime() - victim.InvulnTime < 6) then
-		-- return false
-	-- else
-		-- return true
-	-- end
--- end
+function GM:PlayerShouldTakeDamage(victim,attacker) -- Disable friendly fire
+	if (Time / 60 < CTF_Time:GetFloat() or CurTime() - victim.InvulnTime < 6) then
+		return false
+	else
+		if((GetConVar("ctf_friendlyfire"):GetBool() == false) and attacker:Team() == victim:Team()) then
+			return false
+		else
+			return true
+		end
+	end
+end
 
 function doBuild(team, pos, ply)
 	local otherTeam = 1
@@ -1158,6 +1130,12 @@ function GM:Think()
 		MatchHasBegun = true
 		net.Start("MatchBegin")
 		net.Broadcast()
+		
+		-- Prevent players from using sandbox spawning commands after the match has started
+		--concommand.Remove("gm_spawn")
+		--concommand.Remove("gm_spawnsent")
+		--concommand.Remove("gm_spawnswep")
+		--concommand.Remove("gm_spawnvehicle")
 		
 		for k,v in pairs(ents.GetAll()) do
 			--Don't remove the perimeter sphere entity so we us it to check for the ordnance/class menus
