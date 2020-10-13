@@ -21,8 +21,8 @@ PLAYER_CLASSES = {
 	{
 		name = "Machinegunner",
 		health = 100,
-		walkspeed = 190,
-		runspeed = 270,
+		walkspeed = 175,
+		runspeed = 255,
 	},
 	{
 		name = "Demolitionist",
