@@ -17,7 +17,7 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_scarl.mdl",
 	Class = "tfa_ins2_scarl",
 	Category = 2,
-	Description = "The SCAR-L offers great recoil control and accuracy. Sports excellent damage at longer distances.",
+	Description = "The SCAR-L offers great recoil control and low spread. Sports excellent damage at longer distances.",
 
 }
 list.Set( "weapons_rifleman_primary", "tfa_ins2_scarl", V )
@@ -61,18 +61,7 @@ list.Set( "weapons_marksman_primary", "tfa_ins2_gol", V )
 
 local V = {
 
-	Name = "RPK-74m",
-	Model = "models/weapons/w_rpk_74m.mdl",
-	Class = "tfa_ins2_rpk_74m",
-	Category = 4,
-	Description = "The RPK-74m machinegun is best used for ranged engagements, considerably lighter, but does less damage.",
-
-}
-list.Set( "weapons_gunner_primary", "tfa_ins2_rpk_74m", V )
-
-local V = {
-
-	Name = "Stoner A1 LMG",
+	Name = "Stoner A1",
 	Model = "models/weapons/tfa_ins2/w_wf_mg25.mdl",
 	Class = "tfa_ins2_kaclmg",
 	Category = 4,
@@ -80,6 +69,17 @@ local V = {
 
 }
 list.Set( "weapons_gunner_primary", "tfa_ins2_kaclmg", V )
+
+local V = {
+
+	Name = "Para M249",
+	Model = "models/weapons/tfa_ins2/w_minimi.mdl",
+	Class = "tfa_ins2_minimi",
+	Category = 4,
+	Description = "The M249 has a smaller magazine and damage-per-shot than the Stoner A1, but it is much lighter to carry.",
+
+}
+list.Set( "weapons_gunner_primary", "tfa_ins2_minimi", V )
 
 -- Demolitionist Weapon Table
 
