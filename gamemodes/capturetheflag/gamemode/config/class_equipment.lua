@@ -2,25 +2,25 @@
 
 local V = {
 
-	Name = "Frag Grenade",
+	Name = "HL2 Frag Grenade",
 	Model = "models/Items/grenadeAmmo.mdl",
 	Class = "weapon_frag",
 	Category = "Grenades",
-	Description = "Standard fare HL2 frag grenade, simple to throw with high damage. Easy for everyone to see and hear.",
+	Description = "Standard fare Half-Life 2 frag grenade. Easy to throw and easy to track, for better or for worse.",
 
 }
 list.Set( "grenades_list", "weapon_frag", V )
 
 local V = {
 
-	Name = "ST5 Stun Grenade",
-	Model = "models/items/tfa_st5/st5_ammo.mdl",
-	Class = "tfa_misc_st5stunner",
+	Name = "RDG1 Smoke Grenade",
+	Model = "models/weapons/w_nam_rdg1.mdl",
+	Class = "tfa_nam_rdg1",
 	Category = "Grenades",
-	Description = "The ST5 Stun Grenade can incapacitate and disorient enemies for up to six seconds. Must be timed well.",
+	Description = "A WW2 Era Soviet smoke grenade. Produces a thick cloud of black smoke that lasts twenty seconds.",
 
 }
-list.Set( "grenades_list", "tfa_misc_st5stunner", V )
+list.Set( "grenades_list", "tfa_nam_rdg1", V )
 
 -- Binoculars --
 
@@ -162,11 +162,11 @@ list.Set( "supplies_list", "tfa_fml_hl2_ammo_drop_slam", V )
 
 local V = {
 
-	Name = "Vehicle Repair Tool",
+	Name = "Vehicle Maintenance Tool",
 	Model = "models/weapons/w_physics.mdl",
 	Class = "weapon_ctf_repair",
 	Category = "Toolkit",
-	Description = "A handheld tool that repairs and restocks ammunition for both land and ground vehicles.",
+	Description = "Repairs both land and air vehicles and can restock air vehicle ammunition reserves.",
 
 }
 list.Set( "engineers_list", "weapon_ctf_repair", V )
