@@ -1,3 +1,5 @@
+totalServerVehicles = GetConVarNumber("sbox_maxvehicles")
+
 function buyEntity(ply, cmd, args)
 
 	if(args[1] != nil) then
@@ -59,6 +61,7 @@ function buyLFSVehicle(ply, cmd, args)
 		Angles.yaw = Angles.yaw + 180
 		
 		local balance = ply:GetNWInt("playerMoney")
+		local totalPlayerVehicles = ply:GetCount("vehicles")
 		
 		if(ent:IsValid()) then
 			local ClassName = ent:GetClass()
@@ -68,9 +71,9 @@ function buyLFSVehicle(ply, cmd, args)
 			local entCount = ply:GetNWInt(ClassName .. "count")
 			
 			-- TO DO: 
-			-- Add team entity count check
+			-- Make a new variable that encompasses all vehicles, since lfs uses sbox_maxsents and lfs uses sbox_maxvehicles
 			
-			if(balance >= ent.Cost) then
+			if(balance >= ent.Cost and (totalPlayerVehicles < totalServerVehicles)) then
 			
 				ply:EmitSound("ambient/levels/labs/coinslot1.wav") --Serverside
 				ply:SetNWInt("playerMoney", balance - ent.Cost)
@@ -82,7 +85,14 @@ function buyLFSVehicle(ply, cmd, args)
 				ent:SetAngles(Angle(Angles))
 				ent:Spawn()
 				ent:Activate()
+
+				ply:AddCleanup( "vehicles", Ent )
 			
+			elseif (totalPlayerVehicles >= totalServerVehicles) then
+
+				ply:EmitSound("buttons/combine_button_locked.wav") --Serverside
+				ply:ChatPrint( "[CTF]: You have hit your personal vehicle limit." )
+
 			else
 			
 				ply:EmitSound("buttons/combine_button_locked.wav") --Serverside
@@ -97,6 +107,7 @@ concommand.Add("ctf_LFS_buyvehicle", buyLFSVehicle)
 function buyPrewarVehicle( ply, vname, tr )
 
 	local balance = ply:GetNWInt("playerMoney")
+	local totalPlayerVehicles = ply:GetCount("vehicles")
 
 	if not vname then return end
 
@@ -107,7 +118,7 @@ function buyPrewarVehicle( ply, vname, tr )
 
 	if not vehiclePrewar then return end
 	
-	if (balance >= vehiclePrewar["Cost"]) then
+	if ((balance >= vehiclePrewar["Cost"]) and (totalPlayerVehicles < totalServerVehicles)) then
 	
 		ply:EmitSound("ambient/levels/labs/coinslot1.wav")
 		ply:SetNWInt("playerMoney", balance - vehiclePrewar["Cost"])
@@ -129,6 +140,11 @@ function buyPrewarVehicle( ply, vname, tr )
 
 		ply:AddCleanup( "vehicles", Ent )
 	
+	elseif (totalPlayerVehicles >= totalServerVehicles) then
+
+		ply:EmitSound("buttons/combine_button_locked.wav") --Serverside
+		ply:ChatPrint( "[CTF]: You have hit your personal vehicle limit." )
+
 	else
 	
 		ply:EmitSound("buttons/combine_button_locked.wav")
@@ -141,6 +157,7 @@ concommand.Add( "ctf_simfphys_buyprewar", function( ply, cmd, args ) buyPrewarVe
 function buyReconVehicle( ply, vname, tr )
 
 	local balance = ply:GetNWInt("playerMoney")
+	local totalPlayerVehicles = ply:GetCount("vehicles")
 
 	if not vname then return end
 
@@ -151,7 +168,7 @@ function buyReconVehicle( ply, vname, tr )
 
 	if not vehicleRecon then return end
 	
-	if (balance >= vehicleRecon["Cost"]) then
+	if ((balance >= vehicleRecon["Cost"]) and (totalPlayerVehicles < totalServerVehicles)) then
 	
 		ply:EmitSound("ambient/levels/labs/coinslot1.wav")
 		ply:SetNWInt("playerMoney", balance - vehicleRecon["Cost"])
@@ -173,6 +190,11 @@ function buyReconVehicle( ply, vname, tr )
 
 		ply:AddCleanup( "vehicles", Ent )
 	
+	elseif (totalPlayerVehicles >= totalServerVehicles) then
+
+		ply:EmitSound("buttons/combine_button_locked.wav") --Serverside
+		ply:ChatPrint( "[CTF]: You have hit your personal vehicle limit." )
+
 	else
 	
 		ply:EmitSound("buttons/combine_button_locked.wav")
@@ -185,6 +207,7 @@ concommand.Add( "ctf_simfphys_buyrecon", function( ply, cmd, args ) buyReconVehi
 function buyTankVehicle( ply, vname, tr )
 
 	local balance = ply:GetNWInt("playerMoney")
+	local totalPlayerVehicles = ply:GetCount("vehicles")
 
 	if not vname then return end
 
@@ -195,7 +218,7 @@ function buyTankVehicle( ply, vname, tr )
 
 	if not vehicleTank then return end
 	
-	if (balance >= vehicleTank["Cost"]) then
+	if ((balance >= vehicleTank["Cost"]) and (totalPlayerVehicles < totalServerVehicles)) then
 	
 		ply:EmitSound("ambient/levels/labs/coinslot1.wav")
 		ply:SetNWInt("playerMoney", balance - vehicleTank["Cost"])
@@ -217,6 +240,11 @@ function buyTankVehicle( ply, vname, tr )
 
 		ply:AddCleanup( "vehicles", Ent )
 	
+	elseif (totalPlayerVehicles >= totalServerVehicles) then
+
+		ply:EmitSound("buttons/combine_button_locked.wav") --Serverside
+		ply:ChatPrint( "[CTF]: You have hit your personal vehicle limit." )
+
 	else
 	
 		ply:EmitSound("buttons/combine_button_locked.wav")
@@ -256,6 +284,8 @@ local function GiveCreditsAutoComplete( cmd, stringargs )
 end
 
 function giveCredits(ply, cmd, args)
+
+	if ( !IsValid( ply ) ) then return end -- No dedicated server console support
 	
 	if(ply:IsAdmin() or ply:IsSuperAdmin()) then
 	
