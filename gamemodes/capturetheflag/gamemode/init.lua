@@ -442,36 +442,29 @@ function GM:PlayerSpawn( ply )
 
 	hook.Call("PlayerLoadout", ply)
 
-	if (ply:Team() == 4) then
+	if (ply:Team() == 4) then -- Spectator
+
 		ply:StripWeapons()
 		ply:Spectate( OBS_MODE_ROAMING )
-		net.Start("RestrictMenu")
-		net.Send(ply)
+
 	end
 
 	if Time / 60 < CTF_Time:GetFloat() then
 		ply.DoOnce = 1
 	end
-	
-	if (!MatchHasBegun) then
-	
-		ply:GodEnable()
-	
-	end
 
 	if (MatchHasBegun) then
 	
 		ply:GodDisable()
-	
-		net.Start("RestrictMenu")
-		net.Send(ply)
 		
 		if(!ply:IsAdmin() or !ply:IsSuperAdmin()) then
+			net.Start("RestrictMenu")
 			net.Send(ply)
 		end
 		
 	else
 		
+		ply:GodEnable()
 		net.Start("UnrestrictMenu")
 		net.Send(ply)
 		
@@ -862,12 +855,22 @@ function GM:PlayerSpawnSWEP( ply, model )
 	end
 end
 
-function GM:PlayerSpawnVehicle( ply, model )
-	if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+--function GM:PlayerSpawnVehicle( ply, model )
+	--if ( MatchHasBegun and not (ply:IsAdmin() or ply:IsSuperAdmin())) then
+		--return false
+	--else
+		--return true
+	--end
+--end
+
+function GM:CanPlayerSuicide( ply )
+
+	if(ply:GetObserverMode() == OBS_MODE_ROAMING) then
 		return false
 	else
 		return true
 	end
+
 end
 
 function joining( ply )
@@ -1131,12 +1134,6 @@ function GM:Think()
 		net.Start("MatchBegin")
 		net.Broadcast()
 		
-		-- Prevent players from using sandbox spawning commands after the match has started
-		--concommand.Remove("gm_spawn")
-		--concommand.Remove("gm_spawnsent")
-		--concommand.Remove("gm_spawnswep")
-		--concommand.Remove("gm_spawnvehicle")
-		
 		for k,v in pairs(ents.GetAll()) do
 			--Don't remove the perimeter sphere entity so we us it to check for the ordnance/class menus
 			if v.IsSphere and v:GetClass() ~= "ctf_perimetersphere" then
@@ -1178,6 +1175,15 @@ function GM:Think()
 			net.Start("ctf_TimeUpdate")
 			net.WriteFloat(NewTimeLeft)
 			net.Broadcast()
+		end
+	end
+
+	for _,ply in ipairs(player.GetAll()) do
+		if(ply:GetObserverMode() == OBS_MODE_ROAMING) then
+			if(!ply:IsAdmin() or !ply:IsSuperAdmin()) then
+				net.Start("RestrictMenu")
+				net.Send(ply)
+			end
 		end
 	end
 	
