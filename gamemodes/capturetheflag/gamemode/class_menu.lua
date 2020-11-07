@@ -1,3 +1,5 @@
+AddCSLuaFile()
+
 include( 'config/class_weapons.lua' )
 include( 'config/secondary_weapons.lua' )
 include( 'config/class_equipment.lua' )
@@ -13,6 +15,8 @@ local selectedSecondary
 local selectedEquipment
 
 function classMenu()
+
+	if(LocalPlayer():GetObserverMode() == OBS_MODE_ROAMING) then return end -- Prevent class menu from being opened while spectating
 
 	local Frame = vgui.Create( "DFrame" )
 		Frame:SetTitle( "[CTF]: Class Selection Menu" )
@@ -1373,7 +1377,7 @@ function classMenu()
 					
 					selectedModel = selectedEquipment.Model
 
-					if(value == "Vehicle Repair Tool") then
+					if(value == "Vehicle Maintenance Tool") then
 						equipmentIcon:SetSize( 450, 450)
 						equipmentIcon:SetPos(285,-315)
 					elseif (value == "Fortification Tablet") then
