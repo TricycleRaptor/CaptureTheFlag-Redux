@@ -6,7 +6,7 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_cw_ar15.mdl",
 	Class = "tfa_ins2_cw_ar15",
 	Category = 2,
-	Description = "The AR-15 classic is a assault rifle offering many tactical accessories at the cost of mobility and reload time.",
+	Description = "The AR-15 classic is a assault rifle standing at the middle ground of damage, recoil, and accuracy.",
 
 }
 list.Set( "weapons_rifleman_primary", "tfa_ins2_cw_ar15", V )
@@ -17,21 +17,21 @@ local V = {
 	Model = "models/weapons/tfa_ins2/w_scarl.mdl",
 	Class = "tfa_ins2_scarl",
 	Category = 2,
-	Description = "The SCAR-L offers great recoil control and low spread. Sports excellent damage at longer distances.",
+	Description = "The SCAR-L offers great recoil control and accuracy. Superb at longer distances at the cost of damage.",
 
 }
 list.Set( "weapons_rifleman_primary", "tfa_ins2_scarl", V )
 
 local V = {
 
-	Name = "AK-103",
-	Model = "models/weapons/w_rif_ak103.mdl",
-	Class = "tfa_ins2_ak103",
+	Name = "FN-FAL",
+	Model = "models/weapons/w_fn_fal.mdl",
+	Class = "tfa_ins2_fn_fal",
 	Category = 2,
-	Description = "The AK-103 offers the strongest damage of all three rifleman options. High recoil and poor accuracy.",
+	Description = "The FN-FAL is the highest damage option available to the rifleman at the cost of strong recoil.",
 
 }
-list.Set( "weapons_rifleman_primary", "tfa_ins2_ak103", V )
+list.Set( "weapons_rifleman_primary", "tfa_ins2_fn_fal", V )
 
 -- Marksman Weapon Table --
 
