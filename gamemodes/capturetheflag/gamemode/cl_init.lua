@@ -244,46 +244,40 @@ local function UpdateRespawn()
 end
 net.Receive("UpdateRespawn", UpdateRespawn)
 
-hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
+CurrentTarget = nil
+local haloColor
 
-	-- Player halos
-	if (LocalPlayer():GetEyeTrace()) then
-		if (IsValid(LocalPlayer():GetEyeTrace().Entity)) then
-			if(LocalPlayer():GetEyeTrace().Entity:IsPlayer()) then
-				if(LocalPlayer():GetEyeTrace().Entity:Team() == 1) then
-					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
-				elseif (LocalPlayer():GetEyeTrace().Entity:Team() == 2) then
-					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
-				end
+timer.Create("ctf_targetEnt", 0.1, 0, function()
+	local tr = LocalPlayer():GetEyeTrace()
+	CurrentTarget = tr.Entity
+	if IsValid(CurrentTarget) then
+		if (CurrentTarget:IsPlayer()) then
+			if(CurrentTarget:Team() == 1) then
+				haloColor = Color( 255, 71, 71 )
+			elseif (CurrentTarget:Team() == 2) then
+				haloColor = Color( 100, 100, 255 )
+			end
+		elseif (CurrentTarget:IsVehicle()) then
+			if(CurrentTarget:GetNWInt("OwningTeam") == 1) then
+				haloColor = Color( 255, 71, 71 )
+			elseif (CurrentTarget:GetNWInt("OwningTeam") == 2) then
+				haloColor = Color( 100, 100, 255 )
+			end
+		elseif (CurrentTarget.LFS) then
+			if(CurrentTarget:GetNWInt("OwningTeam") == 1) then
+				haloColor = Color( 255, 71, 71 )
+			elseif (CurrentTarget:GetNWInt("OwningTeam") == 2) then
+				haloColor = Color( 100, 100, 255 )
 			end
 		end
-	end 
-	
-	-- Vehicle halos
-	if (LocalPlayer():GetEyeTrace()) then
-		if (IsValid(LocalPlayer():GetEyeTrace().Entity)) then
-			if(LocalPlayer():GetEyeTrace().Entity:IsVehicle()) then
-				if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then
-					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
-				elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then
-					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
-				end
-			end
-		end	
+	else
+		CurrentTarget = nil
 	end
-	
-	-- LFS Halos
-	local traceClass = LocalPlayer():GetEyeTrace().Entity:GetClass()
-	if (LocalPlayer():GetEyeTrace()) then
-		if (IsValid(LocalPlayer():GetEyeTrace().Entity) and traceClass ~= nil) then
-			if(LocalPlayer():GetEyeTrace().Entity:IsScripted() and string.match(traceClass,"lfs_") or string.match(traceClass,"lunasflightschool_")) then
-				if(LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 1) then
-					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 255, 71, 71 ), 3, 3, 1 )
-				elseif (LocalPlayer():GetEyeTrace().Entity:GetNWInt("OwningTeam") == 2) then
-					halo.Add( {LocalPlayer():GetEyeTrace().Entity} , Color( 100, 100, 255 ), 3, 3, 1 )
-				end
-			end
-		end
+end)
+
+hook.Add( "PreDrawHalos", "CTF_OutlineHalos", function()
+	if (CurrentTarget and haloColor) then
+		halo.Add( {CurrentTarget} , haloColor, 3, 3, 1 )
 	end
 end )
 
